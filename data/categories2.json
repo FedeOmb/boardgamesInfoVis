@@ -1,7 +1,7 @@
-categories2 = {
-   "1001":{
-      "name":"Political",
-      "games":[
+{
+   "1001": {
+      "name": "Political",
+      "games": [
          233078,
          316554,
          12333,
@@ -10,9 +10,9 @@ categories2 = {
          37111
       ]
    },
-   "1002":{
-      "name":"Card Game",
-      "games":[
+   "1002": {
+      "name": "Card Game",
+      "games": [
          182028,
          173346,
          266192,
@@ -31,9 +31,9 @@ categories2 = {
          40834
       ]
    },
-   "1008":{
-      "name":"Nautical",
-      "games":[
+   "1008": {
+      "name": "Nautical",
+      "games": [
          124361,
          324856,
          247763,
@@ -42,15 +42,15 @@ categories2 = {
          170042
       ]
    },
-   "1009":{
-      "name":"Abstract Strategy",
-      "games":[
+   "1009": {
+      "name": "Abstract Strategy",
+      "games": [
          230802
       ]
    },
-   "1010":{
-      "name":"Fantasy",
-      "games":[
+   "1010": {
+      "name": "Fantasy",
+      "games": [
          174430,
          291457,
          115746,
@@ -75,17 +75,17 @@ categories2 = {
          269385
       ]
    },
-   "1011":{
-      "name":"Transportation",
-      "games":[
+   "1011": {
+      "name": "Transportation",
+      "games": [
          224517,
          28720,
          122515
       ]
    },
-   "1013":{
-      "name":"Farming",
-      "games":[
+   "1013": {
+      "name": "Farming",
+      "games": [
          177736,
          183394,
          3076,
@@ -97,9 +97,9 @@ categories2 = {
          159675
       ]
    },
-   "1015":{
-      "name":"Civilization",
-      "games":[
+   "1015": {
+      "name": "Civilization",
+      "games": [
          233078,
          220308,
          182028,
@@ -114,9 +114,9 @@ categories2 = {
          68448
       ]
    },
-   "1016":{
-      "name":"Science Fiction",
-      "games":[
+   "1016": {
+      "name": "Science Fiction",
+      "games": [
          233078,
          167791,
          187645,
@@ -141,9 +141,9 @@ categories2 = {
          37111
       ]
    },
-   "1017":{
-      "name":"Dice",
-      "games":[
+   "1017": {
+      "name": "Dice",
+      "games": [
          84876,
          192135,
          182874,
@@ -151,9 +151,9 @@ categories2 = {
          73439
       ]
    },
-   "1019":{
-      "name":"Wargame",
-      "games":[
+   "1019": {
+      "name": "Wargame",
+      "games": [
          233078,
          187645,
          115746,
@@ -164,9 +164,9 @@ categories2 = {
          72125
       ]
    },
-   "1020":{
-      "name":"Exploration",
-      "games":[
+   "1020": {
+      "name": "Exploration",
+      "games": [
          174430,
          233078,
          291457,
@@ -184,9 +184,9 @@ categories2 = {
          264220
       ]
    },
-   "1021":{
-      "name":"Economic",
-      "games":[
+   "1021": {
+      "name": "Economic",
+      "games": [
          224517,
          342942,
          233078,
@@ -231,9 +231,9 @@ categories2 = {
          73439
       ]
    },
-   "1022":{
-      "name":"Adventure",
-      "games":[
+   "1022": {
+      "name": "Adventure",
+      "games": [
          174430,
          291457,
          115746,
@@ -255,16 +255,16 @@ categories2 = {
          146021
       ]
    },
-   "1023":{
-      "name":"Bluffing",
-      "games":[
+   "1023": {
+      "name": "Bluffing",
+      "games": [
          124742,
          37111
       ]
    },
-   "1024":{
-      "name":"Horror",
-      "games":[
+   "1024": {
+      "name": "Horror",
+      "games": [
          167355,
          205637,
          205059,
@@ -273,25 +273,25 @@ categories2 = {
          146021
       ]
    },
-   "1026":{
-      "name":"Negotiation",
-      "games":[
+   "1026": {
+      "name": "Negotiation",
+      "games": [
          233078,
          256960
       ]
    },
-   "1028":{
-      "name":"Puzzle",
-      "games":[
+   "1028": {
+      "name": "Puzzle",
+      "games": [
          177736,
          205059,
          295947,
          230802
       ]
    },
-   "1029":{
-      "name":"City Building",
-      "games":[
+   "1029": {
+      "name": "City Building",
+      "games": [
          173346,
          199792,
          3076,
@@ -306,15 +306,15 @@ categories2 = {
          18602
       ]
    },
-   "1032":{
-      "name":"Action / Dexterity",
-      "games":[
+   "1032": {
+      "name": "Action / Dexterity",
+      "games": [
          521
       ]
    },
-   "1035":{
-      "name":"Medieval",
-      "games":[
+   "1035": {
+      "name": "Medieval",
+      "games": [
          84876,
          177736,
          164928,
@@ -330,35 +330,35 @@ categories2 = {
          73439
       ]
    },
-   "1036":{
-      "name":"Prehistoric",
-      "games":[
+   "1036": {
+      "name": "Prehistoric",
+      "games": [
          62219
       ]
    },
-   "1039":{
-      "name":"Deduction",
-      "games":[
+   "1039": {
+      "name": "Deduction",
+      "games": [
          37111
       ]
    },
-   "1040":{
-      "name":"Murder/Mystery",
-      "games":[
+   "1040": {
+      "name": "Murder/Mystery",
+      "games": [
          205059
       ]
    },
-   "1044":{
-      "name":"Collectible Components",
-      "games":[
+   "1044": {
+      "name": "Collectible Components",
+      "games": [
          205637,
          285774,
          124742
       ]
    },
-   "1046":{
-      "name":"Fighting",
-      "games":[
+   "1046": {
+      "name": "Fighting",
+      "games": [
          174430,
          291457,
          115746,
@@ -378,9 +378,9 @@ categories2 = {
          146021
       ]
    },
-   "1047":{
-      "name":"Miniatures",
-      "games":[
+   "1047": {
+      "name": "Miniatures",
+      "games": [
          174430,
          291457,
          187645,
@@ -396,9 +396,9 @@ categories2 = {
          269385
       ]
    },
-   "1050":{
-      "name":"Ancient",
-      "games":[
+   "1050": {
+      "name": "Ancient",
+      "games": [
          173346,
          124361,
          126163,
@@ -406,53 +406,53 @@ categories2 = {
          68448
       ]
    },
-   "1052":{
-      "name":"Arabian",
-      "games":[
+   "1052": {
+      "name": "Arabian",
+      "games": [
          157354
       ]
    },
-   "1055":{
-      "name":"American West",
-      "games":[
+   "1055": {
+      "name": "American West",
+      "games": [
          193738,
          341169
       ]
    },
-   "1064":{
-      "name":"Movies / TV / Radio theme",
-      "games":[
+   "1064": {
+      "name": "Movies / TV / Radio theme",
+      "games": [
          187645,
          316554,
          164153,
          37111
       ]
    },
-   "1069":{
-      "name":"Modern Warfare",
-      "games":[
+   "1069": {
+      "name": "Modern Warfare",
+      "games": [
          12333
       ]
    },
-   "1070":{
-      "name":"Renaissance",
-      "games":[
+   "1070": {
+      "name": "Renaissance",
+      "games": [
          230802,
          93,
          122515
       ]
    },
-   "1081":{
-      "name":"Spies/Secret Agents",
-      "games":[
+   "1081": {
+      "name": "Spies/Secret Agents",
+      "games": [
          256960,
          314040,
          37111
       ]
    },
-   "1082":{
-      "name":"Mythology",
-      "games":[
+   "1082": {
+      "name": "Mythology",
+      "games": [
          162886,
          170216,
          126163,
@@ -461,9 +461,9 @@ categories2 = {
          264220
       ]
    },
-   "1084":{
-      "name":"Environmental",
-      "games":[
+   "1084": {
+      "name": "Environmental",
+      "games": [
          161936,
          342942,
          167791,
@@ -472,9 +472,9 @@ categories2 = {
          62219
       ]
    },
-   "1086":{
-      "name":"Territory Building",
-      "games":[
+   "1086": {
+      "name": "Territory Building",
+      "games": [
          167791,
          115746,
          162886,
@@ -487,9 +487,9 @@ categories2 = {
          122515
       ]
    },
-   "1088":{
-      "name":"Industry / Manufacturing",
-      "games":[
+   "1088": {
+      "name": "Industry / Manufacturing",
+      "games": [
          224517,
          167791,
          28720,
@@ -504,9 +504,9 @@ categories2 = {
          159675
       ]
    },
-   "1089":{
-      "name":"Animals",
-      "games":[
+   "1089": {
+      "name": "Animals",
+      "games": [
          342942,
          193738,
          266192,
@@ -520,15 +520,15 @@ categories2 = {
          62219
       ]
    },
-   "1090":{
-      "name":"Pirates",
-      "games":[
+   "1090": {
+      "name": "Pirates",
+      "games": [
          276025
       ]
    },
-   "1093":{
-      "name":"Novel-based",
-      "games":[
+   "1093": {
+      "name": "Novel-based",
+      "games": [
          115746,
          316554,
          205637,
@@ -538,16 +538,16 @@ categories2 = {
          146021
       ]
    },
-   "1094":{
-      "name":"Educational",
-      "games":[
+   "1094": {
+      "name": "Educational",
+      "games": [
          266192,
          256960
       ]
    },
-   "1097":{
-      "name":"Travel",
-      "games":[
+   "1097": {
+      "name": "Travel",
+      "games": [
          312484,
          164928,
          171623,
@@ -555,21 +555,21 @@ categories2 = {
          146021
       ]
    },
-   "1101":{
-      "name":"Video Game Theme",
-      "games":[
+   "1101": {
+      "name": "Video Game Theme",
+      "games": [
          209010
       ]
    },
-   "1102":{
-      "name":"Civil War",
-      "games":[
+   "1102": {
+      "name": "Civil War",
+      "games": [
          187645
       ]
    },
-   "1113":{
-      "name":"Space Exploration",
-      "games":[
+   "1113": {
+      "name": "Space Exploration",
+      "games": [
          233078,
          167791,
          187645,
@@ -583,35 +583,35 @@ categories2 = {
          37111
       ]
    },
-   "1115":{
-      "name":"Religious",
-      "games":[
+   "1115": {
+      "name": "Religious",
+      "games": [
          164928
       ]
    },
-   "1116":{
-      "name":"Comic Book / Strip",
-      "games":[
+   "1116": {
+      "name": "Comic Book / Strip",
+      "games": [
          285774
       ]
    },
-   "1118":{
-      "name":"Mature / Adult",
-      "games":[
+   "1118": {
+      "name": "Mature / Adult",
+      "games": [
          55690,
          264220
       ]
    },
-   "2145":{
-      "name":"Medical",
-      "games":[
+   "2145": {
+      "name": "Medical",
+      "games": [
          161936,
          221107
       ]
    },
-   "2710":{
-      "name":"Post-Napoleonic",
-      "games":[
+   "2710": {
+      "name": "Post-Napoleonic",
+      "games": [
          224517,
          28720,
          256960,

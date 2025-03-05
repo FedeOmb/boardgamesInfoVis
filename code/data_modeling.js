@@ -1,15 +1,17 @@
-    var data 
-    var nodes = []
-    var links = []
-    var categories = []
+
+
     var designers = []
     var mechanics = []
     
     d3.json("./data/boardgames_100.json", function (error, _graph) {
         if (error) throw error;
-        data = _graph
+        var data
+        var nodes = []
+        var links = []
 
-        for(i in data){
+        data = data_cleaning(_graph)
+
+        for(let i in data){
             let rat = data[i].rating.rating
             let rev = data[i].rating.num_of_reviews
             let cat = data[i].types.categories
@@ -26,29 +28,59 @@
         }
         //console.log(data)
 
-        for(i in data){
-            for(j in data[i].recommendations.fans_liked){
+        for(let i in data){
+            for(let j in data[i].recommendations.fans_liked){
                 let temp = {}
                 temp.source = data[i].id
                 temp.target = data[i].recommendations.fans_liked[j]
                 links.push(temp)
             }
         }
-        //console.log(JSON.stringify(links))
+        console.log("LINKS")
+        console.log(JSON.stringify(links))
 
-        for(i in data){
+        for(let i in data){
             let temp = data[i]
             delete temp.recommendations
             nodes.push(temp)
-        } 
-        //console.log(JSON.stringify(nodes))
+        }
+        console.log("NODES")
+        console.log(JSON.stringify(nodes))
 
+        create_categories(data)
+        create_designers(data)
+        create_mechanics(data)
+        
+        dataset_conv_clean = {}
+        dataset_conv_clean.nodes = nodes
+        dataset_conv_clean.links = links
+
+        console.log("DATASET CONVERTED CLEANED")
+        console.log(dataset_conv_clean)
+        console.log(JSON.stringify(dataset_conv_clean))
+      }
+    );
+
+    function data_cleaning(raw_data){
+        let data = raw_data
+        let games_id = []
+        for (let i in data) {
+            games_id.push(data[i].id)
+        }
+        for (let j in data) {
+            data[j].recommendations.fans_liked = data[j].recommendations.fans_liked.filter((id) => {return games_id.includes(id)})
+        }
+        return data
+    }  
+
+    function create_categories(data){
+        var categories = []
         //categories versione 1
         var present = false
-        for(i in data){
-            for(j in data[i].categories){
+        for(let i in data){
+            for(let j in data[i].categories){
                 present = false
-               for(k in categories){
+               for(let k in categories){
                     if(data[i].categories[j].id == categories[k].id)
                         present = true
                 } 
@@ -61,32 +93,36 @@
                 }
             }
         }
-        for(i in data){
-            for(j in data[i].categories){
-                for(k in categories)
+        for(let i in data){
+            for(let j in data[i].categories){
+                for(let k in categories)
                     if(data[i].categories[j].id == categories[k].id)
                         categories[k].games.push(data[i].id)
             }
         }
-        //console.log(JSON.stringify(categories))
+        console.log("CATEGORIES VERS1")
+        console.log(JSON.stringify(categories))
 
-        //categories versione 1
+        //categories versione 2
         var categories2 = {}
-        for(i in categories){
+        for(let i in categories){
             let id = categories[i].id
             let temp = {}
             temp.name = categories[i].name
             temp.games = categories[i].games
             categories2[id] = temp
         }
-        //console.log(JSON.stringify(categories2))
+        console.log("CATEGORIES VERS2")
+        console.log(JSON.stringify(categories2))
+    }
 
+    function create_mechanics(data){
         //mechanics versione 1
         var present = false
-        for(i in data){
-            for(j in data[i].mechanics){
+        for(let i in data){
+            for(let j in data[i].mechanics){
                 present = false
-               for(k in mechanics){
+               for(let k in mechanics){
                     if(data[i].mechanics[j].id == mechanics[k].id)
                         present = true
                 } 
@@ -99,32 +135,36 @@
                 }
             }
         }
-        for(i in data){
-            for(j in data[i].mechanics){
-                for(k in mechanics)
+        for(let i in data){
+            for(let j in data[i].mechanics){
+                for(let k in mechanics)
                     if(data[i].mechanics[j].id == mechanics[k].id)
                         mechanics[k].games.push(data[i].id)
             }
         }
-        //console.log(JSON.stringify(mechanics))
+        console.log("MECHANICS VERS1")
+        console.log(JSON.stringify(mechanics))
 
-        //categories versione 1
+        //mechanics versione 2
         var mechanics2 = {}
-        for(i in mechanics){
+        for(let i in mechanics){
             let id = mechanics[i].id
             let temp = {}
             temp.name = mechanics[i].name
             temp.games = mechanics[i].games
             mechanics2[id] = temp
         }
-        //console.log(JSON.stringify(mechanics2))
+        console.log("MECHANICS VERS2")
+        console.log(JSON.stringify(mechanics2))        
+    }
 
+    function create_designers(data) {
         //designers versione 1
         var present = false
-        for(i in data){
-            for(j in data[i].designer){
+        for(let i in data){
+            for(let j in data[i].designer){
                 present = false
-               for(k in designers){
+               for(let k in designers){
                     if(data[i].designer[j].id == designers[k].id)
                         present = true
                 } 
@@ -137,24 +177,28 @@
                 }
             }
         }
-        for(i in data){
-            for(j in data[i].designer){
-                for(k in designers)
+        for(let i in data){
+            for(let j in data[i].designer){
+                for(let k in designers)
                     if(data[i].designer[j].id == designers[k].id)
                         designers[k].games.push(data[i].id)
             }
         }
-        //console.log(JSON.stringify(designers))
+        console.log("DESIGNERS VERS1")
+        console.log(JSON.stringify(designers))
 
-        //categories versione 1
+        //designers versione 1
         var designers2 = {}
-        for(i in designers){
+        for(let i in designers){
             let id = designers[i].id
             let temp = {}
             temp.name = designers[i].name
             temp.games = designers[i].games
             designers2[id] = temp
         }
-        //console.log(JSON.stringify(designers2))
+        console.log("DESIGNERS VERS2")
+        console.log(JSON.stringify(designers2))
 
-      });
+    }
+
+

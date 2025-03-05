@@ -1,7 +1,7 @@
-mechanics2 = {
-   "2001":{
-      "name":"Action Points",
-      "games":[
+{
+   "2001": {
+      "name": "Action Points",
+      "games": [
          161936,
          182028,
          205637,
@@ -16,9 +16,9 @@ mechanics2 = {
          146021
       ]
    },
-   "2002":{
-      "name":"Tile Placement",
-      "games":[
+   "2002": {
+      "name": "Tile Placement",
+      "games": [
          342942,
          167791,
          84876,
@@ -36,9 +36,9 @@ mechanics2 = {
          122515
       ]
    },
-   "2004":{
-      "name":"Set Collection",
-      "games":[
+   "2004": {
+      "name": "Set Collection",
+      "games": [
          161936,
          342942,
          167791,
@@ -67,38 +67,38 @@ mechanics2 = {
          73439
       ]
    },
-   "2005":{
-      "name":"Stock Holding",
-      "games":[
+   "2005": {
+      "name": "Stock Holding",
+      "games": [
          276025,
          172386
       ]
    },
-   "2007":{
-      "name":"Pick-up and Deliver",
-      "games":[
+   "2007": {
+      "name": "Pick-up and Deliver",
+      "games": [
          266507,
          221107
       ]
    },
-   "2008":{
-      "name":"Trading",
-      "games":[
+   "2008": {
+      "name": "Trading",
+      "games": [
          161936,
          233078,
          221107
       ]
    },
-   "2009":{
-      "name":"Trick-taking",
-      "games":[
+   "2009": {
+      "name": "Trick-taking",
+      "games": [
          324856,
          284083
       ]
    },
-   "2011":{
-      "name":"Modular Board",
-      "games":[
+   "2011": {
+      "name": "Modular Board",
+      "games": [
          174430,
          233078,
          162886,
@@ -120,9 +120,9 @@ mechanics2 = {
          269385
       ]
    },
-   "2012":{
-      "name":"Auction/Bidding",
-      "games":[
+   "2012": {
+      "name": "Auction/Bidding",
+      "games": [
          182028,
          2651,
          25613,
@@ -131,16 +131,16 @@ mechanics2 = {
          122515
       ]
    },
-   "2013":{
-      "name":"Commodity Speculation",
-      "games":[
+   "2013": {
+      "name": "Commodity Speculation",
+      "games": [
          216132,
          125153
       ]
    },
-   "2015":{
-      "name":"Variable Player Powers",
-      "games":[
+   "2015": {
+      "name": "Variable Player Powers",
+      "games": [
          174430,
          161936,
          342942,
@@ -191,22 +191,22 @@ mechanics2 = {
          146021
       ]
    },
-   "2016":{
-      "name":"Secret Unit Deployment",
-      "games":[
+   "2016": {
+      "name": "Secret Unit Deployment",
+      "games": [
          124742
       ]
    },
-   "2017":{
-      "name":"Voting",
-      "games":[
+   "2017": {
+      "name": "Voting",
+      "games": [
          233078,
          37111
       ]
    },
-   "2018":{
-      "name":"Campaign / Battle Card Driven",
-      "games":[
+   "2018": {
+      "name": "Campaign / Battle Card Driven",
+      "games": [
          174430,
          291457,
          115746,
@@ -217,9 +217,9 @@ mechanics2 = {
          269385
       ]
    },
-   "2019":{
-      "name":"Team-Based Game",
-      "games":[
+   "2019": {
+      "name": "Team-Based Game",
+      "games": [
          187645,
          115746,
          167355,
@@ -230,9 +230,9 @@ mechanics2 = {
          37111
       ]
    },
-   "2020":{
-      "name":"Simultaneous Action Selection",
-      "games":[
+   "2020": {
+      "name": "Simultaneous Action Selection",
+      "games": [
          174430,
          291457,
          162886,
@@ -247,17 +247,17 @@ mechanics2 = {
          172386
       ]
    },
-   "2021":{
-      "name":"Area-Impulse",
-      "games":[
+   "2021": {
+      "name": "Area-Impulse",
+      "games": [
          233078,
          187645,
          246900
       ]
    },
-   "2023":{
-      "name":"Cooperative Game",
-      "games":[
+   "2023": {
+      "name": "Cooperative Game",
+      "games": [
          174430,
          161936,
          291457,
@@ -284,9 +284,9 @@ mechanics2 = {
          146021
       ]
    },
-   "2026":{
-      "name":"Hexagon Grid",
-      "games":[
+   "2026": {
+      "name": "Hexagon Grid",
+      "games": [
          174430,
          342942,
          233078,
@@ -306,9 +306,9 @@ mechanics2 = {
          122515
       ]
    },
-   "2027":{
-      "name":"Storytelling",
-      "games":[
+   "2027": {
+      "name": "Storytelling",
+      "games": [
          174430,
          55690,
          255984,
@@ -316,9 +316,9 @@ mechanics2 = {
          264220
       ]
    },
-   "2028":{
-      "name":"Role Playing",
-      "games":[
+   "2028": {
+      "name": "Role Playing",
+      "games": [
          174430,
          205637,
          96848,
@@ -333,9 +333,9 @@ mechanics2 = {
          146021
       ]
    },
-   "2040":{
-      "name":"Hand Management",
-      "games":[
+   "2040": {
+      "name": "Hand Management",
+      "games": [
          174430,
          224517,
          161936,
@@ -390,9 +390,9 @@ mechanics2 = {
          170042
       ]
    },
-   "2041":{
-      "name":"Open Drafting",
-      "games":[
+   "2041": {
+      "name": "Open Drafting",
+      "games": [
          342942,
          316554,
          182028,
@@ -421,17 +421,17 @@ mechanics2 = {
          172386
       ]
    },
-   "2043":{
-      "name":"Enclosure",
-      "games":[
+   "2043": {
+      "name": "Enclosure",
+      "games": [
          167791,
          31260,
          200680
       ]
    },
-   "2046":{
-      "name":"Area Movement",
-      "games":[
+   "2046": {
+      "name": "Area Movement",
+      "games": [
          187645,
          115746,
          246900,
@@ -448,38 +448,38 @@ mechanics2 = {
          37111
       ]
    },
-   "2047":{
-      "name":"Memory",
-      "games":[
+   "2047": {
+      "name": "Memory",
+      "games": [
          170216,
          93
       ]
    },
-   "2048":{
-      "name":"Pattern Building",
-      "games":[
+   "2048": {
+      "name": "Pattern Building",
+      "games": [
          84876,
          295947,
          230802
       ]
    },
-   "2057":{
-      "name":"Chit-Pull System",
-      "games":[
+   "2057": {
+      "name": "Chit-Pull System",
+      "games": [
          191189
       ]
    },
-   "2070":{
-      "name":"Simulation",
-      "games":[
+   "2070": {
+      "name": "Simulation",
+      "games": [
          115746,
          12333,
          256960
       ]
    },
-   "2072":{
-      "name":"Dice Rolling",
-      "games":[
+   "2072": {
+      "name": "Dice Rolling",
+      "games": [
          233078,
          187645,
          115746,
@@ -510,9 +510,9 @@ mechanics2 = {
          146021
       ]
    },
-   "2078":{
-      "name":"Point to Point Movement",
-      "games":[
+   "2078": {
+      "name": "Point to Point Movement",
+      "games": [
          161936,
          124361,
          266507,
@@ -527,9 +527,9 @@ mechanics2 = {
          146021
       ]
    },
-   "2079":{
-      "name":"Variable Phase Order",
-      "games":[
+   "2079": {
+      "name": "Variable Phase Order",
+      "games": [
          233078,
          3076,
          184267,
@@ -539,9 +539,9 @@ mechanics2 = {
          28143
       ]
    },
-   "2080":{
-      "name":"Area Majority / Influence",
-      "games":[
+   "2080": {
+      "name": "Area Majority / Influence",
+      "games": [
          233078,
          187645,
          115746,
@@ -560,9 +560,9 @@ mechanics2 = {
          73439
       ]
    },
-   "2081":{
-      "name":"Network and Route Building",
-      "games":[
+   "2081": {
+      "name": "Network and Route Building",
+      "games": [
          224517,
          220308,
          28720,
@@ -574,9 +574,9 @@ mechanics2 = {
          122515
       ]
    },
-   "2082":{
-      "name":"Worker Placement",
-      "games":[
+   "2082": {
+      "name": "Worker Placement",
+      "games": [
          316554,
          177736,
          312484,
@@ -607,9 +607,9 @@ mechanics2 = {
          170042
       ]
    },
-   "2661":{
-      "name":"Push Your Luck",
-      "games":[
+   "2661": {
+      "name": "Push Your Luck",
+      "games": [
          177736,
          266507,
          205637,
@@ -618,9 +618,9 @@ mechanics2 = {
          201808
       ]
    },
-   "2664":{
-      "name":"Deck, Bag, and Pool Building",
-      "games":[
+   "2664": {
+      "name": "Deck, Bag, and Pool Building",
+      "games": [
          316554,
          193738,
          124361,
@@ -641,9 +641,9 @@ mechanics2 = {
          269385
       ]
    },
-   "2676":{
-      "name":"Grid Movement",
-      "games":[
+   "2676": {
+      "name": "Grid Movement",
+      "games": [
          174430,
          233078,
          291457,
@@ -656,9 +656,9 @@ mechanics2 = {
          62219
       ]
    },
-   "2685":{
-      "name":"Player Elimination",
-      "games":[
+   "2685": {
+      "name": "Player Elimination",
+      "games": [
          167355,
          246900,
          266507,
@@ -666,9 +666,9 @@ mechanics2 = {
          201808
       ]
    },
-   "2686":{
-      "name":"Take That",
-      "games":[
+   "2686": {
+      "name": "Take That",
+      "games": [
          167791,
          187645,
          316554,
@@ -680,9 +680,9 @@ mechanics2 = {
          62219
       ]
    },
-   "2689":{
-      "name":"Action Queue",
-      "games":[
+   "2689": {
+      "name": "Action Queue",
+      "games": [
          174430,
          291457,
          237182,
@@ -693,23 +693,23 @@ mechanics2 = {
          172386
       ]
    },
-   "2813":{
-      "name":"Rondel",
-      "games":[
+   "2813": {
+      "name": "Rondel",
+      "games": [
          229853
       ]
    },
-   "2814":{
-      "name":"Traitor Game",
-      "games":[
+   "2814": {
+      "name": "Traitor Game",
+      "games": [
          167355,
          205059,
          37111
       ]
    },
-   "2819":{
-      "name":"Solo / Solitaire Game",
-      "games":[
+   "2819": {
+      "name": "Solo / Solitaire Game",
+      "games": [
          174430,
          342942,
          167791,
@@ -761,15 +761,15 @@ mechanics2 = {
          146021
       ]
    },
-   "2820":{
-      "name":"Semi-Cooperative Game",
-      "games":[
+   "2820": {
+      "name": "Semi-Cooperative Game",
+      "games": [
          167355
       ]
    },
-   "2822":{
-      "name":"Scenario / Mission / Campaign Game",
-      "games":[
+   "2822": {
+      "name": "Scenario / Mission / Campaign Game",
+      "games": [
          174430,
          291457,
          266507,
@@ -788,15 +788,15 @@ mechanics2 = {
          269385
       ]
    },
-   "2823":{
-      "name":"Score-and-Reset Game",
-      "games":[
+   "2823": {
+      "name": "Score-and-Reset Game",
+      "games": [
          256960
       ]
    },
-   "2824":{
-      "name":"Legacy Game",
-      "games":[
+   "2824": {
+      "name": "Legacy Game",
+      "games": [
          174430,
          161936,
          291457,
@@ -805,9 +805,9 @@ mechanics2 = {
          314040
       ]
    },
-   "2826":{
-      "name":"Turn Order: Stat-Based",
-      "games":[
+   "2826": {
+      "name": "Turn Order: Stat-Based",
+      "games": [
          224517,
          84876,
          28720,
@@ -817,17 +817,17 @@ mechanics2 = {
          93
       ]
    },
-   "2827":{
-      "name":"Turn Order: Auction",
-      "games":[
+   "2827": {
+      "name": "Turn Order: Auction",
+      "games": [
          183394,
          157354,
          122515
       ]
    },
-   "2828":{
-      "name":"Turn Order: Progressive",
-      "games":[
+   "2828": {
+      "name": "Turn Order: Progressive",
+      "games": [
          167791,
          316554,
          266192,
@@ -840,9 +840,9 @@ mechanics2 = {
          73439
       ]
    },
-   "2829":{
-      "name":"Turn Order: Claim Action",
-      "games":[
+   "2829": {
+      "name": "Turn Order: Claim Action",
+      "games": [
          102794,
          31260,
          185343,
@@ -857,9 +857,9 @@ mechanics2 = {
          172386
       ]
    },
-   "2830":{
-      "name":"Turn Order: Pass Order",
-      "games":[
+   "2830": {
+      "name": "Turn Order: Pass Order",
+      "games": [
          220308,
          177736,
          120677,
@@ -867,22 +867,22 @@ mechanics2 = {
          18602
       ]
    },
-   "2833":{
-      "name":"Turn Order: Role Order",
-      "games":[
+   "2833": {
+      "name": "Turn Order: Role Order",
+      "games": [
          192135,
          28143
       ]
    },
-   "2835":{
-      "name":"Passed Action Token",
-      "games":[
+   "2835": {
+      "name": "Passed Action Token",
+      "games": [
          246900
       ]
    },
-   "2838":{
-      "name":"Action Drafting",
-      "games":[
+   "2838": {
+      "name": "Action Drafting",
+      "games": [
          233078,
          3076,
          182874,
@@ -890,9 +890,9 @@ mechanics2 = {
          317985
       ]
    },
-   "2839":{
-      "name":"Action Retrieval",
-      "games":[
+   "2839": {
+      "name": "Action Retrieval",
+      "games": [
          174430,
          291457,
          162886,
@@ -900,23 +900,23 @@ mechanics2 = {
          237182
       ]
    },
-   "2840":{
-      "name":"Action/Event",
-      "games":[
+   "2840": {
+      "name": "Action/Event",
+      "games": [
          12333
       ]
    },
-   "2843":{
-      "name":"Follow",
-      "games":[
+   "2843": {
+      "name": "Follow",
+      "games": [
          233078,
          3076,
          28143
       ]
    },
-   "2846":{
-      "name":"Once-Per-Game Abilities",
-      "games":[
+   "2846": {
+      "name": "Once-Per-Game Abilities",
+      "games": [
          174430,
          291457,
          187645,
@@ -926,17 +926,17 @@ mechanics2 = {
          37111
       ]
    },
-   "2847":{
-      "name":"Advantage Token",
-      "games":[
+   "2847": {
+      "name": "Advantage Token",
+      "games": [
          12333,
          124361,
          200680
       ]
    },
-   "2849":{
-      "name":"Tech Trees / Tech Tracks",
-      "games":[
+   "2849": {
+      "name": "Tech Trees / Tech Tracks",
+      "games": [
          224517,
          233078,
          167791,
@@ -952,9 +952,9 @@ mechanics2 = {
          317985
       ]
    },
-   "2850":{
-      "name":"Events",
-      "games":[
+   "2850": {
+      "name": "Events",
+      "games": [
          187645,
          115746,
          182028,
@@ -970,9 +970,9 @@ mechanics2 = {
          73439
       ]
    },
-   "2851":{
-      "name":"Narrative Choice / Paragraph",
-      "games":[
+   "2851": {
+      "name": "Narrative Choice / Paragraph",
+      "games": [
          169786,
          266507,
          276025,
@@ -981,9 +981,9 @@ mechanics2 = {
          264220
       ]
    },
-   "2853":{
-      "name":"Stat Check Resolution",
-      "games":[
+   "2853": {
+      "name": "Stat Check Resolution",
+      "games": [
          205637,
          192135,
          205059,
@@ -991,27 +991,27 @@ mechanics2 = {
          146021
       ]
    },
-   "2854":{
-      "name":"Critical Hits and Failures",
-      "games":[
+   "2854": {
+      "name": "Critical Hits and Failures",
+      "games": [
          174430,
          291457,
          246900,
          55690
       ]
    },
-   "2856":{
-      "name":"Die Icon Resolution",
-      "games":[
+   "2856": {
+      "name": "Die Icon Resolution",
+      "games": [
          187645,
          192135,
          164153,
          121921
       ]
    },
-   "2857":{
-      "name":"Card Play Conflict Resolution",
-      "games":[
+   "2857": {
+      "name": "Card Play Conflict Resolution",
+      "games": [
          174430,
          187645,
          115746,
@@ -1020,28 +1020,28 @@ mechanics2 = {
          170216
       ]
    },
-   "2860":{
-      "name":"Flicking",
-      "games":[
+   "2860": {
+      "name": "Flicking",
+      "games": [
          521
       ]
    },
-   "2864":{
-      "name":"Force Commitment",
-      "games":[
+   "2864": {
+      "name": "Force Commitment",
+      "games": [
          316554,
          169786
       ]
    },
-   "2871":{
-      "name":"Kill Steal",
-      "games":[
+   "2871": {
+      "name": "Kill Steal",
+      "games": [
          246900
       ]
    },
-   "2874":{
-      "name":"Victory Points as a Resource",
-      "games":[
+   "2874": {
+      "name": "Victory Points as a Resource",
+      "games": [
          167791,
          220308,
          169786,
@@ -1052,9 +1052,9 @@ mechanics2 = {
          157354
       ]
    },
-   "2875":{
-      "name":"End Game Bonuses",
-      "games":[
+   "2875": {
+      "name": "End Game Bonuses",
+      "games": [
          342942,
          167791,
          220308,
@@ -1084,60 +1084,60 @@ mechanics2 = {
          73439
       ]
    },
-   "2876":{
-      "name":"Race",
-      "games":[
+   "2876": {
+      "name": "Race",
+      "games": [
          233078,
          237182,
          124742
       ]
    },
-   "2884":{
-      "name":"Sudden Death Ending",
-      "games":[
+   "2884": {
+      "name": "Sudden Death Ending",
+      "games": [
          12333,
          173346,
          237182
       ]
    },
-   "2886":{
-      "name":"King of the Hill",
-      "games":[
+   "2886": {
+      "name": "King of the Hill",
+      "games": [
          233078,
          169786
       ]
    },
-   "2887":{
-      "name":"Catch the Leader",
-      "games":[
+   "2887": {
+      "name": "Catch the Leader",
+      "games": [
          2651,
          244521
       ]
    },
-   "2888":{
-      "name":"Tug of War",
-      "games":[
+   "2888": {
+      "name": "Tug of War",
+      "games": [
          12333,
          173346
       ]
    },
-   "2889":{
-      "name":"Highest-Lowest Scoring",
-      "games":[
+   "2889": {
+      "name": "Highest-Lowest Scoring",
+      "games": [
          159675
       ]
    },
-   "2891":{
-      "name":"Hidden Roles",
-      "games":[
+   "2891": {
+      "name": "Hidden Roles",
+      "games": [
          167355,
          110327,
          37111
       ]
    },
-   "2893":{
-      "name":"Communication Limits",
-      "games":[
+   "2893": {
+      "name": "Communication Limits",
+      "games": [
          174430,
          291457,
          205637,
@@ -1145,9 +1145,9 @@ mechanics2 = {
          284083
       ]
    },
-   "2897":{
-      "name":"Variable Set-up",
-      "games":[
+   "2897": {
+      "name": "Variable Set-up",
+      "games": [
          224517,
          342942,
          233078,
@@ -1183,9 +1183,9 @@ mechanics2 = {
          73439
       ]
    },
-   "2900":{
-      "name":"Market",
-      "games":[
+   "2900": {
+      "name": "Market",
+      "games": [
          224517,
          28720,
          175914,
@@ -1195,9 +1195,9 @@ mechanics2 = {
          266810
       ]
    },
-   "2901":{
-      "name":"Delayed Purchase",
-      "games":[
+   "2901": {
+      "name": "Delayed Purchase",
+      "games": [
          187645,
          266507,
          175914,
@@ -1208,9 +1208,9 @@ mechanics2 = {
          40834
       ]
    },
-   "2902":{
-      "name":"Income",
-      "games":[
+   "2902": {
+      "name": "Income",
+      "games": [
          224517,
          342942,
          167791,
@@ -1232,9 +1232,9 @@ mechanics2 = {
          73439
       ]
    },
-   "2903":{
-      "name":"Automatic Resource Growth",
-      "games":[
+   "2903": {
+      "name": "Automatic Resource Growth",
+      "games": [
          162886,
          177736,
          102794,
@@ -1244,24 +1244,24 @@ mechanics2 = {
          159675
       ]
    },
-   "2904":{
-      "name":"Loans",
-      "games":[
+   "2904": {
+      "name": "Loans",
+      "games": [
          224517,
          28720,
          35677
       ]
    },
-   "2910":{
-      "name":"Investment",
-      "games":[
+   "2910": {
+      "name": "Investment",
+      "games": [
          125153,
          172386
       ]
    },
-   "2911":{
-      "name":"Ownership",
-      "games":[
+   "2911": {
+      "name": "Ownership",
+      "games": [
          193738,
          199792,
          251247,
@@ -1273,9 +1273,9 @@ mechanics2 = {
          73439
       ]
    },
-   "2912":{
-      "name":"Contracts",
-      "games":[
+   "2912": {
+      "name": "Contracts",
+      "games": [
          167791,
          187645,
          169786,
@@ -1295,9 +1295,9 @@ mechanics2 = {
          170042
       ]
    },
-   "2914":{
-      "name":"Increase Value of Unchosen Resources",
-      "games":[
+   "2914": {
+      "name": "Increase Value of Unchosen Resources",
+      "games": [
          233078,
          316554,
          120677,
@@ -1310,60 +1310,60 @@ mechanics2 = {
          110327
       ]
    },
-   "2915":{
-      "name":"Negotiation",
-      "games":[
+   "2915": {
+      "name": "Negotiation",
+      "games": [
          256960
       ]
    },
-   "2916":{
-      "name":"Alliances",
-      "games":[
+   "2916": {
+      "name": "Alliances",
+      "games": [
          246900
       ]
    },
-   "2919":{
-      "name":"Auction: Turn Order Until Pass",
-      "games":[
+   "2919": {
+      "name": "Auction: Turn Order Until Pass",
+      "games": [
          2651
       ]
    },
-   "2922":{
-      "name":"Constrained Bidding",
-      "games":[
+   "2922": {
+      "name": "Constrained Bidding",
+      "games": [
          157354,
          122515
       ]
    },
-   "2924":{
-      "name":"Auction: Dutch",
-      "games":[
+   "2924": {
+      "name": "Auction: Dutch",
+      "games": [
          182028,
          124361,
          25613
       ]
    },
-   "2926":{
-      "name":"Selection Order Bid",
-      "games":[
+   "2926": {
+      "name": "Selection Order Bid",
+      "games": [
          93
       ]
    },
-   "2927":{
-      "name":"Auction: Multiple Lot",
-      "games":[
+   "2927": {
+      "name": "Auction: Multiple Lot",
+      "games": [
          122515
       ]
    },
-   "2931":{
-      "name":"Auction: Fixed Placement",
-      "games":[
+   "2931": {
+      "name": "Auction: Fixed Placement",
+      "games": [
          122515
       ]
    },
-   "2933":{
-      "name":"Worker Placement, Different Worker Types",
-      "games":[
+   "2933": {
+      "name": "Worker Placement, Different Worker Types",
+      "games": [
          183394,
          185343,
          266810,
@@ -1372,34 +1372,34 @@ mechanics2 = {
          73439
       ]
    },
-   "2935":{
-      "name":"Worker Placement with Dice Workers",
-      "games":[
+   "2935": {
+      "name": "Worker Placement with Dice Workers",
+      "games": [
          84876,
          229853,
          171623,
          73439
       ]
    },
-   "2939":{
-      "name":"Track Movement",
-      "games":[
+   "2939": {
+      "name": "Track Movement",
+      "games": [
          193738,
          276025,
          341169,
          229853
       ]
    },
-   "2940":{
-      "name":"Square Grid",
-      "games":[
+   "2940": {
+      "name": "Square Grid",
+      "games": [
          164153,
          157354
       ]
    },
-   "2947":{
-      "name":"Movement Points",
-      "games":[
+   "2947": {
+      "name": "Movement Points",
+      "games": [
          115746,
          169786,
          124361,
@@ -1410,42 +1410,42 @@ mechanics2 = {
          121921
       ]
    },
-   "2948":{
-      "name":"Resource to Move",
-      "games":[
+   "2948": {
+      "name": "Resource to Move",
+      "games": [
          312484,
          192135,
          171623
       ]
    },
-   "2953":{
-      "name":"Programmed Movement",
-      "games":[
+   "2953": {
+      "name": "Programmed Movement",
+      "games": [
          209010
       ]
    },
-   "2955":{
-      "name":"Mancala",
-      "games":[
+   "2955": {
+      "name": "Mancala",
+      "games": [
          157354
       ]
    },
-   "2957":{
-      "name":"Bias",
-      "games":[
+   "2957": {
+      "name": "Bias",
+      "games": [
          126163,
          209010
       ]
    },
-   "2958":{
-      "name":"Moving Multiple Units",
-      "games":[
+   "2958": {
+      "name": "Moving Multiple Units",
+      "games": [
          184267
       ]
    },
-   "2959":{
-      "name":"Map Addition",
-      "games":[
+   "2959": {
+      "name": "Map Addition",
+      "games": [
          266507,
          205059,
          72125,
@@ -1455,49 +1455,49 @@ mechanics2 = {
          264220
       ]
    },
-   "2960":{
-      "name":"Map Reduction",
-      "games":[
+   "2960": {
+      "name": "Map Reduction",
+      "games": [
          170216
       ]
    },
-   "2961":{
-      "name":"Map Deformation",
-      "games":[
+   "2961": {
+      "name": "Map Deformation",
+      "games": [
          205637
       ]
    },
-   "2967":{
-      "name":"Hidden Movement",
-      "games":[
+   "2967": {
+      "name": "Hidden Movement",
+      "games": [
          187645,
          115746
       ]
    },
-   "2974":{
-      "name":"Zone of Control",
-      "games":[
+   "2974": {
+      "name": "Zone of Control",
+      "games": [
          169786
       ]
    },
-   "2975":{
-      "name":"Line of Sight",
-      "games":[
+   "2975": {
+      "name": "Line of Sight",
+      "games": [
          174430,
          291457,
          164153
       ]
    },
-   "2978":{
-      "name":"Grid Coverage",
-      "games":[
+   "2978": {
+      "name": "Grid Coverage",
+      "games": [
          84876,
          177736
       ]
    },
-   "2984":{
-      "name":"Closed Drafting",
-      "games":[
+   "2984": {
+      "name": "Closed Drafting",
+      "games": [
          167791,
          170216,
          31260,
@@ -1506,24 +1506,24 @@ mechanics2 = {
          68448
       ]
    },
-   "2987":{
-      "name":"Hidden Victory Points",
-      "games":[
+   "2987": {
+      "name": "Hidden Victory Points",
+      "games": [
          124361,
          3076,
          157354,
          73439
       ]
    },
-   "3001":{
-      "name":"Layering",
-      "games":[
+   "3001": {
+      "name": "Layering",
+      "games": [
          173346
       ]
    },
-   "3004":{
-      "name":"Deck Construction",
-      "games":[
+   "3004": {
+      "name": "Deck Construction",
+      "games": [
          174430,
          291457,
          205637,
@@ -1531,23 +1531,23 @@ mechanics2 = {
          124742
       ]
    },
-   "3005":{
-      "name":"Slide/Push",
-      "games":[
+   "3005": {
+      "name": "Slide/Push",
+      "games": [
          209010
       ]
    },
-   "3100":{
-      "name":"Tags",
-      "games":[
+   "3100": {
+      "name": "Tags",
+      "games": [
          342942,
          167791,
          28143
       ]
    },
-   "3104":{
-      "name":"Neighbor Scope",
-      "games":[
+   "3104": {
+      "name": "Neighbor Scope",
+      "games": [
          68448
       ]
    }

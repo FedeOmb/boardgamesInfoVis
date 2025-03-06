@@ -7,6 +7,13 @@ var link, node;
 // the data - an object with nodes and links
 var graph;
 
+const radiusScale = d3.scaleLinear()
+  .domain([1, 100]) // Input data range
+  .range([10, 5]);
+
+  console.log(radiusScale(10))
+  console.log(radiusScale(90))
+
 // load the data
 d3.json("data/dataset_converted_cleaned.json", function (error, _graph) {
   if (error) throw error;
@@ -139,18 +146,20 @@ function initializeDisplay() {
     .data(graph.nodes)
     .enter()
     .append("circle")
+    .attr("r", (d) => radiusScale(d.rank))
     .call(
       d3
         .drag()
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended)
-    );
+    ); 
 
   // node name
   node.append("title").text(function (d) {
-    return d.id;
+    return d.title + " " + d.rank;
   });
+
   // visualize the graph
   updateDisplay();
 }
@@ -158,7 +167,7 @@ function initializeDisplay() {
 // update the display based on the forces (but not positions)
 function updateDisplay() {
   node
-    .attr("r", forceProperties.collide.radius)
+    .attr("r", d => radiusScale(d.rank))
     .attr("stroke", forceProperties.charge.strength > 0 ? "blue" : "red")
     .attr(
       "stroke-width",

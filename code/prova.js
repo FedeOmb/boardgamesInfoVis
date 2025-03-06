@@ -1,32 +1,63 @@
     
-    d3.json("./data/boardgames_100.json", function (error, _graph) {
+    d3.json("./data/dataset_converted_cleaned.json", function (error, _graph) {
         if (error) throw error;
-        console.log(_graph)
-      });
-    
-    data = JSON.parse(JSON.stringify(dataset))
-    console.log(data)
-    data2 = data
-    var nodes = []
-    for(i in data){
-        let temp = data[i]
-        delete temp.recommendations
-        nodes.push(temp)
-    }
-    console.log(nodes)
+        graph = _graph
 
-    var links = []
-    console.log(data2)
-    for(i in data2){
-        let recom = data2[i].recommendations
-        for(j in recom.fans_liked){
-            console.log(j)
-            let temp = {}
-            temp.source = data2[i].id
-            temp.target = data2[i].recommendations.fans_liked[j]
-            links.push(temp)
+        const cliques = findCliquesInGraph(graph);
+        console.log("cliques: ");
+        console.log(JSON.stringify(cliques))
+    })
+
+    function findCliquesInGraph(graph, minSize = 12) {
+        // Step 1: Build adjacency list
+        const adjacencyList = buildAdjacencyList(graph);
+      
+        // Step 2: Find cliques using Bron-Kerbosch
+        const cliques = bronKerbosch(adjacencyList, minSize);
+      
+        return cliques;
+    }
+    
+    function bronKerbosch(adjacencyList, minSize = 12) {
+        const cliques = [];
+      
+        function findCliques(R, P, X) {
+          if (P.size === 0 && X.size === 0) {
+            if (R.size >= minSize) {
+              cliques.push([...R]);
+            }
+            return;
+          }
+      
+          for (const node of [...P]) {
+            const neighbors = adjacencyList.get(node);
+            findCliques(
+              new Set([...R, node]),
+              new Set([...P].filter(n => neighbors.has(n))),
+              new Set([...X].filter(n => neighbors.has(n)))
+            );
+            P.delete(node);
+            X.add(node);
+          }
         }
+      
+        findCliques(new Set(), new Set(adjacencyList.keys()), new Set());
+        return cliques;
     }
-    console.log(links)
 
-    
+    function buildAdjacencyList(graph) {
+        const adjacencyList = new Map();
+      
+        // Initialize adjacency list for each node
+        graph.nodes.forEach(node => {
+          adjacencyList.set(node.id, new Set());
+        });
+      
+        // Populate adjacency list based on links
+        graph.links.forEach(link => {
+          adjacencyList.get(link.source).add(link.target);
+          adjacencyList.get(link.target).add(link.source);
+        });
+      
+        return adjacencyList;
+    }

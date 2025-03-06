@@ -11,8 +11,9 @@ const radiusScale = d3.scaleLinear()
   .domain([1, 100]) // Input data range
   .range([10, 5]);
 
-  console.log(radiusScale(10))
-  console.log(radiusScale(90))
+const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+var nodeColorMap = mapNodesToCliqueColors(cliques)
 
 // load the data
 d3.json("data/dataset_converted_cleaned.json", function (error, _graph) {
@@ -51,7 +52,7 @@ forceProperties = {
     enabled: true,
     strength: 0.7,
     iterations: 1,
-    radius: 5,
+    radius: 10,
   },
   forceX: {
     enabled: false,
@@ -147,6 +148,7 @@ function initializeDisplay() {
     .enter()
     .append("circle")
     .attr("r", (d) => radiusScale(d.rank))
+    .attr("fill", d => nodeColorMap.get(d.id) || "gray") // Default to gray if no clique color
     .call(
       d3
         .drag()
@@ -168,6 +170,7 @@ function initializeDisplay() {
 function updateDisplay() {
   node
     .attr("r", d => radiusScale(d.rank))
+    .attr("fill", d => nodeColorMap.get(d.id) || "gray") // Default to gray if no clique color
     .attr("stroke", forceProperties.charge.strength > 0 ? "blue" : "red")
     .attr(
       "stroke-width",
@@ -237,4 +240,18 @@ d3.select(window).on("resize", function () {
 function updateAll() {
   updateForces();
   updateDisplay();
+}
+
+function mapNodesToCliqueColors(cliques) {
+  console.log(cliques)
+  const nodeColorMap = new Map();
+
+  cliques.forEach((clique, index) => {
+    const color = colorScale(index); // Assign a unique color to each clique
+    clique.forEach(nodeId => {
+      nodeColorMap.set(nodeId, color); // Map each node in the clique to its color
+    });
+  });
+
+  return nodeColorMap;
 }

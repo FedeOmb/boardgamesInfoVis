@@ -1,9 +1,6 @@
 const width = 1000;
 const height = 1000;
-const svg = d3
-  .select("#bar-chart")
-  .append("svg")
-  .attr("viewBox", `0 0 ${width} ${height}`);
+
 
   //vers6 di d3 funziona solo con d3.json().then()
 d3.json("data/categories.json").then( (data) =>{
@@ -19,109 +16,138 @@ d3.json("data/categories.json").then( (data) =>{
         )
     });
     console.log(new_data);
-    //data.sort((a, b) => b.count - a.count);
+    
     new_data = d3.sort(new_data, (a, b) => d3.descending(a.count, b.count))
-    //createVertBarchart(new_data);
-    createHorizBarchart(new_data);
+
+    createVertBarchart(new_data);
+
+    //createHorizBarchart(new_data);
   })
 
 const createVertBarchart = (data) => {
-    const max_count = d3.max(data, (d) => d.count);
-  const yScale = d3.scaleLinear().domain([0, max_count]).range([700, 0]);
+
+  const chartMargin = { top: 20, right: 20, bottom: 100, left: 40 };
+  const chartWidth = width - (chartMargin.right + chartMargin.left);
+  const chartHeight = height - (chartMargin.top + chartMargin.bottom);
+  const max_count = d3.max(data, (d) => d.count);
+
+  //definizione scale per gli assi
+  const yScale = d3.scaleLinear().domain([0, max_count]).range([chartHeight, 0]);
   const xScale = d3
     .scaleBand()
-    .domain(data.map((d) => d.id))
-    .range([0, 1000])
+    .domain(data.map((d) => d.name))
+    .range([0, chartWidth])
     .padding(0.2);
 
+    const svg = d3
+      .select("#bar-chart")
+      .append("svg")
+      .attr("viewBox", `0 0 ${width} ${height}`)
+    
+    const innerChart = svg
+    .append("g")
+    .attr("width", chartWidth)
+    .attr("height", chartHeight)
+    .attr("transform", `translate(${chartMargin.left},${chartMargin.top})`)
+      
     //il join() funziona solo dalla vers6 di d3
-  const barAndLabel = svg
+
+    // gruppo rect + label interna
+  const barAndLabel = innerChart
     .selectAll("g")
     .data(data)
     .join("g")
-    .attr("transform", (d) => `translate(${xScale(d.id)}, 0)`);
+    .attr("transform", (d) => `translate(${xScale(d.name)}, 0)`);
 
   barAndLabel
     .append("rect")
-    .attr("width", (d) => xScale.bandwidth())
-    .attr("height", (d) => 700 - yScale(d.count))
-    .attr("x", 20)
+    .attr("width", xScale.bandwidth())
+    .attr("height", (d) => chartHeight - yScale(d.count))
+    .attr("x", 0)
     .attr("y", (d) => yScale(d.count))
     .attr("fill", "teal");
-
-  barAndLabel
-    .append("text")
-    .text((d) => d.name)
-    .attr("text-anchor", "end")
-    .attr("x", (d) => 20 + xScale.bandwidth() / 2)
-    .attr("y", 720)
-    .attr("transform", (d) => `rotate(-45, ${20 + xScale.bandwidth() / 2}, 720)`)
-    .style("font-family", "sans-serif")
-    .style("font-size", "11px");
-
+  
   barAndLabel
     .append("text")
     .text((d) => d.count)
     .attr("x", xScale.bandwidth() / 2)
-    .attr("y", (d) => yScale(d.count))
+    .attr("y", (d) => yScale(d.count) - 3)
+    .style("text-anchor", "middle")
     .style("font-family", "sans-serif")
     .style("font-size", "9px");
 
-  svg
-    .append("line")
-    .attr("x1", 0)
-    .attr("y1", 700)
-    .attr("x2", 1000)
-    .attr("y2", 700)
-    .attr("stroke", "black");
+    //aggiunta assi
+  innerChart
+    .append("g")
+    .attr("transform", `translate(0, ${chartHeight})`)
+    .call(d3.axisBottom(xScale))
+    .selectAll("text")
+    .attr("transform", `translate(-10,0) rotate(-45)`)
+    .style("text-anchor", "end")
+
+  innerChart
+    .append("g")
+    .call(d3.axisLeft(yScale))
+    
 };
 
 const createHorizBarchart = (data) => {
+  const chartMargin = { top: 20, right: 20, bottom: 20, left: 120 };
+  const chartWidth = width - (chartMargin.right + chartMargin.left);
+  const chartHeight = height - (chartMargin.top + chartMargin.bottom);
   const max_count = d3.max(data, (d) => d.count);
-const xScale = d3.scaleLinear().domain([0, max_count]).range([0, 700]);
-const yScale = d3
+  
+  //definizione scale per gli assi
+  const xScale = d3.scaleLinear().domain([0, max_count]).range([0, chartWidth]);
+  const yScale = d3
   .scaleBand()
-  .domain(data.map((d) => d.id))
-  .range([0, 1000])
+  .domain(data.map((d) => d.name))
+  .range([0, chartHeight])
   .padding(0.2);
 
-  //il join() funziona solo dalla vers6 di d3
-const barAndLabel = svg
+const svg = d3
+  .select("#bar-chart")
+  .append("svg")
+  .attr("viewBox", `0 0 ${width} ${height}`)
+
+const innerChart = svg
+  .append("g")
+  .attr("width", chartWidth)
+  .attr("height", chartHeight)
+  .attr("transform", `translate(${chartMargin.left},${chartMargin.top})`)
+
+// gruppo rect + label interna
+const barAndLabel = innerChart
   .selectAll("g")
   .data(data)
   .join("g")
-  .attr("transform", (d) => `translate(0, ${yScale(d.id)})`);
+  .attr("transform", (d) => `translate(0, ${yScale(d.name)})`);
 
 barAndLabel
   .append("rect")
   .attr("width", (d) => xScale(d.count))
-  .attr("height", (d) => yScale.bandwidth())
-  .attr("x", 100)
+  .attr("height", yScale.bandwidth())
+  .attr("x", 0)
   .attr("y", 0)
   .attr("fill", "teal");
 
 barAndLabel
   .append("text")
-  .text((d) => d.name)
-  .attr("text-anchor", "end")
-  .attr("x", 96)
-  .attr("y", 12)
-  .style("font-family", "sans-serif")
-  .style("font-size", "11px");
-
-barAndLabel
-  .append("text")
   .text((d) => d.count)
-  .attr("x", (d) => 100 + xScale(d.count) + 4)
-  .attr("y", 12)
+  .attr("x", (d) => xScale(d.count) + 3)
+  .attr("y", yScale.bandwidth() / 2)
   .style("font-family", "sans-serif")
   .style("font-size", "9px");
 
-svg
-  .append("line")
-  .attr("x1", 100)
-  .attr("y1", 0)
-  .attr("x2", 100)
-  .attr("y2", 1000)
-  .attr("stroke", "black");
+  //aggiunta assi
+innerChart
+  .append("g")
+  .call(d3.axisLeft(yScale))
+  .selectAll("text")
+  .attr("transform", "translate(-10,0)")
+  .style("text-anchor", "end");
+
+innerChart
+  .append("g")
+  .call(d3.axisTop(xScale));
 };

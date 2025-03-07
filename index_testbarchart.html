@@ -14,18 +14,67 @@
               font-family: sans-serif;
               font-size: 75%;
             }
-      
-            /* SVG styles */
-            .responsive-svg {
+            .container {
               margin-right: auto;
               margin-left: auto;
+              padding-right: 30px;
+              padding-left: 30px;
               width: 100%;
-              max-width: 600px;
+              max-width: 1200px;
+            }
+            .row {
+              display: flex;
+              flex-wrap: nowrap;
+              margin-left: -15px;
+              margin-right: -15px;
+            }
+            .col {
+              position: relative;
+              width: 100%;
+              min-height: 1px;
+              padding-right: 15px;
+              padding-left: 15px;
+              flex-basis: 0;
+              flex-grow: 1;
+              max-width: 100%;
+            }
+            .col-9 {
+              flex: 0 0 75%;
+              max-width: 75%;
+            }
+            .col-3 {
+              flex: 0 0 25%;
+              max-width: 25%;
+            }
+      
+            /* SVG styles */
+            .responsive-svg-container {
+              width: 100%;
+              height: 100%;
+            }
+            .responsive-controls-container {
+              margin: 0 auto;
+              max-width: 200px;
             }
           </style>
     </head>
     <body>
-        <div class="responsive-svg"></div>
+      <div class="container">
+        <h1>Board Games Visualization</h1>
+        <div class="row">
+          <div class="col col-9">
+            <h2>Bar Chart</h2>
+            <div class="responsive-svg-container">
+              <div id="bar-chart"></div>
+            </div>
+          </div>
+          <div class="col col-3">
+            <h2>Controlli filtri</h2>
+            <div class="responsive-controls-container">
+              <div id="controls"></div>
+            </div>
+          </div>
+        </div>
         <script src="https://d3js.org/d3.v6.min.js"></script>
         <script type="text/javascript" src="code/test_barchart.js"></script>
     </body>

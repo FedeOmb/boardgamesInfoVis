@@ -19,9 +19,9 @@ d3.json("data/categories.json").then( (data) =>{
     
     new_data = d3.sort(new_data, (a, b) => d3.descending(a.count, b.count))
 
-    createVertBarchart(new_data);
+    //createVertBarchart(new_data);
 
-    //createHorizBarchart(new_data);
+    createHorizBarchart(new_data);
   })
 
 const createVertBarchart = (data) => {

@@ -1,3 +1,4 @@
+
 var svg = d3.select("svg"),
   width = +svg.node().getBoundingClientRect().width,
   height = +svg.node().getBoundingClientRect().height;
@@ -9,7 +10,7 @@ var graph;
 
 const radiusScale = d3.scaleLinear()
   .domain([1, 100]) // Input data range
-  .range([10, 5]);
+  .range([13, 3]);
 
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -44,15 +45,15 @@ forceProperties = {
   },
   charge: {
     enabled: true,
-    strength: -30,
+    strength: -70,
     distanceMin: 1,
-    distanceMax: 2000,
+    distanceMax: 6000,
   },
   collide: {
     enabled: true,
     strength: 0.7,
     iterations: 1,
-    radius: 10,
+    radius: 13,
   },
   forceX: {
     enabled: false,
@@ -66,7 +67,7 @@ forceProperties = {
   },
   link: {
     enabled: true,
-    distance: 30,
+    distance: 50,
     iterations: 1,
   },
 };
@@ -171,13 +172,9 @@ function updateDisplay() {
   node
     .attr("r", d => radiusScale(d.rank))
     .attr("fill", d => nodeColorMap.get(d.id) || "gray") // Default to gray if no clique color
-    .attr("stroke", forceProperties.charge.strength > 0 ? "blue" : "red")
+    .attr("stroke", "grey")
     .attr(
-      "stroke-width",
-      forceProperties.charge.enabled == false
-        ? 0
-        : Math.abs(forceProperties.charge.strength) / 15
-    );
+      "stroke-width", 1);
 
   link
     .attr("stroke-width", forceProperties.link.enabled ? 1 : 0.5)

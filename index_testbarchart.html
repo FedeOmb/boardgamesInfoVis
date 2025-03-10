@@ -20,7 +20,7 @@
               padding-right: 30px;
               padding-left: 30px;
               width: 100%;
-              max-width: 1200px;
+              max-width: 2000px;
             }
             .row {
               display: flex;
@@ -71,7 +71,16 @@
           <div class="col col-3">
             <h2>Controlli filtri</h2>
             <div class="responsive-controls-container">
-              <div id="controls"></div>
+              <div id="radio-container">
+                <input type="radio" id="classic" name="barchart-type" value="classic" checked>
+                <label for="barchart-type">BarChart classico (1 attributo)</label>
+                <input type="radio" id="stacked" name="barchart-type" value="stacked" checked>
+                <label for="barchart-type">Stacked BarChart (2 attributi)</label>                
+              </div>
+              <div id="select-container">
+                <label for="select-attribute">Visualizza la diffusione di un determinato attributo nella top 100</label>
+                <select id="select-attribute"></select>
+              </div>
             </div>
           </div>
         </div>

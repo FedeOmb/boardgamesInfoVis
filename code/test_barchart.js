@@ -1,9 +1,43 @@
-const width = 1000;
-const height = 1000;
+//container = document.getElementById("chart-container");
 
+const width =  window.innerWidth * 0.7;
+const height = window.innerHeight ;
 
-  //vers6 di d3 funziona solo con d3.json().then()
-d3.json("data/categories.json").then( (data) =>{
+const svg = d3
+  .select("#bar-chart")
+  .append("svg")
+  .attr("viewBox", `0 0 ${width} ${height}`)
+
+const attrList = ["categories", "mechanics"];
+const attrSelector = d3.select("#select-attribute");
+
+//aggiungi opzioni attributi al selettore
+attrSelector.selectAll("option")
+  .data(attrList)
+  .join("option")
+  .attr("value", (d) => d)
+  .text((d) => d)
+  .property("selected", (d) => d == "categories");
+
+loadDataset("data/categories.json")
+
+//listener per cambio attributo
+attrSelector.on("change", () => {
+  const attr = attrSelector.property("value");
+  const viewMode = document.querySelector(
+    'input[name="barchart-type"]:checked'
+  ).value;
+  if(attr == "categories"){
+    loadDataset("data/categories.json")
+  }else{
+    loadDataset("data/mechanics.json")
+  }
+});
+
+//vers6 di d3 funziona solo con d3.json().then()
+
+function loadDataset(dataset){
+  d3.json(dataset).then( (data) =>{
     console.log(data);
     var new_data = [];
     data.forEach( d => {
@@ -19,12 +53,13 @@ d3.json("data/categories.json").then( (data) =>{
     
     new_data = d3.sort(new_data, (a, b) => d3.descending(a.count, b.count))
 
-    createVertBarchart(new_data);
+    //createVertBarchart(new_data);
 
-    //createHorizBarchart(new_data);
+    createHorizBarchart(new_data);
   })
+}
 
-const createVertBarchart = (data) => {
+function createVertBarchart(data){
 
   const chartMargin = { top: 20, right: 20, bottom: 100, left: 40 };
   const chartWidth = width - (chartMargin.right + chartMargin.left);
@@ -39,12 +74,9 @@ const createVertBarchart = (data) => {
     .range([0, chartWidth])
     .padding(0.2);
 
-    const svg = d3
-      .select("#bar-chart")
-      .append("svg")
-      .attr("viewBox", `0 0 ${width} ${height}`)
+  svg.selectAll("*").remove();
     
-    const innerChart = svg
+  const innerChart = svg
     .append("g")
     .attr("width", chartWidth)
     .attr("height", chartHeight)
@@ -91,7 +123,7 @@ const createVertBarchart = (data) => {
     
 };
 
-const createHorizBarchart = (data) => {
+function createHorizBarchart(data){
   const chartMargin = { top: 20, right: 20, bottom: 20, left: 120 };
   const chartWidth = width - (chartMargin.right + chartMargin.left);
   const chartHeight = height - (chartMargin.top + chartMargin.bottom);
@@ -105,49 +137,46 @@ const createHorizBarchart = (data) => {
   .range([0, chartHeight])
   .padding(0.2);
 
-const svg = d3
-  .select("#bar-chart")
-  .append("svg")
-  .attr("viewBox", `0 0 ${width} ${height}`)
+  svg.selectAll("*").remove();
 
-const innerChart = svg
-  .append("g")
-  .attr("width", chartWidth)
-  .attr("height", chartHeight)
-  .attr("transform", `translate(${chartMargin.left},${chartMargin.top})`)
+  const innerChart = svg
+    .append("g")
+    .attr("width", chartWidth)
+    .attr("height", chartHeight)
+    .attr("transform", `translate(${chartMargin.left},${chartMargin.top})`)
 
-// gruppo rect + label interna
-const barAndLabel = innerChart
-  .selectAll("g")
-  .data(data)
-  .join("g")
-  .attr("transform", (d) => `translate(0, ${yScale(d.name)})`);
+  // gruppo rect + label interna
+  const barAndLabel = innerChart
+    .selectAll("g")
+    .data(data)
+    .join("g")
+    .attr("transform", (d) => `translate(0, ${yScale(d.name)})`);
 
-barAndLabel
-  .append("rect")
-  .attr("width", (d) => xScale(d.count))
-  .attr("height", yScale.bandwidth())
-  .attr("x", 0)
-  .attr("y", 0)
-  .attr("fill", "teal");
+  barAndLabel
+    .append("rect")
+    .attr("width", (d) => xScale(d.count))
+    .attr("height", yScale.bandwidth())
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("fill", "teal");
 
-barAndLabel
-  .append("text")
-  .text((d) => d.count)
-  .attr("x", (d) => xScale(d.count) + 3)
-  .attr("y", yScale.bandwidth() / 2)
-  .style("font-family", "sans-serif")
-  .style("font-size", "9px");
+  barAndLabel
+    .append("text")
+    .text((d) => d.count)
+    .attr("x", (d) => xScale(d.count) + 3)
+    .attr("y", yScale.bandwidth() / 2)
+    .style("font-family", "sans-serif")
+    .style("font-size", "9px");
 
-  //aggiunta assi
-innerChart
-  .append("g")
-  .call(d3.axisLeft(yScale))
-  .selectAll("text")
-  .attr("transform", "translate(-10,0)")
-  .style("text-anchor", "end");
+    //aggiunta assi
+  innerChart
+    .append("g")
+    .call(d3.axisLeft(yScale))
+    .selectAll("text")
+    .attr("transform", "translate(-10,0)")
+    .style("text-anchor", "end");
 
-innerChart
-  .append("g")
-  .call(d3.axisTop(xScale));
+  innerChart
+    .append("g")
+    .call(d3.axisTop(xScale));
 };

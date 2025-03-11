@@ -3,7 +3,7 @@
     var designers = []
     var mechanics = []
     
-    d3.json("./data/boardgames_100.json", function (error, _graph) {
+    d3.json("./data/boardgames.json", function (error, _graph) {
         if (error) throw error;
         var data
         var nodes = []

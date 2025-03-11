@@ -9,8 +9,8 @@ var link, node;
 var graph;
 
 const radiusScale = d3.scaleLinear()
-  .domain([1, 100]) // Input data range
-  .range([13, 3]);
+  .domain([1, 40]) // Input data range
+  .range([12, 3]);
 
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -29,7 +29,7 @@ const tooltip = d3.select("body")
     .style("visibility", "hidden");
 
 // load the data
-d3.json("data/dataset_converted_cleaned.json", function (error, _graph) {
+d3.json("data/dataset_converted_cleaned_40.json", function (error, _graph) {
   if (error) throw error;
   graph = _graph;
   //console.log(graph)
@@ -153,8 +153,8 @@ function initializeDisplay() {
     .append("line")
     .attr("stroke", "#999") // Explicitly set the default stroke color for links
     .attr("stroke-width", 1)
-    .on("mouseover", mouseEnterEdge) // Add mouseover event listener
-    .on("mouseout", mouseEnterEdge);   // Add mouseout event listener;
+    .on("mouseover", mouseEnterEdge)
+    .on("mouseout", mouseLeaveEdge);
 
   // set the data and properties of node circles
   node = svg
@@ -166,8 +166,8 @@ function initializeDisplay() {
     .append("circle")
     .attr("r", (d) => radiusScale(d.rank))
     .attr("fill", d => nodeColorMap.get(d.id) || "gray") // Default to gray if no clique color
-    .on("mouseover", handleMouseOver) // Add mouseover event listener
-    .on("mouseout", handleMouseOut);   // Add mouseout event listener
+    .on("mouseover", handleMouseOver) 
+    .on("mouseout", handleMouseOut);   
 
     // visualize the graph
     updateDisplay();
@@ -229,7 +229,6 @@ function updateAll() {
 }
 
 function mapNodesToCliqueColors(cliques) {
-  //console.log(cliques)
   const nodeColorMap = new Map();
 
   cliques.forEach((clique, index) => {
@@ -258,7 +257,8 @@ function handleMouseOver(d) {
   link.each(function (l) {
     if (l.source === d || l.target === d) {
       d3.select(this)
-        .attr("stroke", "black") // Change link color to black
+        .attr("stroke", "black") 
+        .attr("stroke-color", "black") 
         .attr("stroke-width", 3)
         .attr("stroke-opacity", 1); // Increase link thickness
     }
@@ -286,7 +286,8 @@ function handleMouseOut(d) {
   link.each(function (l) {
     if (l.source === d || l.target === d) {
       d3.select(this)
-        .attr("stroke", "#999") // Revert link color to original
+        .attr("stroke", "#999")
+        .attr("stroke-color", "#999")
         .attr("stroke-width", 1); // Revert link thickness to original
     }
   });
@@ -295,54 +296,55 @@ function handleMouseOut(d) {
 }
 
 function mouseEnterEdge(d) {
-  //highlight edge
-  d3.select(this)
-  .attr("stroke-color", "darkorange")
-  .attr("stroke", "darkorange")
-  .attr("stroke-width", 3);
+    //highlight edge
+    d3.select(this)
+      .attr("stroke-color", "darkorange")
+      .attr("stroke", "darkorange")
+      .attr("stroke-width", 3);
 
-// Trova i nodi corrispondenti nel dataset
-const sourceNode = graph.nodes.find(n => n.id === (d.source.id || d.source));
-const targetNode = graph.nodes.find(n => n.id === (d.target.id || d.target));
+    // Trova i nodi corrispondenti nel dataset
+    const sourceNode = graph.nodes.find(n => n.id === (d.source.id || d.source));
+    const targetNode = graph.nodes.find(n => n.id === (d.target.id || d.target));
 
-// Verifica che entrambi i nodi esistano
-if (!sourceNode || !targetNode) return;
+    // Verifica che entrambi i nodi esistano
+    if (!sourceNode || !targetNode) return;
 
-// Trova le categorie in comune
-const sourceCategories = new Set(sourceNode.categories?.map(c => c.name) || []);
-const targetCategories = new Set(targetNode.categories?.map(c => c.name) || []);
-const commonCategories = [...sourceCategories].filter(c => targetCategories.has(c));
+    // Trova le categorie in comune
+    const sourceCategories = new Set(sourceNode.categories?.map(c => c.name) || []);
+    const targetCategories = new Set(targetNode.categories?.map(c => c.name) || []);
+    const commonCategories = [...sourceCategories].filter(c => targetCategories.has(c));
 
-//highlight source and target node if any
-d3.selectAll("circle")
-  .select(function (data) {
-    return data == d.source || data == d.target ? this : null;
-  })
-  .attr("stroke-width", "3")
-  .attr("stroke-color", "darkorange")
-  .attr("stroke", "darkorange")
-  .attr("stroke-width", 3);
+    //highlight source and target node if any
+    d3.selectAll("circle")
+      .select(function (data) {
+        return data == d.source || data == d.target ? this : null;
+      })
+      .attr("stroke-width", "3")
+      .attr("stroke-color", "darkorange")
+      .attr("stroke", "darkorange")
+      .attr("stroke-width", 3);
+  
+    tooltip.transition().duration(200).style("opacity", 0.9);
+  
+    edgeData = d3.select(this).datum();
 
-tooltip.transition().duration(200).style("opacity", 0.9);
+    // Mostra la tooltip solo se ci sono categorie in comune
+    if (commonCategories.length > 0) {
+        tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>${commonCategories}`)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px")
+        .style("visibility", "visible");
+    }else{
+        tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>`)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px")
+        .style("visibility", "visible");
+    }
+    
+  }
 
-edgeData = d3.select(this).datum();
-
-// Mostra la tooltip solo se ci sono categorie in comune
-if (commonCategories.length > 0) {
-    tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>${commonCategories}`)
-    .style("left", (event.pageX + 10) + "px")
-    .style("top", (event.pageY - 10) + "px")
-    .style("visibility", "visible");
-}else{
-    tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>`)
-    .style("left", (event.pageX + 10) + "px")
-    .style("top", (event.pageY - 10) + "px")
-    .style("visibility", "visible");
-}
-}
-
-function mouseLeaveEdge(d) {
-  d3.select(this).attr("stroke-color", "grey")
+  function mouseLeaveEdge(d) {
+    d3.select(this).attr("stroke-color", "grey")
     .attr("stroke", "grey")
     .attr("stroke-width", 1);
   
@@ -356,7 +358,7 @@ function mouseLeaveEdge(d) {
       .attr("stroke-width", 1);
   
       tooltip.style("visibility", "hidden");
-}
+  }
 
 // Helper function to check if two nodes are adjacent
 function isAdjacent(source, target) {

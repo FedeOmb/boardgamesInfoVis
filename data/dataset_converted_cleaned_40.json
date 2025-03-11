@@ -1,0 +1,4730 @@
+{
+   "nodes":[
+      {
+         "id":174430,
+         "title":"Gloomhaven",
+         "year":2017,
+         "rank":1,
+         "minplayers":1,
+         "maxplayers":4,
+         "minplaytime":60,
+         "maxplaytime":120,
+         "minage":14,
+         "rating":8.67527,
+         "num_of_reviews":54330,
+         "categories":[
+            {
+               "id":1022,
+               "name":"Adventure"
+            },
+            {
+               "id":1020,
+               "name":"Exploration"
+            },
+            {
+               "id":1010,
+               "name":"Fantasy"
+            },
+            {
+               "id":1046,
+               "name":"Fighting"
+            },
+            {
+               "id":1047,
+               "name":"Miniatures"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2689,
+               "name":"Action Queue"
+            },
+            {
+               "id":2839,
+               "name":"Action Retrieval"
+            },
+            {
+               "id":2018,
+               "name":"Campaign / Battle Card Driven"
+            },
+            {
+               "id":2857,
+               "name":"Card Play Conflict Resolution"
+            },
+            {
+               "id":2893,
+               "name":"Communication Limits"
+            },
+            {
+               "id":2023,
+               "name":"Cooperative Game"
+            },
+            {
+               "id":2854,
+               "name":"Critical Hits and Failures"
+            },
+            {
+               "id":3004,
+               "name":"Deck Construction"
+            },
+            {
+               "id":2676,
+               "name":"Grid Movement"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2026,
+               "name":"Hexagon Grid"
+            },
+            {
+               "id":2824,
+               "name":"Legacy Game"
+            },
+            {
+               "id":2975,
+               "name":"Line of Sight"
+            },
+            {
+               "id":2011,
+               "name":"Modular Board"
+            },
+            {
+               "id":2846,
+               "name":"Once-Per-Game Abilities"
+            },
+            {
+               "id":2028,
+               "name":"Role Playing"
+            },
+            {
+               "id":2822,
+               "name":"Scenario / Mission / Campaign Game"
+            },
+            {
+               "id":2020,
+               "name":"Simultaneous Action Selection"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2027,
+               "name":"Storytelling"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            }
+         ],
+         "designer":[
+            {
+               "id":69802,
+               "name":"Isaac Childres"
+            }
+         ]
+      },
+      {
+         "id":224517,
+         "title":"Brass: Birmingham",
+         "year":2018,
+         "rank":2,
+         "minplayers":2,
+         "maxplayers":4,
+         "minplaytime":60,
+         "maxplaytime":120,
+         "minage":14,
+         "rating":8.65313,
+         "num_of_reviews":33285,
+         "categories":[
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1088,
+               "name":"Industry / Manufacturing"
+            },
+            {
+               "id":2710,
+               "name":"Post-Napoleonic"
+            },
+            {
+               "id":1011,
+               "name":"Transportation"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2902,
+               "name":"Income"
+            },
+            {
+               "id":2904,
+               "name":"Loans"
+            },
+            {
+               "id":2900,
+               "name":"Market"
+            },
+            {
+               "id":2081,
+               "name":"Network and Route Building"
+            },
+            {
+               "id":2849,
+               "name":"Tech Trees / Tech Tracks"
+            },
+            {
+               "id":2826,
+               "name":"Turn Order: Stat-Based"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            }
+         ],
+         "designer":[
+            {
+               "id":32887,
+               "name":"Gavan Brown"
+            },
+            {
+               "id":32943,
+               "name":"Matt Tolman"
+            },
+            {
+               "id":6,
+               "name":"Martin Wallace"
+            }
+         ]
+      },
+      {
+         "id":161936,
+         "title":"Pandemic Legacy: Season 1",
+         "year":2015,
+         "rank":3,
+         "minplayers":2,
+         "maxplayers":4,
+         "minplaytime":60,
+         "maxplaytime":60,
+         "minage":13,
+         "rating":8.56688,
+         "num_of_reviews":48768,
+         "categories":[
+            {
+               "id":1084,
+               "name":"Environmental"
+            },
+            {
+               "id":2145,
+               "name":"Medical"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2001,
+               "name":"Action Points"
+            },
+            {
+               "id":2023,
+               "name":"Cooperative Game"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2824,
+               "name":"Legacy Game"
+            },
+            {
+               "id":2078,
+               "name":"Point to Point Movement"
+            },
+            {
+               "id":2004,
+               "name":"Set Collection"
+            },
+            {
+               "id":2008,
+               "name":"Trading"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            }
+         ],
+         "designer":[
+            {
+               "id":442,
+               "name":"Rob Daviau"
+            },
+            {
+               "id":378,
+               "name":"Matt Leacock"
+            }
+         ]
+      },
+      {
+         "id":342942,
+         "title":"Ark Nova",
+         "year":2021,
+         "rank":4,
+         "minplayers":1,
+         "maxplayers":4,
+         "minplaytime":90,
+         "maxplaytime":150,
+         "minage":14,
+         "rating":8.56684,
+         "num_of_reviews":23194,
+         "categories":[
+            {
+               "id":1089,
+               "name":"Animals"
+            },
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1084,
+               "name":"Environmental"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2875,
+               "name":"End Game Bonuses"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2026,
+               "name":"Hexagon Grid"
+            },
+            {
+               "id":2902,
+               "name":"Income"
+            },
+            {
+               "id":2041,
+               "name":"Open Drafting"
+            },
+            {
+               "id":2004,
+               "name":"Set Collection"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":3100,
+               "name":"Tags"
+            },
+            {
+               "id":2002,
+               "name":"Tile Placement"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            }
+         ],
+         "designer":[
+            {
+               "id":138517,
+               "name":"Mathias Wigge"
+            }
+         ]
+      },
+      {
+         "id":233078,
+         "title":"Twilight Imperium: Fourth Edition",
+         "year":2017,
+         "rank":5,
+         "minplayers":3,
+         "maxplayers":6,
+         "minplaytime":240,
+         "maxplaytime":480,
+         "minage":14,
+         "rating":8.6449,
+         "num_of_reviews":19295,
+         "categories":[
+            {
+               "id":1015,
+               "name":"Civilization"
+            },
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1020,
+               "name":"Exploration"
+            },
+            {
+               "id":1026,
+               "name":"Negotiation"
+            },
+            {
+               "id":1001,
+               "name":"Political"
+            },
+            {
+               "id":1016,
+               "name":"Science Fiction"
+            },
+            {
+               "id":1113,
+               "name":"Space Exploration"
+            },
+            {
+               "id":1019,
+               "name":"Wargame"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2838,
+               "name":"Action Drafting"
+            },
+            {
+               "id":2080,
+               "name":"Area Majority / Influence"
+            },
+            {
+               "id":2021,
+               "name":"Area-Impulse"
+            },
+            {
+               "id":2072,
+               "name":"Dice Rolling"
+            },
+            {
+               "id":2843,
+               "name":"Follow"
+            },
+            {
+               "id":2676,
+               "name":"Grid Movement"
+            },
+            {
+               "id":2026,
+               "name":"Hexagon Grid"
+            },
+            {
+               "id":2914,
+               "name":"Increase Value of Unchosen Resources"
+            },
+            {
+               "id":2886,
+               "name":"King of the Hill"
+            },
+            {
+               "id":2011,
+               "name":"Modular Board"
+            },
+            {
+               "id":2876,
+               "name":"Race"
+            },
+            {
+               "id":2849,
+               "name":"Tech Trees / Tech Tracks"
+            },
+            {
+               "id":2008,
+               "name":"Trading"
+            },
+            {
+               "id":2079,
+               "name":"Variable Phase Order"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            },
+            {
+               "id":2017,
+               "name":"Voting"
+            }
+         ],
+         "designer":[
+            {
+               "id":96049,
+               "name":"Dane Beltrami"
+            },
+            {
+               "id":6651,
+               "name":"Corey Konieczka"
+            },
+            {
+               "id":21,
+               "name":"Christian T. Petersen"
+            }
+         ]
+      },
+      {
+         "id":167791,
+         "title":"Terraforming Mars",
+         "year":2016,
+         "rank":6,
+         "minplayers":1,
+         "maxplayers":5,
+         "minplaytime":120,
+         "maxplaytime":120,
+         "minage":12,
+         "rating":8.39103,
+         "num_of_reviews":85192,
+         "categories":[
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1084,
+               "name":"Environmental"
+            },
+            {
+               "id":1088,
+               "name":"Industry / Manufacturing"
+            },
+            {
+               "id":1016,
+               "name":"Science Fiction"
+            },
+            {
+               "id":1113,
+               "name":"Space Exploration"
+            },
+            {
+               "id":1086,
+               "name":"Territory Building"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2984,
+               "name":"Closed Drafting"
+            },
+            {
+               "id":2912,
+               "name":"Contracts"
+            },
+            {
+               "id":2043,
+               "name":"Enclosure"
+            },
+            {
+               "id":2875,
+               "name":"End Game Bonuses"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2026,
+               "name":"Hexagon Grid"
+            },
+            {
+               "id":2902,
+               "name":"Income"
+            },
+            {
+               "id":2004,
+               "name":"Set Collection"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":3100,
+               "name":"Tags"
+            },
+            {
+               "id":2686,
+               "name":"Take That"
+            },
+            {
+               "id":2849,
+               "name":"Tech Trees / Tech Tracks"
+            },
+            {
+               "id":2002,
+               "name":"Tile Placement"
+            },
+            {
+               "id":2828,
+               "name":"Turn Order: Progressive"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            },
+            {
+               "id":2874,
+               "name":"Victory Points as a Resource"
+            }
+         ],
+         "designer":[
+            {
+               "id":52075,
+               "name":"Jacob Fryxelius"
+            }
+         ]
+      },
+      {
+         "id":291457,
+         "title":"Gloomhaven: Jaws of the Lion",
+         "year":2020,
+         "rank":7,
+         "minplayers":1,
+         "maxplayers":4,
+         "minplaytime":30,
+         "maxplaytime":120,
+         "minage":14,
+         "rating":8.55175,
+         "num_of_reviews":25082,
+         "categories":[
+            {
+               "id":1022,
+               "name":"Adventure"
+            },
+            {
+               "id":1020,
+               "name":"Exploration"
+            },
+            {
+               "id":1010,
+               "name":"Fantasy"
+            },
+            {
+               "id":1046,
+               "name":"Fighting"
+            },
+            {
+               "id":1047,
+               "name":"Miniatures"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2689,
+               "name":"Action Queue"
+            },
+            {
+               "id":2839,
+               "name":"Action Retrieval"
+            },
+            {
+               "id":2018,
+               "name":"Campaign / Battle Card Driven"
+            },
+            {
+               "id":2893,
+               "name":"Communication Limits"
+            },
+            {
+               "id":2023,
+               "name":"Cooperative Game"
+            },
+            {
+               "id":2854,
+               "name":"Critical Hits and Failures"
+            },
+            {
+               "id":3004,
+               "name":"Deck Construction"
+            },
+            {
+               "id":2676,
+               "name":"Grid Movement"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2026,
+               "name":"Hexagon Grid"
+            },
+            {
+               "id":2824,
+               "name":"Legacy Game"
+            },
+            {
+               "id":2975,
+               "name":"Line of Sight"
+            },
+            {
+               "id":2846,
+               "name":"Once-Per-Game Abilities"
+            },
+            {
+               "id":2822,
+               "name":"Scenario / Mission / Campaign Game"
+            },
+            {
+               "id":2020,
+               "name":"Simultaneous Action Selection"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            }
+         ],
+         "designer":[
+            {
+               "id":69802,
+               "name":"Isaac Childres"
+            }
+         ]
+      },
+      {
+         "id":187645,
+         "title":"Star Wars: Rebellion",
+         "year":2016,
+         "rank":8,
+         "minplayers":2,
+         "maxplayers":4,
+         "minplaytime":180,
+         "maxplaytime":240,
+         "minage":14,
+         "rating":8.41817,
+         "num_of_reviews":28570,
+         "categories":[
+            {
+               "id":1102,
+               "name":"Civil War"
+            },
+            {
+               "id":1047,
+               "name":"Miniatures"
+            },
+            {
+               "id":1064,
+               "name":"Movies / TV / Radio theme"
+            },
+            {
+               "id":1016,
+               "name":"Science Fiction"
+            },
+            {
+               "id":1113,
+               "name":"Space Exploration"
+            },
+            {
+               "id":1019,
+               "name":"Wargame"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2080,
+               "name":"Area Majority / Influence"
+            },
+            {
+               "id":2046,
+               "name":"Area Movement"
+            },
+            {
+               "id":2021,
+               "name":"Area-Impulse"
+            },
+            {
+               "id":2857,
+               "name":"Card Play Conflict Resolution"
+            },
+            {
+               "id":2912,
+               "name":"Contracts"
+            },
+            {
+               "id":2901,
+               "name":"Delayed Purchase"
+            },
+            {
+               "id":2072,
+               "name":"Dice Rolling"
+            },
+            {
+               "id":2856,
+               "name":"Die Icon Resolution"
+            },
+            {
+               "id":2850,
+               "name":"Events"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2967,
+               "name":"Hidden Movement"
+            },
+            {
+               "id":2902,
+               "name":"Income"
+            },
+            {
+               "id":2846,
+               "name":"Once-Per-Game Abilities"
+            },
+            {
+               "id":2686,
+               "name":"Take That"
+            },
+            {
+               "id":2019,
+               "name":"Team-Based Game"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            }
+         ],
+         "designer":[
+            {
+               "id":6651,
+               "name":"Corey Konieczka"
+            }
+         ]
+      },
+      {
+         "id":115746,
+         "title":"War of the Ring: Second Edition",
+         "year":2011,
+         "rank":9,
+         "minplayers":2,
+         "maxplayers":4,
+         "minplaytime":150,
+         "maxplaytime":180,
+         "minage":13,
+         "rating":8.52576,
+         "num_of_reviews":17964,
+         "categories":[
+            {
+               "id":1022,
+               "name":"Adventure"
+            },
+            {
+               "id":1010,
+               "name":"Fantasy"
+            },
+            {
+               "id":1046,
+               "name":"Fighting"
+            },
+            {
+               "id":1093,
+               "name":"Novel-based"
+            },
+            {
+               "id":1086,
+               "name":"Territory Building"
+            },
+            {
+               "id":1019,
+               "name":"Wargame"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2080,
+               "name":"Area Majority / Influence"
+            },
+            {
+               "id":2046,
+               "name":"Area Movement"
+            },
+            {
+               "id":2018,
+               "name":"Campaign / Battle Card Driven"
+            },
+            {
+               "id":2857,
+               "name":"Card Play Conflict Resolution"
+            },
+            {
+               "id":2072,
+               "name":"Dice Rolling"
+            },
+            {
+               "id":2850,
+               "name":"Events"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2967,
+               "name":"Hidden Movement"
+            },
+            {
+               "id":2947,
+               "name":"Movement Points"
+            },
+            {
+               "id":2070,
+               "name":"Simulation"
+            },
+            {
+               "id":2019,
+               "name":"Team-Based Game"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            }
+         ],
+         "designer":[
+            {
+               "id":3247,
+               "name":"Roberto Di Meglio"
+            },
+            {
+               "id":934,
+               "name":"Marco Maggi"
+            },
+            {
+               "id":935,
+               "name":"Francesco Nepitello"
+            }
+         ]
+      },
+      {
+         "id":162886,
+         "title":"Spirit Island",
+         "year":2017,
+         "rank":10,
+         "minplayers":1,
+         "maxplayers":4,
+         "minplaytime":90,
+         "maxplaytime":120,
+         "minage":13,
+         "rating":8.36924,
+         "num_of_reviews":40752,
+         "categories":[
+            {
+               "id":1010,
+               "name":"Fantasy"
+            },
+            {
+               "id":1046,
+               "name":"Fighting"
+            },
+            {
+               "id":1082,
+               "name":"Mythology"
+            },
+            {
+               "id":1086,
+               "name":"Territory Building"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2839,
+               "name":"Action Retrieval"
+            },
+            {
+               "id":2080,
+               "name":"Area Majority / Influence"
+            },
+            {
+               "id":2903,
+               "name":"Automatic Resource Growth"
+            },
+            {
+               "id":2018,
+               "name":"Campaign / Battle Card Driven"
+            },
+            {
+               "id":2023,
+               "name":"Cooperative Game"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2011,
+               "name":"Modular Board"
+            },
+            {
+               "id":2004,
+               "name":"Set Collection"
+            },
+            {
+               "id":2020,
+               "name":"Simultaneous Action Selection"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            }
+         ],
+         "designer":[
+            {
+               "id":16615,
+               "name":"R. Eric Reuss"
+            }
+         ]
+      },
+      {
+         "id":220308,
+         "title":"Gaia Project",
+         "year":2017,
+         "rank":11,
+         "minplayers":1,
+         "maxplayers":4,
+         "minplaytime":60,
+         "maxplaytime":150,
+         "minage":12,
+         "rating":8.42974,
+         "num_of_reviews":22960,
+         "categories":[
+            {
+               "id":1015,
+               "name":"Civilization"
+            },
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1047,
+               "name":"Miniatures"
+            },
+            {
+               "id":1016,
+               "name":"Science Fiction"
+            },
+            {
+               "id":1113,
+               "name":"Space Exploration"
+            },
+            {
+               "id":1086,
+               "name":"Territory Building"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2875,
+               "name":"End Game Bonuses"
+            },
+            {
+               "id":2026,
+               "name":"Hexagon Grid"
+            },
+            {
+               "id":2902,
+               "name":"Income"
+            },
+            {
+               "id":2011,
+               "name":"Modular Board"
+            },
+            {
+               "id":2081,
+               "name":"Network and Route Building"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2849,
+               "name":"Tech Trees / Tech Tracks"
+            },
+            {
+               "id":2830,
+               "name":"Turn Order: Pass Order"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            },
+            {
+               "id":2874,
+               "name":"Victory Points as a Resource"
+            }
+         ],
+         "designer":[
+            {
+               "id":4300,
+               "name":"Jens Drögemüller"
+            },
+            {
+               "id":4407,
+               "name":"Helge Ostertag"
+            }
+         ]
+      },
+      {
+         "id":316554,
+         "title":"Dune: Imperium",
+         "year":2020,
+         "rank":12,
+         "minplayers":1,
+         "maxplayers":4,
+         "minplaytime":60,
+         "maxplaytime":120,
+         "minage":14,
+         "rating":8.36497,
+         "num_of_reviews":28524,
+         "categories":[
+            {
+               "id":1064,
+               "name":"Movies / TV / Radio theme"
+            },
+            {
+               "id":1093,
+               "name":"Novel-based"
+            },
+            {
+               "id":1001,
+               "name":"Political"
+            },
+            {
+               "id":1016,
+               "name":"Science Fiction"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2857,
+               "name":"Card Play Conflict Resolution"
+            },
+            {
+               "id":2664,
+               "name":"Deck, Bag, and Pool Building"
+            },
+            {
+               "id":2864,
+               "name":"Force Commitment"
+            },
+            {
+               "id":2914,
+               "name":"Increase Value of Unchosen Resources"
+            },
+            {
+               "id":2041,
+               "name":"Open Drafting"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2686,
+               "name":"Take That"
+            },
+            {
+               "id":2828,
+               "name":"Turn Order: Progressive"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            },
+            {
+               "id":2082,
+               "name":"Worker Placement"
+            }
+         ],
+         "designer":[
+            {
+               "id":92370,
+               "name":"Paul Dennen"
+            }
+         ]
+      },
+      {
+         "id":182028,
+         "title":"Through the Ages: A New Story of Civilization",
+         "year":2015,
+         "rank":13,
+         "minplayers":2,
+         "maxplayers":4,
+         "minplaytime":120,
+         "maxplaytime":120,
+         "minage":14,
+         "rating":8.3355,
+         "num_of_reviews":28424,
+         "categories":[
+            {
+               "id":1002,
+               "name":"Card Game"
+            },
+            {
+               "id":1015,
+               "name":"Civilization"
+            },
+            {
+               "id":1021,
+               "name":"Economic"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2001,
+               "name":"Action Points"
+            },
+            {
+               "id":2012,
+               "name":"Auction/Bidding"
+            },
+            {
+               "id":2924,
+               "name":"Auction: Dutch"
+            },
+            {
+               "id":2850,
+               "name":"Events"
+            },
+            {
+               "id":2902,
+               "name":"Income"
+            },
+            {
+               "id":2041,
+               "name":"Open Drafting"
+            },
+            {
+               "id":2686,
+               "name":"Take That"
+            }
+         ],
+         "designer":[
+            {
+               "id":789,
+               "name":"Vlaada Chvátil"
+            }
+         ]
+      },
+      {
+         "id":12333,
+         "title":"Twilight Struggle",
+         "year":2005,
+         "rank":14,
+         "minplayers":2,
+         "maxplayers":2,
+         "minplaytime":120,
+         "maxplaytime":180,
+         "minage":13,
+         "rating":8.26264,
+         "num_of_reviews":45582,
+         "categories":[
+            {
+               "id":1069,
+               "name":"Modern Warfare"
+            },
+            {
+               "id":1001,
+               "name":"Political"
+            },
+            {
+               "id":1019,
+               "name":"Wargame"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2840,
+               "name":"Action/Event"
+            },
+            {
+               "id":2847,
+               "name":"Advantage Token"
+            },
+            {
+               "id":2080,
+               "name":"Area Majority / Influence"
+            },
+            {
+               "id":2018,
+               "name":"Campaign / Battle Card Driven"
+            },
+            {
+               "id":2072,
+               "name":"Dice Rolling"
+            },
+            {
+               "id":2850,
+               "name":"Events"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2070,
+               "name":"Simulation"
+            },
+            {
+               "id":2020,
+               "name":"Simultaneous Action Selection"
+            },
+            {
+               "id":2884,
+               "name":"Sudden Death Ending"
+            },
+            {
+               "id":2888,
+               "name":"Tug of War"
+            }
+         ],
+         "designer":[
+            {
+               "id":3876,
+               "name":"Ananda Gupta"
+            },
+            {
+               "id":3877,
+               "name":"Jason Matthews"
+            }
+         ]
+      },
+      {
+         "id":193738,
+         "title":"Great Western Trail",
+         "year":2016,
+         "rank":15,
+         "minplayers":2,
+         "maxplayers":4,
+         "minplaytime":75,
+         "maxplaytime":150,
+         "minage":12,
+         "rating":8.25687,
+         "num_of_reviews":36963,
+         "categories":[
+            {
+               "id":1055,
+               "name":"American West"
+            },
+            {
+               "id":1089,
+               "name":"Animals"
+            },
+            {
+               "id":1021,
+               "name":"Economic"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2664,
+               "name":"Deck, Bag, and Pool Building"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2911,
+               "name":"Ownership"
+            },
+            {
+               "id":2004,
+               "name":"Set Collection"
+            },
+            {
+               "id":2939,
+               "name":"Track Movement"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            }
+         ],
+         "designer":[
+            {
+               "id":11767,
+               "name":"Alexander Pfister"
+            }
+         ]
+      },
+      {
+         "id":169786,
+         "title":"Scythe",
+         "year":2016,
+         "rank":16,
+         "minplayers":1,
+         "maxplayers":5,
+         "minplaytime":90,
+         "maxplaytime":115,
+         "minage":14,
+         "rating":8.1865,
+         "num_of_reviews":72994,
+         "categories":[
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1046,
+               "name":"Fighting"
+            },
+            {
+               "id":1016,
+               "name":"Science Fiction"
+            },
+            {
+               "id":1086,
+               "name":"Territory Building"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2857,
+               "name":"Card Play Conflict Resolution"
+            },
+            {
+               "id":2912,
+               "name":"Contracts"
+            },
+            {
+               "id":2875,
+               "name":"End Game Bonuses"
+            },
+            {
+               "id":2864,
+               "name":"Force Commitment"
+            },
+            {
+               "id":2676,
+               "name":"Grid Movement"
+            },
+            {
+               "id":2026,
+               "name":"Hexagon Grid"
+            },
+            {
+               "id":2886,
+               "name":"King of the Hill"
+            },
+            {
+               "id":2947,
+               "name":"Movement Points"
+            },
+            {
+               "id":2851,
+               "name":"Narrative Choice / Paragraph"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2686,
+               "name":"Take That"
+            },
+            {
+               "id":2849,
+               "name":"Tech Trees / Tech Tracks"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            },
+            {
+               "id":2874,
+               "name":"Victory Points as a Resource"
+            },
+            {
+               "id":2974,
+               "name":"Zone of Control"
+            }
+         ],
+         "designer":[
+            {
+               "id":62640,
+               "name":"Jamey Stegmaier"
+            }
+         ]
+      },
+      {
+         "id":84876,
+         "title":"The Castles of Burgundy",
+         "year":2011,
+         "rank":17,
+         "minplayers":2,
+         "maxplayers":4,
+         "minplaytime":30,
+         "maxplaytime":90,
+         "minage":12,
+         "rating":8.12806,
+         "num_of_reviews":55707,
+         "categories":[
+            {
+               "id":1017,
+               "name":"Dice"
+            },
+            {
+               "id":1035,
+               "name":"Medieval"
+            },
+            {
+               "id":1086,
+               "name":"Territory Building"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2072,
+               "name":"Dice Rolling"
+            },
+            {
+               "id":2875,
+               "name":"End Game Bonuses"
+            },
+            {
+               "id":2978,
+               "name":"Grid Coverage"
+            },
+            {
+               "id":2026,
+               "name":"Hexagon Grid"
+            },
+            {
+               "id":2048,
+               "name":"Pattern Building"
+            },
+            {
+               "id":2004,
+               "name":"Set Collection"
+            },
+            {
+               "id":2002,
+               "name":"Tile Placement"
+            },
+            {
+               "id":2826,
+               "name":"Turn Order: Stat-Based"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            },
+            {
+               "id":2935,
+               "name":"Worker Placement with Dice Workers"
+            }
+         ],
+         "designer":[
+            {
+               "id":4958,
+               "name":"Stefan Feld"
+            }
+         ]
+      },
+      {
+         "id":167355,
+         "title":"Nemesis",
+         "year":2018,
+         "rank":18,
+         "minplayers":1,
+         "maxplayers":5,
+         "minplaytime":90,
+         "maxplaytime":180,
+         "minage":12,
+         "rating":8.33096,
+         "num_of_reviews":23779,
+         "categories":[
+            {
+               "id":1022,
+               "name":"Adventure"
+            },
+            {
+               "id":1024,
+               "name":"Horror"
+            },
+            {
+               "id":1047,
+               "name":"Miniatures"
+            },
+            {
+               "id":1016,
+               "name":"Science Fiction"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2018,
+               "name":"Campaign / Battle Card Driven"
+            },
+            {
+               "id":2023,
+               "name":"Cooperative Game"
+            },
+            {
+               "id":2072,
+               "name":"Dice Rolling"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2891,
+               "name":"Hidden Roles"
+            },
+            {
+               "id":2011,
+               "name":"Modular Board"
+            },
+            {
+               "id":2685,
+               "name":"Player Elimination"
+            },
+            {
+               "id":2820,
+               "name":"Semi-Cooperative Game"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2019,
+               "name":"Team-Based Game"
+            },
+            {
+               "id":2814,
+               "name":"Traitor Game"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            }
+         ],
+         "designer":[
+            {
+               "id":61569,
+               "name":"Adam Kwapiński"
+            }
+         ]
+      },
+      {
+         "id":173346,
+         "title":"7 Wonders Duel",
+         "year":2015,
+         "rank":19,
+         "minplayers":2,
+         "maxplayers":2,
+         "minplaytime":30,
+         "maxplaytime":30,
+         "minage":10,
+         "rating":8.0984,
+         "num_of_reviews":80420,
+         "categories":[
+            {
+               "id":1050,
+               "name":"Ancient"
+            },
+            {
+               "id":1002,
+               "name":"Card Game"
+            },
+            {
+               "id":1029,
+               "name":"City Building"
+            },
+            {
+               "id":1015,
+               "name":"Civilization"
+            },
+            {
+               "id":1021,
+               "name":"Economic"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":3001,
+               "name":"Layering"
+            },
+            {
+               "id":2041,
+               "name":"Open Drafting"
+            },
+            {
+               "id":2004,
+               "name":"Set Collection"
+            },
+            {
+               "id":2884,
+               "name":"Sudden Death Ending"
+            },
+            {
+               "id":2888,
+               "name":"Tug of War"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            }
+         ],
+         "designer":[
+            {
+               "id":9714,
+               "name":"Antoine Bauza"
+            },
+            {
+               "id":1727,
+               "name":"Bruno Cathala"
+            }
+         ]
+      },
+      {
+         "id":28720,
+         "title":"Brass: Lancashire",
+         "year":2007,
+         "rank":20,
+         "minplayers":2,
+         "maxplayers":4,
+         "minplaytime":60,
+         "maxplaytime":120,
+         "minage":14,
+         "rating":8.18934,
+         "num_of_reviews":22616,
+         "categories":[
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1088,
+               "name":"Industry / Manufacturing"
+            },
+            {
+               "id":2710,
+               "name":"Post-Napoleonic"
+            },
+            {
+               "id":1011,
+               "name":"Transportation"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2902,
+               "name":"Income"
+            },
+            {
+               "id":2904,
+               "name":"Loans"
+            },
+            {
+               "id":2900,
+               "name":"Market"
+            },
+            {
+               "id":2081,
+               "name":"Network and Route Building"
+            },
+            {
+               "id":2849,
+               "name":"Tech Trees / Tech Tracks"
+            },
+            {
+               "id":2826,
+               "name":"Turn Order: Stat-Based"
+            }
+         ],
+         "designer":[
+            {
+               "id":6,
+               "name":"Martin Wallace"
+            }
+         ]
+      },
+      {
+         "id":124361,
+         "title":"Concordia",
+         "year":2013,
+         "rank":21,
+         "minplayers":2,
+         "maxplayers":5,
+         "minplaytime":100,
+         "maxplaytime":100,
+         "minage":13,
+         "rating":8.11031,
+         "num_of_reviews":35656,
+         "categories":[
+            {
+               "id":1050,
+               "name":"Ancient"
+            },
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1008,
+               "name":"Nautical"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2839,
+               "name":"Action Retrieval"
+            },
+            {
+               "id":2847,
+               "name":"Advantage Token"
+            },
+            {
+               "id":2924,
+               "name":"Auction: Dutch"
+            },
+            {
+               "id":2664,
+               "name":"Deck, Bag, and Pool Building"
+            },
+            {
+               "id":2875,
+               "name":"End Game Bonuses"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2987,
+               "name":"Hidden Victory Points"
+            },
+            {
+               "id":2947,
+               "name":"Movement Points"
+            },
+            {
+               "id":2041,
+               "name":"Open Drafting"
+            },
+            {
+               "id":2078,
+               "name":"Point to Point Movement"
+            },
+            {
+               "id":2004,
+               "name":"Set Collection"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            }
+         ],
+         "designer":[
+            {
+               "id":6045,
+               "name":"Mac Gerdts"
+            }
+         ]
+      },
+      {
+         "id":177736,
+         "title":"A Feast for Odin",
+         "year":2016,
+         "rank":22,
+         "minplayers":1,
+         "maxplayers":4,
+         "minplaytime":30,
+         "maxplaytime":120,
+         "minage":12,
+         "rating":8.18794,
+         "num_of_reviews":24124,
+         "categories":[
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1013,
+               "name":"Farming"
+            },
+            {
+               "id":1088,
+               "name":"Industry / Manufacturing"
+            },
+            {
+               "id":1035,
+               "name":"Medieval"
+            },
+            {
+               "id":1028,
+               "name":"Puzzle"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2903,
+               "name":"Automatic Resource Growth"
+            },
+            {
+               "id":2072,
+               "name":"Dice Rolling"
+            },
+            {
+               "id":2978,
+               "name":"Grid Coverage"
+            },
+            {
+               "id":2902,
+               "name":"Income"
+            },
+            {
+               "id":2661,
+               "name":"Push Your Luck"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2002,
+               "name":"Tile Placement"
+            },
+            {
+               "id":2830,
+               "name":"Turn Order: Pass Order"
+            },
+            {
+               "id":2082,
+               "name":"Worker Placement"
+            }
+         ],
+         "designer":[
+            {
+               "id":10,
+               "name":"Uwe Rosenberg"
+            }
+         ]
+      },
+      {
+         "id":246900,
+         "title":"Eclipse: Second Dawn for the Galaxy",
+         "year":2020,
+         "rank":23,
+         "minplayers":2,
+         "maxplayers":6,
+         "minplaytime":60,
+         "maxplaytime":200,
+         "minage":14,
+         "rating":8.55169,
+         "num_of_reviews":9128,
+         "categories":[
+            {
+               "id":1015,
+               "name":"Civilization"
+            },
+            {
+               "id":1016,
+               "name":"Science Fiction"
+            },
+            {
+               "id":1113,
+               "name":"Space Exploration"
+            },
+            {
+               "id":1019,
+               "name":"Wargame"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2916,
+               "name":"Alliances"
+            },
+            {
+               "id":2080,
+               "name":"Area Majority / Influence"
+            },
+            {
+               "id":2046,
+               "name":"Area Movement"
+            },
+            {
+               "id":2021,
+               "name":"Area-Impulse"
+            },
+            {
+               "id":2854,
+               "name":"Critical Hits and Failures"
+            },
+            {
+               "id":2072,
+               "name":"Dice Rolling"
+            },
+            {
+               "id":2676,
+               "name":"Grid Movement"
+            },
+            {
+               "id":2026,
+               "name":"Hexagon Grid"
+            },
+            {
+               "id":2902,
+               "name":"Income"
+            },
+            {
+               "id":2871,
+               "name":"Kill Steal"
+            },
+            {
+               "id":2011,
+               "name":"Modular Board"
+            },
+            {
+               "id":2835,
+               "name":"Passed Action Token"
+            },
+            {
+               "id":2685,
+               "name":"Player Elimination"
+            },
+            {
+               "id":2849,
+               "name":"Tech Trees / Tech Tracks"
+            },
+            {
+               "id":2002,
+               "name":"Tile Placement"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            }
+         ],
+         "designer":[
+            {
+               "id":13000,
+               "name":"Touko Tahkokallio"
+            }
+         ]
+      },
+      {
+         "id":120677,
+         "title":"Terra Mystica",
+         "year":2012,
+         "rank":24,
+         "minplayers":2,
+         "maxplayers":5,
+         "minplaytime":60,
+         "maxplaytime":150,
+         "minage":12,
+         "rating":8.09724,
+         "num_of_reviews":44620,
+         "categories":[
+            {
+               "id":1015,
+               "name":"Civilization"
+            },
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1010,
+               "name":"Fantasy"
+            },
+            {
+               "id":1086,
+               "name":"Territory Building"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2875,
+               "name":"End Game Bonuses"
+            },
+            {
+               "id":2026,
+               "name":"Hexagon Grid"
+            },
+            {
+               "id":2902,
+               "name":"Income"
+            },
+            {
+               "id":2914,
+               "name":"Increase Value of Unchosen Resources"
+            },
+            {
+               "id":2081,
+               "name":"Network and Route Building"
+            },
+            {
+               "id":2849,
+               "name":"Tech Trees / Tech Tracks"
+            },
+            {
+               "id":2830,
+               "name":"Turn Order: Pass Order"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            },
+            {
+               "id":2874,
+               "name":"Victory Points as a Resource"
+            }
+         ],
+         "designer":[
+            {
+               "id":4300,
+               "name":"Jens Drögemüller"
+            },
+            {
+               "id":4407,
+               "name":"Helge Ostertag"
+            }
+         ]
+      },
+      {
+         "id":266192,
+         "title":"Wingspan",
+         "year":2019,
+         "rank":25,
+         "minplayers":1,
+         "maxplayers":5,
+         "minplaytime":40,
+         "maxplaytime":70,
+         "minage":10,
+         "rating":8.08126,
+         "num_of_reviews":72507,
+         "categories":[
+            {
+               "id":1089,
+               "name":"Animals"
+            },
+            {
+               "id":1002,
+               "name":"Card Game"
+            },
+            {
+               "id":1094,
+               "name":"Educational"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2912,
+               "name":"Contracts"
+            },
+            {
+               "id":2072,
+               "name":"Dice Rolling"
+            },
+            {
+               "id":2875,
+               "name":"End Game Bonuses"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2846,
+               "name":"Once-Per-Game Abilities"
+            },
+            {
+               "id":2041,
+               "name":"Open Drafting"
+            },
+            {
+               "id":2004,
+               "name":"Set Collection"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2828,
+               "name":"Turn Order: Progressive"
+            }
+         ],
+         "designer":[
+            {
+               "id":111338,
+               "name":"Elizabeth Hargrave"
+            }
+         ]
+      },
+      {
+         "id":266507,
+         "title":"Clank!: Legacy – Acquisitions Incorporated",
+         "year":2019,
+         "rank":26,
+         "minplayers":2,
+         "maxplayers":4,
+         "minplaytime":90,
+         "maxplaytime":120,
+         "minage":13,
+         "rating":8.61029,
+         "num_of_reviews":7193,
+         "categories":[
+            {
+               "id":1022,
+               "name":"Adventure"
+            },
+            {
+               "id":1010,
+               "name":"Fantasy"
+            },
+            {
+               "id":1047,
+               "name":"Miniatures"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2664,
+               "name":"Deck, Bag, and Pool Building"
+            },
+            {
+               "id":2901,
+               "name":"Delayed Purchase"
+            },
+            {
+               "id":2875,
+               "name":"End Game Bonuses"
+            },
+            {
+               "id":2850,
+               "name":"Events"
+            },
+            {
+               "id":2824,
+               "name":"Legacy Game"
+            },
+            {
+               "id":2959,
+               "name":"Map Addition"
+            },
+            {
+               "id":2947,
+               "name":"Movement Points"
+            },
+            {
+               "id":2851,
+               "name":"Narrative Choice / Paragraph"
+            },
+            {
+               "id":2846,
+               "name":"Once-Per-Game Abilities"
+            },
+            {
+               "id":2041,
+               "name":"Open Drafting"
+            },
+            {
+               "id":2007,
+               "name":"Pick-up and Deliver"
+            },
+            {
+               "id":2685,
+               "name":"Player Elimination"
+            },
+            {
+               "id":2078,
+               "name":"Point to Point Movement"
+            },
+            {
+               "id":2661,
+               "name":"Push Your Luck"
+            },
+            {
+               "id":2822,
+               "name":"Scenario / Mission / Campaign Game"
+            },
+            {
+               "id":2004,
+               "name":"Set Collection"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            }
+         ],
+         "designer":[
+            {
+               "id":37507,
+               "name":"Andy Clautice"
+            },
+            {
+               "id":92370,
+               "name":"Paul Dennen"
+            }
+         ]
+      },
+      {
+         "id":205637,
+         "title":"Arkham Horror: The Card Game",
+         "year":2016,
+         "rank":27,
+         "minplayers":1,
+         "maxplayers":2,
+         "minplaytime":60,
+         "maxplaytime":120,
+         "minage":14,
+         "rating":8.14743,
+         "num_of_reviews":38023,
+         "categories":[
+            {
+               "id":1022,
+               "name":"Adventure"
+            },
+            {
+               "id":1002,
+               "name":"Card Game"
+            },
+            {
+               "id":1044,
+               "name":"Collectible Components"
+            },
+            {
+               "id":1020,
+               "name":"Exploration"
+            },
+            {
+               "id":1024,
+               "name":"Horror"
+            },
+            {
+               "id":1093,
+               "name":"Novel-based"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2001,
+               "name":"Action Points"
+            },
+            {
+               "id":2046,
+               "name":"Area Movement"
+            },
+            {
+               "id":2893,
+               "name":"Communication Limits"
+            },
+            {
+               "id":2023,
+               "name":"Cooperative Game"
+            },
+            {
+               "id":3004,
+               "name":"Deck Construction"
+            },
+            {
+               "id":2850,
+               "name":"Events"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2961,
+               "name":"Map Deformation"
+            },
+            {
+               "id":2011,
+               "name":"Modular Board"
+            },
+            {
+               "id":2661,
+               "name":"Push Your Luck"
+            },
+            {
+               "id":2028,
+               "name":"Role Playing"
+            },
+            {
+               "id":2822,
+               "name":"Scenario / Mission / Campaign Game"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2853,
+               "name":"Stat Check Resolution"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            }
+         ],
+         "designer":[
+            {
+               "id":11655,
+               "name":"Nate French"
+            },
+            {
+               "id":40573,
+               "name":"MJ Newman"
+            }
+         ]
+      },
+      {
+         "id":237182,
+         "title":"Root",
+         "year":2018,
+         "rank":28,
+         "minplayers":2,
+         "maxplayers":4,
+         "minplaytime":60,
+         "maxplaytime":90,
+         "minage":10,
+         "rating":8.09206,
+         "num_of_reviews":40214,
+         "categories":[
+            {
+               "id":1089,
+               "name":"Animals"
+            },
+            {
+               "id":1010,
+               "name":"Fantasy"
+            },
+            {
+               "id":1019,
+               "name":"Wargame"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2689,
+               "name":"Action Queue"
+            },
+            {
+               "id":2839,
+               "name":"Action Retrieval"
+            },
+            {
+               "id":2080,
+               "name":"Area Majority / Influence"
+            },
+            {
+               "id":2046,
+               "name":"Area Movement"
+            },
+            {
+               "id":2072,
+               "name":"Dice Rolling"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2078,
+               "name":"Point to Point Movement"
+            },
+            {
+               "id":2876,
+               "name":"Race"
+            },
+            {
+               "id":2884,
+               "name":"Sudden Death Ending"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            }
+         ],
+         "designer":[
+            {
+               "id":35585,
+               "name":"Cole Wehrle"
+            }
+         ]
+      },
+      {
+         "id":312484,
+         "title":"Lost Ruins of Arnak",
+         "year":2020,
+         "rank":29,
+         "minplayers":1,
+         "maxplayers":4,
+         "minplaytime":30,
+         "maxplaytime":120,
+         "minage":12,
+         "rating":8.09201,
+         "num_of_reviews":30321,
+         "categories":[
+            {
+               "id":1022,
+               "name":"Adventure"
+            },
+            {
+               "id":1020,
+               "name":"Exploration"
+            },
+            {
+               "id":1097,
+               "name":"Travel"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2912,
+               "name":"Contracts"
+            },
+            {
+               "id":2664,
+               "name":"Deck, Bag, and Pool Building"
+            },
+            {
+               "id":2846,
+               "name":"Once-Per-Game Abilities"
+            },
+            {
+               "id":2041,
+               "name":"Open Drafting"
+            },
+            {
+               "id":2948,
+               "name":"Resource to Move"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2828,
+               "name":"Turn Order: Progressive"
+            },
+            {
+               "id":2082,
+               "name":"Worker Placement"
+            }
+         ],
+         "designer":[
+            {
+               "id":127823,
+               "name":"Elwen"
+            },
+            {
+               "id":127822,
+               "name":"Mín"
+            }
+         ]
+      },
+      {
+         "id":164928,
+         "title":"Orléans",
+         "year":2014,
+         "rank":30,
+         "minplayers":2,
+         "maxplayers":4,
+         "minplaytime":90,
+         "maxplaytime":90,
+         "minage":12,
+         "rating":8.06819,
+         "num_of_reviews":27706,
+         "categories":[
+            {
+               "id":1035,
+               "name":"Medieval"
+            },
+            {
+               "id":1115,
+               "name":"Religious"
+            },
+            {
+               "id":1097,
+               "name":"Travel"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2912,
+               "name":"Contracts"
+            },
+            {
+               "id":2664,
+               "name":"Deck, Bag, and Pool Building"
+            },
+            {
+               "id":2875,
+               "name":"End Game Bonuses"
+            },
+            {
+               "id":2850,
+               "name":"Events"
+            },
+            {
+               "id":2078,
+               "name":"Point to Point Movement"
+            },
+            {
+               "id":2020,
+               "name":"Simultaneous Action Selection"
+            },
+            {
+               "id":2849,
+               "name":"Tech Trees / Tech Tracks"
+            },
+            {
+               "id":2828,
+               "name":"Turn Order: Progressive"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            }
+         ],
+         "designer":[
+            {
+               "id":158,
+               "name":"Reiner Stockhausen"
+            }
+         ]
+      },
+      {
+         "id":199792,
+         "title":"Everdell",
+         "year":2018,
+         "rank":31,
+         "minplayers":1,
+         "maxplayers":4,
+         "minplaytime":40,
+         "maxplaytime":80,
+         "minage":13,
+         "rating":8.07132,
+         "num_of_reviews":40613,
+         "categories":[
+            {
+               "id":1089,
+               "name":"Animals"
+            },
+            {
+               "id":1002,
+               "name":"Card Game"
+            },
+            {
+               "id":1029,
+               "name":"City Building"
+            },
+            {
+               "id":1010,
+               "name":"Fantasy"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2912,
+               "name":"Contracts"
+            },
+            {
+               "id":2875,
+               "name":"End Game Bonuses"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2902,
+               "name":"Income"
+            },
+            {
+               "id":2041,
+               "name":"Open Drafting"
+            },
+            {
+               "id":2911,
+               "name":"Ownership"
+            },
+            {
+               "id":2004,
+               "name":"Set Collection"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            },
+            {
+               "id":2082,
+               "name":"Worker Placement"
+            }
+         ],
+         "designer":[
+            {
+               "id":91302,
+               "name":"James A. Wilson"
+            }
+         ]
+      },
+      {
+         "id":183394,
+         "title":"Viticulture Essential Edition",
+         "year":2015,
+         "rank":32,
+         "minplayers":1,
+         "maxplayers":6,
+         "minplaytime":45,
+         "maxplaytime":90,
+         "minage":13,
+         "rating":8.02556,
+         "num_of_reviews":41487,
+         "categories":[
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1013,
+               "name":"Farming"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2912,
+               "name":"Contracts"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2827,
+               "name":"Turn Order: Auction"
+            },
+            {
+               "id":2874,
+               "name":"Victory Points as a Resource"
+            },
+            {
+               "id":2082,
+               "name":"Worker Placement"
+            },
+            {
+               "id":2933,
+               "name":"Worker Placement, Different Worker Types"
+            }
+         ],
+         "designer":[
+            {
+               "id":62640,
+               "name":"Jamey Stegmaier"
+            },
+            {
+               "id":62641,
+               "name":"Alan Stone"
+            }
+         ]
+      },
+      {
+         "id":96848,
+         "title":"Mage Knight Board Game",
+         "year":2011,
+         "rank":33,
+         "minplayers":1,
+         "maxplayers":4,
+         "minplaytime":60,
+         "maxplaytime":240,
+         "minage":14,
+         "rating":8.09071,
+         "num_of_reviews":31188,
+         "categories":[
+            {
+               "id":1022,
+               "name":"Adventure"
+            },
+            {
+               "id":1020,
+               "name":"Exploration"
+            },
+            {
+               "id":1010,
+               "name":"Fantasy"
+            },
+            {
+               "id":1046,
+               "name":"Fighting"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2023,
+               "name":"Cooperative Game"
+            },
+            {
+               "id":2664,
+               "name":"Deck, Bag, and Pool Building"
+            },
+            {
+               "id":2072,
+               "name":"Dice Rolling"
+            },
+            {
+               "id":2676,
+               "name":"Grid Movement"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2026,
+               "name":"Hexagon Grid"
+            },
+            {
+               "id":2011,
+               "name":"Modular Board"
+            },
+            {
+               "id":2041,
+               "name":"Open Drafting"
+            },
+            {
+               "id":2028,
+               "name":"Role Playing"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            }
+         ],
+         "designer":[
+            {
+               "id":789,
+               "name":"Vlaada Chvátil"
+            }
+         ]
+      },
+      {
+         "id":251247,
+         "title":"Barrage",
+         "year":2019,
+         "rank":34,
+         "minplayers":1,
+         "maxplayers":4,
+         "minplaytime":60,
+         "maxplaytime":120,
+         "minage":14,
+         "rating":8.20379,
+         "num_of_reviews":13222,
+         "categories":[
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1084,
+               "name":"Environmental"
+            },
+            {
+               "id":1088,
+               "name":"Industry / Manufacturing"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2912,
+               "name":"Contracts"
+            },
+            {
+               "id":2875,
+               "name":"End Game Bonuses"
+            },
+            {
+               "id":2902,
+               "name":"Income"
+            },
+            {
+               "id":2081,
+               "name":"Network and Route Building"
+            },
+            {
+               "id":2911,
+               "name":"Ownership"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2826,
+               "name":"Turn Order: Stat-Based"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            },
+            {
+               "id":2082,
+               "name":"Worker Placement"
+            }
+         ],
+         "designer":[
+            {
+               "id":108836,
+               "name":"Tommaso Battista"
+            },
+            {
+               "id":35418,
+               "name":"Simone Luciani"
+            }
+         ]
+      },
+      {
+         "id":175914,
+         "title":"Food Chain Magnate",
+         "year":2015,
+         "rank":35,
+         "minplayers":2,
+         "maxplayers":5,
+         "minplaytime":120,
+         "maxplaytime":240,
+         "minage":14,
+         "rating":8.09416,
+         "num_of_reviews":17668,
+         "categories":[
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1088,
+               "name":"Industry / Manufacturing"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2664,
+               "name":"Deck, Bag, and Pool Building"
+            },
+            {
+               "id":2901,
+               "name":"Delayed Purchase"
+            },
+            {
+               "id":2902,
+               "name":"Income"
+            },
+            {
+               "id":2900,
+               "name":"Market"
+            },
+            {
+               "id":2011,
+               "name":"Modular Board"
+            },
+            {
+               "id":2041,
+               "name":"Open Drafting"
+            },
+            {
+               "id":2020,
+               "name":"Simultaneous Action Selection"
+            },
+            {
+               "id":2874,
+               "name":"Victory Points as a Resource"
+            }
+         ],
+         "designer":[
+            {
+               "id":270,
+               "name":"Jeroen Doumen"
+            },
+            {
+               "id":407,
+               "name":"Joris Wiersinga"
+            }
+         ]
+      },
+      {
+         "id":285774,
+         "title":"Marvel Champions: The Card Game",
+         "year":2019,
+         "rank":36,
+         "minplayers":1,
+         "maxplayers":4,
+         "minplaytime":45,
+         "maxplaytime":90,
+         "minage":14,
+         "rating":8.16512,
+         "num_of_reviews":18951,
+         "categories":[
+            {
+               "id":1002,
+               "name":"Card Game"
+            },
+            {
+               "id":1044,
+               "name":"Collectible Components"
+            },
+            {
+               "id":1116,
+               "name":"Comic Book / Strip"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2023,
+               "name":"Cooperative Game"
+            },
+            {
+               "id":3004,
+               "name":"Deck Construction"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2822,
+               "name":"Scenario / Mission / Campaign Game"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            },
+            {
+               "id":2897,
+               "name":"Variable Set-up"
+            }
+         ],
+         "designer":[
+            {
+               "id":119800,
+               "name":"Michael Boggs"
+            },
+            {
+               "id":11655,
+               "name":"Nate French"
+            },
+            {
+               "id":69895,
+               "name":"Caleb Grace"
+            }
+         ]
+      },
+      {
+         "id":192135,
+         "title":"Too Many Bones",
+         "year":2017,
+         "rank":37,
+         "minplayers":1,
+         "maxplayers":4,
+         "minplaytime":60,
+         "maxplaytime":120,
+         "minage":12,
+         "rating":8.38036,
+         "num_of_reviews":9806,
+         "categories":[
+            {
+               "id":1022,
+               "name":"Adventure"
+            },
+            {
+               "id":1017,
+               "name":"Dice"
+            },
+            {
+               "id":1010,
+               "name":"Fantasy"
+            },
+            {
+               "id":1046,
+               "name":"Fighting"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2023,
+               "name":"Cooperative Game"
+            },
+            {
+               "id":2664,
+               "name":"Deck, Bag, and Pool Building"
+            },
+            {
+               "id":2072,
+               "name":"Dice Rolling"
+            },
+            {
+               "id":2856,
+               "name":"Die Icon Resolution"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2948,
+               "name":"Resource to Move"
+            },
+            {
+               "id":2028,
+               "name":"Role Playing"
+            },
+            {
+               "id":2822,
+               "name":"Scenario / Mission / Campaign Game"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2853,
+               "name":"Stat Check Resolution"
+            },
+            {
+               "id":2849,
+               "name":"Tech Trees / Tech Tracks"
+            },
+            {
+               "id":2833,
+               "name":"Turn Order: Role Order"
+            },
+            {
+               "id":2015,
+               "name":"Variable Player Powers"
+            }
+         ],
+         "designer":[
+            {
+               "id":60315,
+               "name":"Josh J. Carlson"
+            },
+            {
+               "id":60311,
+               "name":"Adam Carlson"
+            }
+         ]
+      },
+      {
+         "id":324856,
+         "title":"The Crew: Mission Deep Sea",
+         "year":2021,
+         "rank":38,
+         "minplayers":2,
+         "maxplayers":5,
+         "minplaytime":20,
+         "maxplaytime":20,
+         "minage":10,
+         "rating":8.29454,
+         "num_of_reviews":9378,
+         "categories":[
+            {
+               "id":1002,
+               "name":"Card Game"
+            },
+            {
+               "id":1008,
+               "name":"Nautical"
+            },
+            {
+               "id":1016,
+               "name":"Science Fiction"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2893,
+               "name":"Communication Limits"
+            },
+            {
+               "id":2023,
+               "name":"Cooperative Game"
+            },
+            {
+               "id":2040,
+               "name":"Hand Management"
+            },
+            {
+               "id":2822,
+               "name":"Scenario / Mission / Campaign Game"
+            },
+            {
+               "id":2009,
+               "name":"Trick-taking"
+            }
+         ],
+         "designer":[
+            {
+               "id":45563,
+               "name":"Thomas Sing"
+            }
+         ]
+      },
+      {
+         "id":3076,
+         "title":"Puerto Rico",
+         "year":2002,
+         "rank":39,
+         "minplayers":3,
+         "maxplayers":5,
+         "minplaytime":90,
+         "maxplaytime":150,
+         "minage":12,
+         "rating":7.94204,
+         "num_of_reviews":67916,
+         "categories":[
+            {
+               "id":1029,
+               "name":"City Building"
+            },
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1013,
+               "name":"Farming"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2838,
+               "name":"Action Drafting"
+            },
+            {
+               "id":2875,
+               "name":"End Game Bonuses"
+            },
+            {
+               "id":2843,
+               "name":"Follow"
+            },
+            {
+               "id":2987,
+               "name":"Hidden Victory Points"
+            },
+            {
+               "id":2914,
+               "name":"Increase Value of Unchosen Resources"
+            },
+            {
+               "id":2828,
+               "name":"Turn Order: Progressive"
+            },
+            {
+               "id":2079,
+               "name":"Variable Phase Order"
+            }
+         ],
+         "designer":[
+            {
+               "id":117,
+               "name":"Andreas Seyfarth"
+            }
+         ]
+      },
+      {
+         "id":102794,
+         "title":"Caverna: The Cave Farmers",
+         "year":2013,
+         "rank":40,
+         "minplayers":1,
+         "maxplayers":7,
+         "minplaytime":30,
+         "maxplaytime":210,
+         "minage":12,
+         "rating":7.97952,
+         "num_of_reviews":31891,
+         "categories":[
+            {
+               "id":1089,
+               "name":"Animals"
+            },
+            {
+               "id":1021,
+               "name":"Economic"
+            },
+            {
+               "id":1010,
+               "name":"Fantasy"
+            },
+            {
+               "id":1013,
+               "name":"Farming"
+            }
+         ],
+         "mechanics":[
+            {
+               "id":2903,
+               "name":"Automatic Resource Growth"
+            },
+            {
+               "id":2914,
+               "name":"Increase Value of Unchosen Resources"
+            },
+            {
+               "id":2819,
+               "name":"Solo / Solitaire Game"
+            },
+            {
+               "id":2002,
+               "name":"Tile Placement"
+            },
+            {
+               "id":2829,
+               "name":"Turn Order: Claim Action"
+            },
+            {
+               "id":2082,
+               "name":"Worker Placement"
+            }
+         ],
+         "designer":[
+            {
+               "id":10,
+               "name":"Uwe Rosenberg"
+            }
+         ]
+      }
+   ],
+   "links":[
+      {
+         "source":174430,
+         "target":291457
+      },
+      {
+         "source":174430,
+         "target":192135
+      },
+      {
+         "source":174430,
+         "target":316554
+      },
+      {
+         "source":174430,
+         "target":266507
+      },
+      {
+         "source":174430,
+         "target":161936
+      },
+      {
+         "source":174430,
+         "target":169786
+      },
+      {
+         "source":174430,
+         "target":167355
+      },
+      {
+         "source":174430,
+         "target":162886
+      },
+      {
+         "source":174430,
+         "target":96848
+      },
+      {
+         "source":174430,
+         "target":233078
+      },
+      {
+         "source":174430,
+         "target":237182
+      },
+      {
+         "source":224517,
+         "target":316554
+      },
+      {
+         "source":224517,
+         "target":102794
+      },
+      {
+         "source":224517,
+         "target":182028
+      },
+      {
+         "source":224517,
+         "target":220308
+      },
+      {
+         "source":224517,
+         "target":342942
+      },
+      {
+         "source":224517,
+         "target":169786
+      },
+      {
+         "source":224517,
+         "target":177736
+      },
+      {
+         "source":224517,
+         "target":124361
+      },
+      {
+         "source":224517,
+         "target":193738
+      },
+      {
+         "source":224517,
+         "target":251247
+      },
+      {
+         "source":224517,
+         "target":167791
+      },
+      {
+         "source":224517,
+         "target":237182
+      },
+      {
+         "source":161936,
+         "target":291457
+      },
+      {
+         "source":161936,
+         "target":266507
+      },
+      {
+         "source":161936,
+         "target":169786
+      },
+      {
+         "source":161936,
+         "target":162886
+      },
+      {
+         "source":161936,
+         "target":174430
+      },
+      {
+         "source":342942,
+         "target":224517
+      },
+      {
+         "source":342942,
+         "target":316554
+      },
+      {
+         "source":342942,
+         "target":312484
+      },
+      {
+         "source":342942,
+         "target":164928
+      },
+      {
+         "source":342942,
+         "target":177736
+      },
+      {
+         "source":342942,
+         "target":193738
+      },
+      {
+         "source":342942,
+         "target":183394
+      },
+      {
+         "source":342942,
+         "target":167791
+      },
+      {
+         "source":342942,
+         "target":199792
+      },
+      {
+         "source":233078,
+         "target":316554
+      },
+      {
+         "source":233078,
+         "target":115746
+      },
+      {
+         "source":233078,
+         "target":169786
+      },
+      {
+         "source":233078,
+         "target":167355
+      },
+      {
+         "source":233078,
+         "target":162886
+      },
+      {
+         "source":233078,
+         "target":174430
+      },
+      {
+         "source":233078,
+         "target":167791
+      },
+      {
+         "source":233078,
+         "target":246900
+      },
+      {
+         "source":233078,
+         "target":187645
+      },
+      {
+         "source":233078,
+         "target":237182
+      },
+      {
+         "source":167791,
+         "target":224517
+      },
+      {
+         "source":167791,
+         "target":102794
+      },
+      {
+         "source":167791,
+         "target":316554
+      },
+      {
+         "source":167791,
+         "target":182028
+      },
+      {
+         "source":167791,
+         "target":220308
+      },
+      {
+         "source":167791,
+         "target":342942
+      },
+      {
+         "source":167791,
+         "target":173346
+      },
+      {
+         "source":167791,
+         "target":312484
+      },
+      {
+         "source":167791,
+         "target":169786
+      },
+      {
+         "source":167791,
+         "target":164928
+      },
+      {
+         "source":167791,
+         "target":162886
+      },
+      {
+         "source":167791,
+         "target":177736
+      },
+      {
+         "source":167791,
+         "target":124361
+      },
+      {
+         "source":167791,
+         "target":193738
+      },
+      {
+         "source":167791,
+         "target":183394
+      },
+      {
+         "source":167791,
+         "target":120677
+      },
+      {
+         "source":167791,
+         "target":237182
+      },
+      {
+         "source":291457,
+         "target":192135
+      },
+      {
+         "source":291457,
+         "target":316554
+      },
+      {
+         "source":291457,
+         "target":266507
+      },
+      {
+         "source":291457,
+         "target":161936
+      },
+      {
+         "source":291457,
+         "target":169786
+      },
+      {
+         "source":291457,
+         "target":167355
+      },
+      {
+         "source":291457,
+         "target":162886
+      },
+      {
+         "source":291457,
+         "target":174430
+      },
+      {
+         "source":291457,
+         "target":199792
+      },
+      {
+         "source":187645,
+         "target":316554
+      },
+      {
+         "source":187645,
+         "target":115746
+      },
+      {
+         "source":187645,
+         "target":169786
+      },
+      {
+         "source":187645,
+         "target":167355
+      },
+      {
+         "source":187645,
+         "target":174430
+      },
+      {
+         "source":187645,
+         "target":246900
+      },
+      {
+         "source":187645,
+         "target":233078
+      },
+      {
+         "source":187645,
+         "target":237182
+      },
+      {
+         "source":115746,
+         "target":316554
+      },
+      {
+         "source":115746,
+         "target":12333
+      },
+      {
+         "source":115746,
+         "target":169786
+      },
+      {
+         "source":115746,
+         "target":167355
+      },
+      {
+         "source":115746,
+         "target":96848
+      },
+      {
+         "source":115746,
+         "target":174430
+      },
+      {
+         "source":115746,
+         "target":246900
+      },
+      {
+         "source":115746,
+         "target":233078
+      },
+      {
+         "source":115746,
+         "target":187645
+      },
+      {
+         "source":115746,
+         "target":237182
+      },
+      {
+         "source":162886,
+         "target":291457
+      },
+      {
+         "source":162886,
+         "target":224517
+      },
+      {
+         "source":162886,
+         "target":316554
+      },
+      {
+         "source":162886,
+         "target":266507
+      },
+      {
+         "source":162886,
+         "target":161936
+      },
+      {
+         "source":162886,
+         "target":342942
+      },
+      {
+         "source":162886,
+         "target":169786
+      },
+      {
+         "source":162886,
+         "target":96848
+      },
+      {
+         "source":162886,
+         "target":174430
+      },
+      {
+         "source":162886,
+         "target":183394
+      },
+      {
+         "source":162886,
+         "target":167791
+      },
+      {
+         "source":162886,
+         "target":199792
+      },
+      {
+         "source":162886,
+         "target":246900
+      },
+      {
+         "source":162886,
+         "target":237182
+      },
+      {
+         "source":220308,
+         "target":224517
+      },
+      {
+         "source":220308,
+         "target":102794
+      },
+      {
+         "source":220308,
+         "target":182028
+      },
+      {
+         "source":220308,
+         "target":177736
+      },
+      {
+         "source":220308,
+         "target":124361
+      },
+      {
+         "source":220308,
+         "target":193738
+      },
+      {
+         "source":220308,
+         "target":120677
+      },
+      {
+         "source":220308,
+         "target":251247
+      },
+      {
+         "source":220308,
+         "target":167791
+      },
+      {
+         "source":316554,
+         "target":224517
+      },
+      {
+         "source":316554,
+         "target":220308
+      },
+      {
+         "source":316554,
+         "target":342942
+      },
+      {
+         "source":316554,
+         "target":312484
+      },
+      {
+         "source":316554,
+         "target":169786
+      },
+      {
+         "source":316554,
+         "target":162886
+      },
+      {
+         "source":316554,
+         "target":183394
+      },
+      {
+         "source":316554,
+         "target":167791
+      },
+      {
+         "source":316554,
+         "target":199792
+      },
+      {
+         "source":316554,
+         "target":246900
+      },
+      {
+         "source":316554,
+         "target":237182
+      },
+      {
+         "source":182028,
+         "target":224517
+      },
+      {
+         "source":182028,
+         "target":102794
+      },
+      {
+         "source":182028,
+         "target":316554
+      },
+      {
+         "source":182028,
+         "target":84876
+      },
+      {
+         "source":182028,
+         "target":220308
+      },
+      {
+         "source":182028,
+         "target":169786
+      },
+      {
+         "source":182028,
+         "target":177736
+      },
+      {
+         "source":182028,
+         "target":124361
+      },
+      {
+         "source":182028,
+         "target":193738
+      },
+      {
+         "source":182028,
+         "target":120677
+      },
+      {
+         "source":182028,
+         "target":167791
+      },
+      {
+         "source":182028,
+         "target":251247
+      },
+      {
+         "source":182028,
+         "target":237182
+      },
+      {
+         "source":12333,
+         "target":182028
+      },
+      {
+         "source":12333,
+         "target":115746
+      },
+      {
+         "source":12333,
+         "target":28720
+      },
+      {
+         "source":12333,
+         "target":237182
+      },
+      {
+         "source":193738,
+         "target":224517
+      },
+      {
+         "source":193738,
+         "target":102794
+      },
+      {
+         "source":193738,
+         "target":182028
+      },
+      {
+         "source":193738,
+         "target":84876
+      },
+      {
+         "source":193738,
+         "target":220308
+      },
+      {
+         "source":193738,
+         "target":164928
+      },
+      {
+         "source":193738,
+         "target":177736
+      },
+      {
+         "source":193738,
+         "target":124361
+      },
+      {
+         "source":193738,
+         "target":120677
+      },
+      {
+         "source":193738,
+         "target":167791
+      },
+      {
+         "source":169786,
+         "target":224517
+      },
+      {
+         "source":169786,
+         "target":316554
+      },
+      {
+         "source":169786,
+         "target":182028
+      },
+      {
+         "source":169786,
+         "target":102794
+      },
+      {
+         "source":169786,
+         "target":220308
+      },
+      {
+         "source":169786,
+         "target":342942
+      },
+      {
+         "source":169786,
+         "target":312484
+      },
+      {
+         "source":169786,
+         "target":162886
+      },
+      {
+         "source":169786,
+         "target":183394
+      },
+      {
+         "source":169786,
+         "target":167791
+      },
+      {
+         "source":169786,
+         "target":199792
+      },
+      {
+         "source":169786,
+         "target":246900
+      },
+      {
+         "source":169786,
+         "target":233078
+      },
+      {
+         "source":169786,
+         "target":237182
+      },
+      {
+         "source":84876,
+         "target":3076
+      },
+      {
+         "source":84876,
+         "target":102794
+      },
+      {
+         "source":84876,
+         "target":164928
+      },
+      {
+         "source":84876,
+         "target":177736
+      },
+      {
+         "source":84876,
+         "target":124361
+      },
+      {
+         "source":84876,
+         "target":193738
+      },
+      {
+         "source":84876,
+         "target":120677
+      },
+      {
+         "source":167355,
+         "target":291457
+      },
+      {
+         "source":167355,
+         "target":316554
+      },
+      {
+         "source":167355,
+         "target":169786
+      },
+      {
+         "source":167355,
+         "target":162886
+      },
+      {
+         "source":167355,
+         "target":187645
+      },
+      {
+         "source":167355,
+         "target":174430
+      },
+      {
+         "source":167355,
+         "target":246900
+      },
+      {
+         "source":167355,
+         "target":233078
+      },
+      {
+         "source":167355,
+         "target":237182
+      },
+      {
+         "source":173346,
+         "target":84876
+      },
+      {
+         "source":173346,
+         "target":312484
+      },
+      {
+         "source":173346,
+         "target":266192
+      },
+      {
+         "source":173346,
+         "target":183394
+      },
+      {
+         "source":173346,
+         "target":167791
+      },
+      {
+         "source":173346,
+         "target":199792
+      },
+      {
+         "source":28720,
+         "target":224517
+      },
+      {
+         "source":28720,
+         "target":182028
+      },
+      {
+         "source":28720,
+         "target":220308
+      },
+      {
+         "source":28720,
+         "target":175914
+      },
+      {
+         "source":28720,
+         "target":124361
+      },
+      {
+         "source":28720,
+         "target":193738
+      },
+      {
+         "source":28720,
+         "target":120677
+      },
+      {
+         "source":28720,
+         "target":251247
+      },
+      {
+         "source":124361,
+         "target":102794
+      },
+      {
+         "source":124361,
+         "target":84876
+      },
+      {
+         "source":124361,
+         "target":220308
+      },
+      {
+         "source":124361,
+         "target":164928
+      },
+      {
+         "source":124361,
+         "target":177736
+      },
+      {
+         "source":124361,
+         "target":193738
+      },
+      {
+         "source":124361,
+         "target":120677
+      },
+      {
+         "source":124361,
+         "target":167791
+      },
+      {
+         "source":177736,
+         "target":102794
+      },
+      {
+         "source":177736,
+         "target":84876
+      },
+      {
+         "source":177736,
+         "target":220308
+      },
+      {
+         "source":177736,
+         "target":312484
+      },
+      {
+         "source":177736,
+         "target":164928
+      },
+      {
+         "source":177736,
+         "target":124361
+      },
+      {
+         "source":177736,
+         "target":193738
+      },
+      {
+         "source":177736,
+         "target":183394
+      },
+      {
+         "source":177736,
+         "target":120677
+      },
+      {
+         "source":177736,
+         "target":167791
+      },
+      {
+         "source":246900,
+         "target":224517
+      },
+      {
+         "source":246900,
+         "target":316554
+      },
+      {
+         "source":246900,
+         "target":182028
+      },
+      {
+         "source":246900,
+         "target":220308
+      },
+      {
+         "source":246900,
+         "target":115746
+      },
+      {
+         "source":246900,
+         "target":169786
+      },
+      {
+         "source":246900,
+         "target":167355
+      },
+      {
+         "source":246900,
+         "target":162886
+      },
+      {
+         "source":246900,
+         "target":167791
+      },
+      {
+         "source":246900,
+         "target":233078
+      },
+      {
+         "source":246900,
+         "target":187645
+      },
+      {
+         "source":246900,
+         "target":237182
+      },
+      {
+         "source":120677,
+         "target":3076
+      },
+      {
+         "source":120677,
+         "target":102794
+      },
+      {
+         "source":120677,
+         "target":84876
+      },
+      {
+         "source":120677,
+         "target":182028
+      },
+      {
+         "source":120677,
+         "target":220308
+      },
+      {
+         "source":120677,
+         "target":177736
+      },
+      {
+         "source":120677,
+         "target":124361
+      },
+      {
+         "source":120677,
+         "target":193738
+      },
+      {
+         "source":120677,
+         "target":167791
+      },
+      {
+         "source":120677,
+         "target":251247
+      },
+      {
+         "source":266192,
+         "target":173346
+      },
+      {
+         "source":266192,
+         "target":312484
+      },
+      {
+         "source":266192,
+         "target":183394
+      },
+      {
+         "source":266192,
+         "target":199792
+      },
+      {
+         "source":266507,
+         "target":291457
+      },
+      {
+         "source":266507,
+         "target":316554
+      },
+      {
+         "source":266507,
+         "target":161936
+      },
+      {
+         "source":266507,
+         "target":169786
+      },
+      {
+         "source":266507,
+         "target":162886
+      },
+      {
+         "source":266507,
+         "target":174430
+      },
+      {
+         "source":266507,
+         "target":183394
+      },
+      {
+         "source":266507,
+         "target":199792
+      },
+      {
+         "source":205637,
+         "target":291457
+      },
+      {
+         "source":205637,
+         "target":285774
+      },
+      {
+         "source":237182,
+         "target":224517
+      },
+      {
+         "source":237182,
+         "target":316554
+      },
+      {
+         "source":237182,
+         "target":182028
+      },
+      {
+         "source":237182,
+         "target":220308
+      },
+      {
+         "source":237182,
+         "target":169786
+      },
+      {
+         "source":237182,
+         "target":162886
+      },
+      {
+         "source":237182,
+         "target":183394
+      },
+      {
+         "source":237182,
+         "target":167791
+      },
+      {
+         "source":237182,
+         "target":246900
+      },
+      {
+         "source":237182,
+         "target":233078
+      },
+      {
+         "source":312484,
+         "target":316554
+      },
+      {
+         "source":312484,
+         "target":342942
+      },
+      {
+         "source":312484,
+         "target":173346
+      },
+      {
+         "source":312484,
+         "target":164928
+      },
+      {
+         "source":312484,
+         "target":177736
+      },
+      {
+         "source":312484,
+         "target":266192
+      },
+      {
+         "source":312484,
+         "target":183394
+      },
+      {
+         "source":312484,
+         "target":167791
+      },
+      {
+         "source":312484,
+         "target":199792
+      },
+      {
+         "source":164928,
+         "target":102794
+      },
+      {
+         "source":164928,
+         "target":177736
+      },
+      {
+         "source":164928,
+         "target":124361
+      },
+      {
+         "source":164928,
+         "target":193738
+      },
+      {
+         "source":164928,
+         "target":183394
+      },
+      {
+         "source":199792,
+         "target":316554
+      },
+      {
+         "source":199792,
+         "target":342942
+      },
+      {
+         "source":199792,
+         "target":173346
+      },
+      {
+         "source":199792,
+         "target":312484
+      },
+      {
+         "source":199792,
+         "target":169786
+      },
+      {
+         "source":199792,
+         "target":266192
+      },
+      {
+         "source":199792,
+         "target":183394
+      },
+      {
+         "source":183394,
+         "target":316554
+      },
+      {
+         "source":183394,
+         "target":102794
+      },
+      {
+         "source":183394,
+         "target":342942
+      },
+      {
+         "source":183394,
+         "target":173346
+      },
+      {
+         "source":183394,
+         "target":312484
+      },
+      {
+         "source":183394,
+         "target":169786
+      },
+      {
+         "source":183394,
+         "target":164928
+      },
+      {
+         "source":183394,
+         "target":177736
+      },
+      {
+         "source":183394,
+         "target":193738
+      },
+      {
+         "source":183394,
+         "target":266192
+      },
+      {
+         "source":183394,
+         "target":167791
+      },
+      {
+         "source":183394,
+         "target":199792
+      },
+      {
+         "source":96848,
+         "target":291457
+      },
+      {
+         "source":96848,
+         "target":192135
+      },
+      {
+         "source":96848,
+         "target":316554
+      },
+      {
+         "source":96848,
+         "target":182028
+      },
+      {
+         "source":96848,
+         "target":169786
+      },
+      {
+         "source":96848,
+         "target":162886
+      },
+      {
+         "source":96848,
+         "target":174430
+      },
+      {
+         "source":96848,
+         "target":167791
+      },
+      {
+         "source":251247,
+         "target":224517
+      },
+      {
+         "source":251247,
+         "target":182028
+      },
+      {
+         "source":251247,
+         "target":220308
+      },
+      {
+         "source":251247,
+         "target":177736
+      },
+      {
+         "source":251247,
+         "target":193738
+      },
+      {
+         "source":251247,
+         "target":120677
+      },
+      {
+         "source":251247,
+         "target":167791
+      },
+      {
+         "source":175914,
+         "target":224517
+      },
+      {
+         "source":175914,
+         "target":28720
+      },
+      {
+         "source":285774,
+         "target":291457
+      },
+      {
+         "source":285774,
+         "target":192135
+      },
+      {
+         "source":285774,
+         "target":266507
+      },
+      {
+         "source":285774,
+         "target":162886
+      },
+      {
+         "source":285774,
+         "target":174430
+      },
+      {
+         "source":192135,
+         "target":291457
+      },
+      {
+         "source":192135,
+         "target":162886
+      },
+      {
+         "source":192135,
+         "target":96848
+      },
+      {
+         "source":192135,
+         "target":174430
+      },
+      {
+         "source":324856,
+         "target":173346
+      },
+      {
+         "source":324856,
+         "target":312484
+      },
+      {
+         "source":324856,
+         "target":266192
+      },
+      {
+         "source":3076,
+         "target":102794
+      },
+      {
+         "source":3076,
+         "target":84876
+      },
+      {
+         "source":3076,
+         "target":124361
+      },
+      {
+         "source":3076,
+         "target":193738
+      },
+      {
+         "source":3076,
+         "target":120677
+      },
+      {
+         "source":102794,
+         "target":84876
+      },
+      {
+         "source":102794,
+         "target":182028
+      },
+      {
+         "source":102794,
+         "target":220308
+      },
+      {
+         "source":102794,
+         "target":164928
+      },
+      {
+         "source":102794,
+         "target":177736
+      },
+      {
+         "source":102794,
+         "target":124361
+      },
+      {
+         "source":102794,
+         "target":193738
+      },
+      {
+         "source":102794,
+         "target":183394
+      },
+      {
+         "source":102794,
+         "target":120677
+      },
+      {
+         "source":102794,
+         "target":167791
+      }
+   ]
+}

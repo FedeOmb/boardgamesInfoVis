@@ -1,5 +1,5 @@
 var data = {}
-d3.json("./data/dataset_converted_cleaned.json", function (error, _graph) {
+d3.json("./data/dataset_converted_cleaned_40.json", function (error, _graph) { //TODO test
     if (error) throw error;
     data = _graph
             

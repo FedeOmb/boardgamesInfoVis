@@ -1,13 +1,14 @@
     
-    d3.json("./data/dataset_converted_cleaned.json", function (error, _graph) {
+    d3.json("./data/dataset_converted_cleaned_40.json", function (error, _graph) {
       if (error) throw error;
       graph = _graph
 
       //find cliques
       const cliques = findCliquesInGraph(graph);
-      //console.log("cliques:", JSON.stringify(cliques));
+      console.log("cliques:", JSON.stringify(cliques));
 
-      groupNodes(graph)
+      //groupNodes(graph)
+      groupNodes2(graph)
   })
 
   function findCliquesInGraph(graph, minSize = 12) {
@@ -186,3 +187,165 @@ dataset.nodes.forEach(node => {
 console.log(`Trovati ${clusters.length} cluster.`);
 clusters.forEach((cluster, i) => console.log(`Cluster ${i}: ${[...cluster]}`));
   }
+
+function groupNodes2(data){
+
+  function jaccardSimilarity(setA, setB) {
+    const intersection = new Set([...setA].filter(x => setB.has(x)));
+    const union = new Set([...setA, ...setB]);
+    return intersection.size / union.size;
+}
+
+function addEdgeWeights(nodes, links, attribute) {
+  const weightedLinks = links.map(link => {
+      const sourceNode = nodes.find(node => node.id === link.source);
+      const targetNode = nodes.find(node => node.id === link.target);
+
+      const sourceAttributes = new Set(sourceNode[attribute].map(a => a.id));
+      const targetAttributes = new Set(targetNode[attribute].map(a => a.id));
+
+      const weight = jaccardSimilarity(sourceAttributes, targetAttributes);
+      return { ...link, weight };
+  });
+
+  return weightedLinks;
+}
+
+function weightedLabelPropagation(nodes, weightedLinks) {
+  const labels = new Map();
+  nodes.forEach((node, index) => labels.set(node.id, index));
+
+  const adjacencyList = new Map();
+  nodes.forEach(node => adjacencyList.set(node.id, []));
+  weightedLinks.forEach(link => {
+      adjacencyList.get(link.source).push({ neighbor: link.target, weight: link.weight });
+      adjacencyList.get(link.target).push({ neighbor: link.source, weight: link.weight });
+  });
+
+  let changed;
+  do {
+      changed = false;
+      nodes.forEach(node => {
+          const labelWeights = new Map();
+          adjacencyList.get(node.id).forEach(({ neighbor, weight }) => {
+              const neighborLabel = labels.get(neighbor);
+              labelWeights.set(neighborLabel, (labelWeights.get(neighborLabel) || 0) + weight);
+          });
+
+          let maxLabel = null;
+          let maxWeight = -1;
+          labelWeights.forEach((weight, label) => {
+              if (weight > maxWeight) {
+                  maxWeight = weight;
+                  maxLabel = label;
+              }
+          });
+
+          if (labels.get(node.id) !== maxLabel) {
+              labels.set(node.id, maxLabel);
+              changed = true;
+          }
+      });
+  } while (changed);
+
+  const communities = new Map();
+  labels.forEach((label, nodeId) => {
+      if (!communities.has(label)) {
+          communities.set(label, []);
+      }
+      communities.get(label).push(nodeId);
+  });
+
+  return Array.from(communities.values());
+}
+
+function splitClusterWithWeightedLPA(cluster, nodes, links, attribute) {
+  const subgraphNodes = nodes.filter(node => cluster.includes(node.id));
+  const subgraphLinks = links.filter(link =>
+      cluster.includes(link.source) && cluster.includes(link.target)
+  );
+
+  const weightedLinks = addEdgeWeights(subgraphNodes, subgraphLinks, attribute);
+  return weightedLabelPropagation(subgraphNodes, weightedLinks);
+}
+
+function mergeSmallSubclusters(subclusters, nodes, attribute, threshold = 4) {
+  const mergedSubclusters = subclusters.filter(subcluster => subcluster.length >= threshold);
+
+  subclusters.forEach(subcluster => {
+      if (subcluster.length < threshold) {
+          let bestSubcluster = null;
+          let bestSimilarity = -1;
+
+          mergedSubclusters.forEach(targetSubcluster => {
+              const targetAttributes = new Set(
+                  targetSubcluster.flatMap(nodeId => {
+                      const node = nodes.find(n => n.id === nodeId);
+                      return node[attribute].map(a => a.id);
+                  })
+              );
+
+              const subclusterAttributes = new Set(
+                  subcluster.flatMap(nodeId => {
+                      const node = nodes.find(n => n.id === nodeId);
+                      return node[attribute].map(a => a.id);
+                  })
+              );
+
+              const similarity = jaccardSimilarity(targetAttributes, subclusterAttributes);
+              if (similarity > bestSimilarity) {
+                  bestSimilarity = similarity;
+                  bestSubcluster = targetSubcluster;
+              }
+          });
+
+          if (bestSubcluster) {
+              bestSubcluster.push(...subcluster);
+          } else {
+              // If no suitable subcluster is found, create a new one
+              mergedSubclusters.push(subcluster);
+          }
+      }
+  });
+
+  return mergedSubclusters;
+}
+
+function updateClusters(clusters, largeClusters, subclusters) {
+  const updatedClusters = clusters.filter(cluster => cluster.length <= LARGE_CLUSTER_THRESHOLD);
+  return updatedClusters.concat(subclusters);
+}
+
+const weightedLinks = addEdgeWeights(data.nodes, data.links, 'categories'); // or 'mechanics'
+console.log("Weighted Links:", weightedLinks);
+
+const clusters = weightedLabelPropagation(data.nodes, weightedLinks);
+
+const LARGE_CLUSTER_THRESHOLD = 10;
+const largeClusters = clusters.filter(cluster => cluster.length > LARGE_CLUSTER_THRESHOLD);
+console.log("Large Clusters:", largeClusters);
+
+// Step 2: Split large clusters using Weighted LPA or K-Means
+const subclusters = largeClusters.flatMap(cluster =>
+    splitClusterWithWeightedLPA(cluster, data.nodes, data.links, 'categories') 
+);
+console.log("Subclusters:", subclusters);
+
+const subgraphNodes = data.nodes.filter(node => subclusters.includes(node.id));
+const subgraphLinks = data.links.filter(link =>
+    clusters.includes(link.source) && subclusters.includes(link.target)
+);
+console.log("Subgraph Nodes:", subgraphNodes);
+console.log("Subgraph Links:", subgraphLinks);
+const subgraphWeightedLinks = addEdgeWeights(subgraphNodes, subgraphLinks, 'categories');
+const subgraphClusters = weightedLabelPropagation(subgraphNodes, subgraphWeightedLinks);
+console.log("Subgraph Clusters:", subgraphClusters);
+
+// Step 3: Merge small subclusters
+const mergedSubclusters = mergeSmallSubclusters(subclusters, data.nodes, 'categories');
+console.log("Merged Subclusters:", mergedSubclusters);
+
+// Step 4: Update the clusters
+const updatedClusters = updateClusters(clusters, largeClusters, mergedSubclusters);
+console.log("Updated Clusters:", JSON.stringify(updatedClusters));
+}

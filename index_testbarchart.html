@@ -77,16 +77,20 @@
                 <input type="radio" id="stacked" name="barchart-type" value="stacked" checked>
                 <label for="barchart-type">Stacked BarChart (2 attributi)</label>                
               </div>
-              <p>
+              <br>
               <div id="select-container">
                 <label for="select-attribute">Visualizza la diffusione di un determinato attributo nella top 100</label>
                 <select id="select-attribute"></select>
+                <br>
+                <label for="max-items">Seleziona il max num di elementi da visualizzare</label>
+                <br>
+                <input type="range" name="max-items" id="max-items" min="10" max="10" value="1">
+                <span id="range-value">0</span>
               </div>
-              <p>
+              <br>
               <div>
-                <p>
-                  <label for="view-ages">Visualizza l'età dei giochi nella top 100</label>
-                </p>
+                <label for="view-ages">Visualizza l'età dei giochi nella top 100</label>
+                <br>
                 <input type="button" id="view-ages" value="Visualizza età">
               </div>
             </div>

@@ -9,6 +9,8 @@ var mechanics = [];
 var designers = [];
 var dataset = {};
 
+var maxItemsToVis = 10;
+
 const svg = d3
   .select("#bar-chart")
   .append("svg")
@@ -16,6 +18,8 @@ const svg = d3
 
 const attrList = ["categories", "mechanics"];
 const attrSelector = d3.select("#select-attribute");
+const rangeSlider = d3.select("#max-items");
+const rangeValue = d3.select("#range-value");
 
 //aggiungi opzioni attributi al selettore
 attrSelector.selectAll("option")
@@ -34,8 +38,16 @@ attrSelector.on("change", () => {
     'input[name="barchart-type"]:checked'
   ).value;
   if(attr == "categories"){
+    maxItemsToVis = categories.length;
+    rangeSlider.attr("max", maxItemsToVis)
+    rangeSlider.attr("value", maxItemsToVis)
+    rangeValue.text(maxItemsToVis.toString())
     createHorizBarchart(categories, "name", "count");
   }if(attr == "mechanics"){
+    maxItemsToVis = mechanics.length;
+    rangeSlider.attr("max", maxItemsToVis)
+    rangeSlider.attr("value", maxItemsToVis)
+    rangeValue.text(maxItemsToVis.toString())
     createHorizBarchart(mechanics, "name", "count");
   }
 });
@@ -43,9 +55,24 @@ attrSelector.on("change", () => {
 const agesBtn = d3.select("#view-ages");
 agesBtn.on("click", () => {
   if(ages.length != 0){
-  createHorizBarchart(ages, "age", "count");
+    maxItemsToVis = ages.length;
+    rangeSlider.attr("max", maxItemsToVis)
+    rangeSlider.attr("value", maxItemsToVis)
+    rangeValue.text(maxItemsToVis.toString())
+    createHorizBarchart(ages, "age", "count");
   }
 });
+
+rangeSlider.on("change", () => {
+  maxItemsToVis = rangeSlider.property("value");
+  rangeValue.text(maxItemsToVis.toString())
+  attr = attrSelector.property("value");
+  if(attr == "categories"){
+    createHorizBarchart(categories, "name", "count");
+  }if(attr == "mechanics"){
+    createHorizBarchart(mechanics, "name", "count");
+  }
+})
 
 //vers6 di d3 funziona solo con d3.json().then()
 
@@ -55,7 +82,7 @@ async function loadDatasets(){
     dataset = data;
     console.log("fulldataset",dataset);
     calcAges();
-    createHorizBarchart(categories, "name", "count");
+
   });
   d3.json("data/categories.json").then( (data) =>{
     data.forEach( d => {
@@ -64,6 +91,11 @@ async function loadDatasets(){
     data = d3.sort(data, (a, b) => d3.descending(a.count, b.count))
     categories = data;
     console.log("categories",categories);
+    maxItemsToVis = categories.length;
+    rangeSlider.attr("max", maxItemsToVis)
+    rangeSlider.attr("value", maxItemsToVis)
+    rangeValue.text(maxItemsToVis.toString())
+    createHorizBarchart(categories, "name", "count");
   });
   d3.json("data/mechanics.json").then( (data) =>{
     data.forEach( d => {
@@ -183,7 +215,10 @@ function createVertBarchart(data){
     
 };
 
-function createHorizBarchart(data, varY, varX){
+function createHorizBarchart(dataToVis, varY, varX){
+
+  data = dataToVis.slice(0, maxItemsToVis);
+
   const chartMargin = { top: 20, right: 20, bottom: 20, left: 120 };
   const chartWidth = width - (chartMargin.right + chartMargin.left);
   const chartHeight = height - (chartMargin.top + chartMargin.bottom);

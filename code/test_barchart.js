@@ -34,27 +34,29 @@ loadDatasets();
 //listener per cambio attributo
 attrSelector.on("change", () => {
   const attr = attrSelector.property("value");
-  const viewMode = document.querySelector(
+  const chartType = document.querySelector(
     'input[name="barchart-type"]:checked'
   ).value;
-  if(attr == "categories"){
-    maxItemsToVis = categories.length;
-    rangeSlider.attr("max", maxItemsToVis)
-    rangeSlider.attr("value", maxItemsToVis)
-    rangeValue.text(maxItemsToVis.toString())
-    createHorizBarchart(categories, "name", "count");
-  }if(attr == "mechanics"){
-    maxItemsToVis = mechanics.length;
-    rangeSlider.attr("max", maxItemsToVis)
-    rangeSlider.attr("value", maxItemsToVis)
-    rangeValue.text(maxItemsToVis.toString())
-    createHorizBarchart(mechanics, "name", "count");
-  }
+  if(chartType == "classic"){
+    if(attr == "categories"){
+      maxItemsToVis = categories.length;
+      rangeSlider.attr("max", maxItemsToVis)
+      rangeSlider.attr("value", maxItemsToVis)
+      rangeValue.text(maxItemsToVis.toString())
+      createHorizBarchart(categories, "name", "count");
+    }if(attr == "mechanics"){
+      maxItemsToVis = mechanics.length;
+      rangeSlider.attr("max", maxItemsToVis)
+      rangeSlider.attr("value", maxItemsToVis)
+      rangeValue.text(maxItemsToVis.toString())
+      createHorizBarchart(mechanics, "name", "count");
+    }
+  } 
 });
 
 const agesBtn = d3.select("#view-ages");
-agesBtn.on("click", () => {
-  if(ages.length != 0){
+agesBtn.on("change", () => {
+  if(agesBtn.property("checked")){
     maxItemsToVis = ages.length;
     rangeSlider.attr("max", maxItemsToVis)
     rangeSlider.attr("value", maxItemsToVis)
@@ -82,7 +84,7 @@ async function loadDatasets(){
     dataset = data;
     console.log("fulldataset",dataset);
     calcAges();
-
+    calcGamesYears(dataset);
   });
   d3.json("data/categories.json").then( (data) =>{
     data.forEach( d => {
@@ -113,7 +115,6 @@ async function loadDatasets(){
     data = d3.sort(data, (a, b) => d3.descending(a.count, b.count))
     designers = data;
     console.log("designers",designers);
-
   });
 
 }
@@ -149,7 +150,37 @@ function calcAges(){
       }
     console.log(ages);
     ages = d3.sort(ages, (a, b) => d3.descending(a.count, b.count))
-  }
+}
+
+function calcGamesYears(data){
+
+  const yearsCateg = [];
+
+  data.nodes.forEach(game => {
+      const year = game.year;
+      let yearEntry = yearsCateg.find(d => d.year == year)
+      if (!yearEntry) {
+        yearEntry = { 
+          year: year,
+          count: 0
+        };
+          yearsCateg.push(yearEntry);
+      }
+  
+      const gameCategories = game.categories.map(c => c.name);
+      
+      gameCategories.forEach(category => {
+        let yearEntry = yearsCateg.find(d => d.year == year)
+        if (!yearEntry[category]) {
+          yearEntry[category] = [];
+        }
+        yearEntry[category].push(game.id);
+
+      });
+      yearEntry.count++;
+  });
+  console.log(yearsCateg)
+}
 
 function createVertBarchart(data){
 
@@ -213,7 +244,7 @@ function createVertBarchart(data){
     .append("g")
     .call(d3.axisLeft(yScale))
     
-};
+}
 
 function createHorizBarchart(dataToVis, varY, varX){
 

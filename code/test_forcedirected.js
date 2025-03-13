@@ -29,7 +29,8 @@ const tooltip = d3.select("body")
     .style("visibility", "hidden");
 
 // load the data
-d3.json("data/dataset_converted_cleaned.json", function (error, _graph) {
+//d3.json("data/dataset_converted_cleaned.json", function (error, _graph) {
+  d3.json("data/dataset_cleaned_bidirectional_100.json", function (error, _graph) {
   if (error) throw error;
   graph = _graph;
   //console.log(graph)
@@ -154,7 +155,7 @@ function initializeDisplay() {
     .attr("stroke", "#999") // Explicitly set the default stroke color for links
     .attr("stroke-width", 1)
     .on("mouseover", mouseEnterEdge) // Add mouseover event listener
-    .on("mouseout", mouseEnterEdge);   // Add mouseout event listener;
+    .on("mouseout", mouseLeaveEdge);   // Add mouseout event listener;
 
   // set the data and properties of node circles
   node = svg

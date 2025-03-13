@@ -3,7 +3,7 @@
     var designers = []
     var mechanics = []
     
-    d3.json("./data/boardgames.json", function (error, _graph) {
+    d3.json("./data/boardgames_100.json", function (error, _graph) {
         if (error) throw error;
         var data
         var nodes = []
@@ -58,6 +58,12 @@
         console.log("DATASET CONVERTED CLEANED")
         console.log(dataset_conv_clean)
         console.log(JSON.stringify(dataset_conv_clean))
+
+        //dataset con solo i link bidirezionali
+        const bidirectionalLinks = filterBidirectionalLinks(dataset_conv_clean.links);
+        dataset_conv_clean.links = bidirectionalLinks
+        console.log("DATASET BIDIRECTIONAL")
+        console.log(JSON.stringify(dataset_conv_clean));
       }
     );
 
@@ -201,4 +207,24 @@
 
     }
 
-
+    function filterBidirectionalLinks(links) {
+        const bidirectionalLinks = [];
+        const addedPairs = new Set(); // To track pairs that have already been added
+    
+        // Create a set of link pairs for quick lookup
+        const linkSet = new Set(links.map(link => `${link.source}-${link.target}`));
+    
+        // Iterate through the links and check if the reverse link exists
+        links.forEach(link => {
+            const reverseLink = `${link.target}-${link.source}`;
+            const pairKey = link.source < link.target ? `${link.source}-${link.target}` : `${link.target}-${link.source}`;
+    
+            // Check if the reverse link exists and the pair hasn't been added yet
+            if (linkSet.has(reverseLink) && !addedPairs.has(pairKey)) {
+                bidirectionalLinks.push(link); // Add the link
+                addedPairs.add(pairKey); // Mark the pair as added
+            }
+        });
+    
+        return bidirectionalLinks;
+    }

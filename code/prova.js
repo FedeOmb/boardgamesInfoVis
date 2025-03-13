@@ -1,5 +1,5 @@
     
-    d3.json("./data/dataset_converted_cleaned_40.json", function (error, _graph) {
+    d3.json("./data/dataset_converted_cleaned_v2.json", function (error, _graph) {
       if (error) throw error;
       graph = _graph
 
@@ -316,7 +316,7 @@ function updateClusters(clusters, largeClusters, subclusters) {
   return updatedClusters.concat(subclusters);
 }
 
-const weightedLinks = addEdgeWeights(data.nodes, data.links, 'categories'); // or 'mechanics'
+const weightedLinks = addEdgeWeights(data.nodes, data.links, 'type'); // or 'mechanics'
 console.log("Weighted Links:", weightedLinks);
 
 const clusters = weightedLabelPropagation(data.nodes, weightedLinks);
@@ -327,7 +327,7 @@ console.log("Large Clusters:", largeClusters);
 
 // Step 2: Split large clusters using Weighted LPA or K-Means
 const subclusters = largeClusters.flatMap(cluster =>
-    splitClusterWithWeightedLPA(cluster, data.nodes, data.links, 'categories') 
+    splitClusterWithWeightedLPA(cluster, data.nodes, data.links, 'type') 
 );
 console.log("Subclusters:", subclusters);
 
@@ -337,12 +337,12 @@ const subgraphLinks = data.links.filter(link =>
 );
 console.log("Subgraph Nodes:", subgraphNodes);
 console.log("Subgraph Links:", subgraphLinks);
-const subgraphWeightedLinks = addEdgeWeights(subgraphNodes, subgraphLinks, 'categories');
+const subgraphWeightedLinks = addEdgeWeights(subgraphNodes, subgraphLinks, 'type');
 const subgraphClusters = weightedLabelPropagation(subgraphNodes, subgraphWeightedLinks);
 console.log("Subgraph Clusters:", subgraphClusters);
 
 // Step 3: Merge small subclusters
-const mergedSubclusters = mergeSmallSubclusters(subclusters, data.nodes, 'categories');
+const mergedSubclusters = mergeSmallSubclusters(subclusters, data.nodes, 'type');
 console.log("Merged Subclusters:", mergedSubclusters);
 
 // Step 4: Update the clusters

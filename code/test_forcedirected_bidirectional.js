@@ -57,23 +57,23 @@ forceProperties = {
   },
   charge: {
     enabled: true,
-    strength: -70,
+    strength: -80,
     distanceMin: 1,
-    distanceMax: 500,
+    distanceMax: 2000,
   },
   collide: {
     enabled: true,
     strength: 0.7,
     iterations: 1,
-    radius: 13,
+    radius: 20,
   },
   forceX: {
-    enabled: false,
+    enabled: true,
     strength: 0.1,
     x: 0.5,
   },
   forceY: {
-    enabled: false,
+    enabled: true,
     strength: 0.1,
     y: 0.5,
   },

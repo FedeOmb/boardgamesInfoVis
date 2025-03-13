@@ -29,8 +29,7 @@ const tooltip = d3.select("body")
     .style("visibility", "hidden");
 
 // load the data
-d3.json("data/dataset_converted_cleaned.json", function (error, _graph) {
-//  d3.json("data/dataset_cleaned_bidirectional_100.json", function (error, _graph) {
+d3.json("data/dataset_cleaned_bidirectional_100.json", function (error, _graph) {
   if (error) throw error;
   graph = _graph;
   //console.log(graph)
@@ -60,7 +59,7 @@ forceProperties = {
     enabled: true,
     strength: -70,
     distanceMin: 1,
-    distanceMax: 6000,
+    distanceMax: 500,
   },
   collide: {
     enabled: true,

@@ -12,9 +12,17 @@ const radiusScale = d3.scaleLinear()
   .domain([1, 100]) // Input data range
   .range([13, 3]);
 
-const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
-var nodeColorMap = mapNodesToCliqueColors(cliques)
+var colorScaleType  = d3.scaleOrdinal(d3.schemeCategory10);
+function setScale(data){
+  var types = data.nodes.flatMap(d => d.type);
+  types = [...new Set(types)];  
+  colorScaleType.domain(types);
+  console.log(types);
+}
+//const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+//var nodeColorMap = mapNodesToCliqueColors(cliques)
 
 const tooltip = d3.select("body")
     .append("div")
@@ -29,11 +37,12 @@ const tooltip = d3.select("body")
     .style("visibility", "hidden");
 
 // load the data
-d3.json("data/dataset_converted_cleaned.json", function (error, _graph) {
+d3.json("data/dataset_converted_cleaned_v2.json", function (error, _graph) {
 //  d3.json("data/dataset_cleaned_bidirectional_100.json", function (error, _graph) {
   if (error) throw error;
   graph = _graph;
   //console.log(graph)
+  setScale(graph);
   initializeDisplay();
   initializeSimulation();
 });
@@ -69,12 +78,12 @@ forceProperties = {
     radius: 13,
   },
   forceX: {
-    enabled: false,
+    enabled: true,
     strength: 0.1,
     x: 0.5,
   },
   forceY: {
-    enabled: false,
+    enabled: true,
     strength: 0.1,
     y: 0.5,
   },
@@ -166,7 +175,7 @@ function initializeDisplay() {
     .enter()
     .append("circle")
     .attr("r", (d) => radiusScale(d.rank))
-    .attr("fill", d => nodeColorMap.get(d.id) || "gray") // Default to gray if no clique color
+    .attr("fill", d => colorScaleType(d.type[0])) // Default to gray if no clique color
     .on("mouseover", handleMouseOver) // Add mouseover event listener
     .on("mouseout", handleMouseOut);   // Add mouseout event listener
 
@@ -178,7 +187,7 @@ function initializeDisplay() {
 function updateDisplay() {
   node
     .attr("r", d => radiusScale(d.rank))
-    .attr("fill", d => nodeColorMap.get(d.id) || "gray") // Default to gray if no clique color
+    .attr("fill", d => colorScaleType(d.type[0])) // Default to gray if no clique color
     .attr("stroke", "grey")
     .attr(
       "stroke-width", 1);
@@ -265,7 +274,7 @@ function handleMouseOver(d) {
     }
   });
 
-  tooltip.html(`<strong>${d.rank}°: ${d.title}</strong><br>`)
+  tooltip.html(`<strong>${d.rank}°: ${d.title} - type: ${d.type}</strong><br>`)
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY - 10) + "px")
         .style("visibility", "visible");

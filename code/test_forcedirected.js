@@ -1,9 +1,30 @@
-
 var svg = d3.select("svg"),
   width = +svg.node().getBoundingClientRect().width,
   height = +svg.node().getBoundingClientRect().height;
 
+  var svg = d3.select("svg")
+  .attr("width", "100%")
+  .attr("height", "100%");
+
+function updateSize() {
+  width = +svg.node().getBoundingClientRect().width;
+  height = +svg.node().getBoundingClientRect().height;
+
+  simulation.force("center", d3.forceCenter(width / 2, height / 2));
+  simulation.alpha(1).restart();
+}
+
+// Aggiungi un event listener per il resize
+window.addEventListener("resize", updateSize);
+
 var networkGroup = svg.append("g").attr("class", "network-group");
+
+var zoom = d3.zoom()
+  .on("zoom", function() {
+    svg.attr("transform", d3.event.transform); // Applica la trasformazione al gruppo
+  });
+
+svg.call(zoom);
 
 // svg objects
 var link, node;
@@ -404,6 +425,11 @@ function mouseLeaveEdge(d) {
 }
 
 function handleNodeClick(d) {
+  node.each(function(n) {
+    d3.select(this).attr("fill", d => colorScaleType(d.type[0]))
+  })
+  d3.select(this)
+  .attr("fill", "black");
   // Sposta la rete verso sinistra
   networkGroup.transition()
     .duration(500)
@@ -412,25 +438,95 @@ function handleNodeClick(d) {
   // Mostra il pannello laterale
   d3.select("#info-panel").style("display", "block");
 
+  d3.select("#node-details").html(""); // Pulisce il pannello
+
   // Aggiorna il contenuto del pannello con i dettagli del nodo
   d3.select("#node-details").html(`
     <strong>${d.rank}°: ${d.title}</strong><br>
     <strong>Type:</strong> ${d.type.join(", ")}<br>
-    <strong>Vicini:</strong> ${getNeighbors(d).map(n => n.title).join(", ")}
   `);
+
+    let svgWidth = 200, svgHeight = 200;
+
+    // Creazione dell'SVG per la torta
+    let pieSvg = d3.select("#node-details")
+        .append("svg")
+        .attr("width", svgWidth)
+        .attr("height", svgHeight)
+        .append("g")
+        .attr("transform", `translate(${svgWidth / 2}, ${svgHeight / 2})`);
+
+    // Dati per la torta
+    let pieData = [
+        { label: "Min", value: d.minplaytime },
+        { label: "Max", value: d.maxplaytime }
+    ];
+
+    let pie = d3.pie().value(d => d.value);
+    let arc = d3.arc().innerRadius(0).outerRadius(80);
+
+    let color = d3.scaleOrdinal().domain(pieData.map(d => d.label)).range(["#1f77b4", "#ff7f0e"]);
+
+    pieSvg.selectAll("path")
+        .data(pie(pieData))
+        .enter()
+        .append("path")
+        .attr("d", arc)
+        .attr("fill", d => color(d.data.label))
+        .append("title")
+        .text(d => `${d.data.label}: ${d.data.value} min`);
+
+    // Aggiunta di etichette
+    pieSvg.selectAll("text")
+        .data(pie(pieData))
+        .enter()
+        .append("text")
+        .attr("transform", d => `translate(${arc.centroid(d)})`)
+        .attr("text-anchor", "middle")
+        .attr("fill", "white")
+        .text(d => d.data.label);
+
+    // Creazione del barchart per i giocatori
+    let barSvg = d3.select("#node-details")
+        .append("svg")
+        .attr("width", svgWidth)
+        .attr("height", svgHeight);
+
+    let barData = [
+        { label: "Min Players", value: d.minplayers },
+        { label: "Max Players", value: d.maxplayers }
+    ];
+
+    let xScale = d3.scaleBand().domain(barData.map(d => d.label)).range([0, svgWidth]).padding(0.4);
+    let yScale = d3.scaleLinear().domain([0, d3.max(barData, d => d.value)]).range([svgHeight - 20, 0]);
+
+    barSvg.selectAll("rect")
+        .data(barData)
+        .enter()
+        .append("rect")
+        .attr("x", d => xScale(d.label))
+        .attr("y", d => yScale(d.value))
+        .attr("width", xScale.bandwidth())
+        .attr("height", d => svgHeight - 20 - yScale(d.value))
+        .attr("fill", "#69b3a2");
+
+    barSvg.selectAll("text")
+        .data(barData)
+        .enter()
+        .append("text")
+        .attr("x", d => xScale(d.label) + xScale.bandwidth() / 2)
+        .attr("y", d => yScale(d.value) - 5)
+        .attr("text-anchor", "middle")
+        .text(d => d.value);
 }
 
-// Funzione per ottenere i vicini di un nodo
-function getNeighbors(node) {
-  return graph.links
-    .filter(link => link.source === node || link.target === node)
-    .map(link => (link.source === node ? link.target : link.source));
-}
-
-svg.on("click", function(event) {
-  if (event.target.tagName !== "circle") {
+svg.on("click", function() {
+  if (d3.event.target.tagName !== "circle") {
     networkGroup.transition().duration(500).attr("transform", "translate(0, 0)");
     d3.select("#info-panel").style("display", "none");
+    node.each(function(n) {
+      d3.select(this).attr("fill", d => colorScaleType(d.type[0]))
+    })
   }
 });
 

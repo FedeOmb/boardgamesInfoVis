@@ -8,6 +8,7 @@ var link, node;
 // the data - an object with nodes and links
 var graph;
 var types = [];
+var bidirectionalLinks = []
 
 const radiusScale = d3.scaleLinear()
   .domain([1, 100]) // Input data range
@@ -44,6 +45,7 @@ d3.json("data/dataset_converted_cleaned_v2.json", function (error, _graph) {
   if (error) throw error;
   graph = _graph;
   //console.log(graph)
+  bidirectionalLinks = filterBidirectionalLinks(graph.links)
   setScale(graph);
   initializeDisplay();
   initializeSimulation();
@@ -259,15 +261,22 @@ function mapNodesToCliqueColors(cliques) {
   return nodeColorMap;
 }
 
-// Function to handle mouseover event
+// Function to handle mouseover node event
 function handleMouseOver(d) {
   // Highlight the hovered node
-  d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2);
+  node.each(function(n) {
+    d3.select(this).attr("opacity", 0.4);
+  })
+  link.each(function (l) {
+    d3.select(this).attr("opacity", 0.4);
+  });
+
+  d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2).attr("opacity", 1);
 
   // Highlight adjacent nodes
   node.each(function (n) {
     if (isAdjacent(d, n)) {
-      d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2).attr("stroke-opacity", 1);
+      d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2).attr("stroke-opacity", 1).attr("opacity", 1);
     }
   });
 
@@ -275,19 +284,20 @@ function handleMouseOver(d) {
   link.each(function (l) {
     if (l.source === d || l.target === d) {
       d3.select(this)
-        .attr("stroke", "DarkSlateGrey") // Change link color to black
+        .attr("stroke", "DarkSlateGrey") 
         .attr("stroke-width", 2)
-        .attr("stroke-opacity", 1); // Increase link thickness
+        .attr("stroke-opacity", 1)
+        .attr("opacity", 1); 
     }
   });
 
-  tooltip.html(`<strong>${d.rank}°: ${d.title} - type: ${d.type}</strong><br>`)
+  tooltip.html(`<strong>${d.rank}°: ${d.title} <br>Type: ${d.type}</strong><br>`)
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY - 10) + "px")
         .style("visibility", "visible");
 }
 
-// Function to handle mouseout event
+// Function to handle mouseout node event
 function handleMouseOut(d) {
   // Unhighlight the hovered node
   d3.select(this).attr("stroke", "grey").attr("stroke-width", 1);
@@ -308,9 +318,17 @@ function handleMouseOut(d) {
     }
   });
 
+  node.each(function(n) {
+    d3.select(this).attr("opacity", 1);
+  })
+  link.each(function (l) {
+    d3.select(this).attr("opacity", 1);
+  });
+
   tooltip.style("visibility", "hidden");
 }
 
+//handle mouseover edge
 function mouseEnterEdge(d) {
   //highlight edge
   d3.select(this)
@@ -318,46 +336,54 @@ function mouseEnterEdge(d) {
   .attr("stroke", "darkorange")
   .attr("stroke-width", 3);
 
-// Trova i nodi corrispondenti nel dataset
-const sourceNode = graph.nodes.find(n => n.id === (d.source.id || d.source));
-const targetNode = graph.nodes.find(n => n.id === (d.target.id || d.target));
+  // Trova i nodi corrispondenti nel dataset
+  const sourceNode = graph.nodes.find(n => n.id === (d.source.id || d.source));
+  const targetNode = graph.nodes.find(n => n.id === (d.target.id || d.target));
 
-// Verifica che entrambi i nodi esistano
-if (!sourceNode || !targetNode) return;
+  // Verifica che entrambi i nodi esistano
+  if (!sourceNode || !targetNode) return;
 
-// Trova le categorie in comune
-const sourceCategories = new Set(sourceNode.categories?.map(c => c.name) || []);
-const targetCategories = new Set(targetNode.categories?.map(c => c.name) || []);
-const commonCategories = [...sourceCategories].filter(c => targetCategories.has(c));
+  // Trova le categorie in comune
+  const sourceCategories = new Set(sourceNode.categories?.map(c => c.name) || []);
+  const targetCategories = new Set(targetNode.categories?.map(c => c.name) || []);
+  const commonCategories = [...sourceCategories].filter(c => targetCategories.has(c));
 
-//highlight source and target node if any
-d3.selectAll("circle")
-  .select(function (data) {
-    return data == d.source || data == d.target ? this : null;
-  })
-  .attr("stroke-width", "3")
-  .attr("stroke-color", "darkorange")
-  .attr("stroke", "darkorange")
-  .attr("stroke-width", 3);
+  //highlight source and target node if any
+  d3.selectAll("circle")
+    .select(function (data) {
+      return data == d.source || data == d.target ? this : null;
+    })
+    .attr("stroke-width", "3")
+    .attr("stroke-color", "darkorange")
+    .attr("stroke", "darkorange")
+    .attr("stroke-width", 3);
 
-tooltip.transition().duration(200).style("opacity", 0.9);
+  tooltip.transition().duration(200).style("opacity", 0.9);
 
-edgeData = d3.select(this).datum();
-
-// Mostra la tooltip solo se ci sono categorie in comune
-if (commonCategories.length > 0) {
-    tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>${commonCategories}`)
-    .style("left", (event.pageX + 10) + "px")
-    .style("top", (event.pageY - 10) + "px")
-    .style("visibility", "visible");
-}else{
-    tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>`)
-    .style("left", (event.pageX + 10) + "px")
-    .style("top", (event.pageY - 10) + "px")
-    .style("visibility", "visible");
+  edgeData = d3.select(this).datum();
+  
+  // Mostra la tooltip solo se ci sono categorie in comune
+  if (commonCategories.length > 0) {
+    if(isBidirectional(sourceNode.id, targetNode.id)){
+      tooltip.html(`<strong>${d.source.title} ↔ ${d.target.title}</strong><br>${commonCategories}`)
+      .style("left", (event.pageX + 10) + "px")
+      .style("top", (event.pageY - 10) + "px")
+      .style("visibility", "visible");
+    }else {
+      tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>${commonCategories}`)
+      .style("left", (event.pageX + 10) + "px")
+      .style("top", (event.pageY - 10) + "px")
+      .style("visibility", "visible");
+    }
+  }else{
+      tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>`)
+      .style("left", (event.pageX + 10) + "px")
+      .style("top", (event.pageY - 10) + "px")
+      .style("visibility", "visible");
+  }
 }
-}
 
+//handle mouseout edge
 function mouseLeaveEdge(d) {
   d3.select(this).attr("stroke-color", "grey")
     .attr("stroke", "grey")
@@ -427,7 +453,7 @@ function drawHulls(svg, hulls) {
               .attr("class", "hull")
               .attr("d", "M" + hulls[type].join("L") + "Z") // Genera il path della hull
               .style("fill", colorScaleType(type)) // Colore in base al type
-              .style("opacity", 0.2)
+              .style("opacity", 0.15)
               .style("pointer-events", "none");
       }
   });
@@ -446,3 +472,31 @@ function adjustNodePositions(nodes, hulls) {
       }
   });
 }
+
+function filterBidirectionalLinks(links) {
+  const bidirectionalLinks = [];
+  const addedPairs = new Set(); // Per tracciare le coppie già aggiunte
+
+  // Creiamo un set per la ricerca rapida dei link
+  const linkSet = new Set(links.map(link => `${link.source}-${link.target}`));
+
+  links.forEach(link => {
+      const reverseLink = `${link.target}-${link.source}`;
+      const pairKey = link.source < link.target ? `${link.source}-${link.target}` : `${link.target}-${link.source}`;
+
+      if (linkSet.has(reverseLink) && !addedPairs.has(pairKey)) {
+          bidirectionalLinks.push(link);
+          addedPairs.add(pairKey);
+      }
+  });
+
+  return bidirectionalLinks;
+}
+
+function isBidirectional(sourceid, targetid){
+  return bidirectionalLinks.some(link => 
+    (link.source.id === sourceid && link.target.id === targetid) || 
+    (link.source.id === targetid && link.target.id === sourceid)
+  );
+}
+

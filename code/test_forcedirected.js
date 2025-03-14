@@ -404,13 +404,21 @@ function mouseLeaveEdge(d) {
 }
 
 function handleNodeClick(d) {
-  // Sposta la rete verso sinistra
+
+  d3.select("#info-panel").style("display", "block");
+
+  // Sposta la rete verso sinistra e ridimensiona il pannello SVG
+  d3.select("svg").transition()
+    .duration(500)
+    .style("flex-basis", "75%") // Riduci la larghezza del pannello SVG
+    .on("end", function() {
+      width = +svg.node().getBoundingClientRect().width;
+      updateForces();
+    });
+
   networkGroup.transition()
     .duration(500)
-    .attr("transform", "translate(-300, 0)"); // Sposta di -200px
-
-  // Mostra il pannello laterale
-  d3.select("#info-panel").style("display", "block");
+    //.attr("transform", "translate(-200, 0)"); // Sposta di -300px
 
   // Aggiorna il contenuto del pannello con i dettagli del nodo
   d3.select("#node-details").html(`

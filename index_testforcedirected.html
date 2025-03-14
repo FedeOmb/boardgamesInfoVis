@@ -18,26 +18,31 @@
             /* SVG styles */
             svg {
               flex-basis: 100%;
-              min-width: 200px;
+            }
+            #graph-svg {
+              height:800px;
+              width:100%;
             }
             .nodes circle {
               pointer-events: all;
             }
+            #info-panel {
+              position: absolute;
+                right: 0;
+                top: 0;
+                width: 25%;
+                height: 100%;
+                border-left: 2px solid gray;
+                padding: 10px;
+                box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+                overflow-y: auto;
+                display: none;
+            }
           </style>
     </head>
     <body>
-        <svg width="800" height="600"></svg>
-        <div id="info-panel" style="
-          position: absolute;
-          right: 0;
-          top: 0;
-          width: 600px;
-          height: 100%;
-          border-left: 2px solid gray;
-          padding: 10px;
-          box-shadow: -2px 0 5px rgba(0,0,0,0.1);
-          overflow-y: auto;
-          display: none;">
+        <svg id="graph-svg"></svg>
+        <div id="info-panel">
           <h3>Dettagli Nodo</h3>
           <div id="node-details"></div>
         </div>

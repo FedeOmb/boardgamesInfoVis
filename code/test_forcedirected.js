@@ -63,7 +63,6 @@ const tooltip = d3.select("body")
 
 // load the data
 d3.json("data/dataset_converted_cleaned_v2.json", function (error, _graph) {
-//  d3.json("data/dataset_cleaned_bidirectional_100.json", function (error, _graph) {
   if (error) throw error;
   graph = _graph;
   //console.log(graph)
@@ -104,12 +103,12 @@ forceProperties = {
     radius: 13,
   },
   forceX: {
-    enabled: false,
+    enabled: true,
     strength: 0.1,
     x: 0.5,
   },
   forceY: {
-    enabled: false,
+    enabled: true,
     strength: 0.1,
     y: 0.5,
   },
@@ -270,6 +269,7 @@ function updateAll() {
   updateDisplay();
 }
 
+/*
 function mapNodesToCliqueColors(cliques) {
   //console.log(cliques)
   const nodeColorMap = new Map();
@@ -283,6 +283,7 @@ function mapNodesToCliqueColors(cliques) {
 
   return nodeColorMap;
 }
+  */
 
 // Function to handle mouseover node event
 function handleMouseOver(d) {
@@ -595,20 +596,6 @@ function drawHulls(svg, hulls) {
               .style("fill", colorScaleType(type)) // Colore in base al type
               .style("opacity", 0.15)
               .style("pointer-events", "none");
-      }
-  });
-}
-function adjustNodePositions(nodes, hulls) {
-  nodes.forEach(node => {
-      if (node.type.length > 1) {
-          let centers = node.type
-              .filter(type => hulls[type])
-              .map(type => d3.polygonCentroid(hulls[type])); // Trova i centroidi dei type
-          
-          if (centers.length > 0) {
-              node.x = d3.mean(centers, d => d[0]); // Media delle x
-              node.y = d3.mean(centers, d => d[1]); // Media delle y
-          }
       }
   });
 }

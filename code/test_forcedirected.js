@@ -7,6 +7,7 @@ var svg = d3.select("svg"),
 var link, node;
 // the data - an object with nodes and links
 var graph;
+var types = [];
 
 const radiusScale = d3.scaleLinear()
   .domain([1, 100]) // Input data range
@@ -14,8 +15,9 @@ const radiusScale = d3.scaleLinear()
 
 
 var colorScaleType  = d3.scaleOrdinal(d3.schemeCategory10);
+
 function setScale(data){
-  var types = data.nodes.flatMap(d => d.type);
+  types = data.nodes.flatMap(d => d.type);
   types = [...new Set(types)];  
   colorScaleType.domain(types);
   console.log(types);
@@ -78,12 +80,12 @@ forceProperties = {
     radius: 13,
   },
   forceX: {
-    enabled: true,
+    enabled: false,
     strength: 0.1,
     x: 0.5,
   },
   forceY: {
-    enabled: true,
+    enabled: false,
     strength: 0.1,
     y: 0.5,
   },
@@ -153,6 +155,8 @@ function updateForces() {
 
 // generate the svg objects and force simulation
 function initializeDisplay() {
+
+  svg.append("g").attr("class", "hulls-group");
   // set the data and properties of link lines
   link = svg
     .append("g")
@@ -161,11 +165,12 @@ function initializeDisplay() {
     .data(graph.links)
     .enter()
     .append("line")
-    .attr("stroke", "#999") // Explicitly set the default stroke color for links
+    .attr("stroke", "grey") // Explicitly set the default stroke color for links
     .attr("stroke-width", 1)
     .on("mouseover", mouseEnterEdge) // Add mouseover event listener
     .on("mouseout", mouseLeaveEdge);   // Add mouseout event listener;
 
+  
   // set the data and properties of node circles
   node = svg
     .append("g")
@@ -189,8 +194,7 @@ function updateDisplay() {
     .attr("r", d => radiusScale(d.rank))
     .attr("fill", d => colorScaleType(d.type[0])) // Default to gray if no clique color
     .attr("stroke", "grey")
-    .attr(
-      "stroke-width", 1);
+    .attr("stroke-width", 1);
 
   link
     .attr("stroke-width", forceProperties.link.enabled ? 1 : 0.5)
@@ -199,6 +203,9 @@ function updateDisplay() {
 
 // update the display positions after each simulation tick
 function ticked() {
+  let hulls = computeHulls(graph.nodes, types);
+  //adjustNodePositions(graph.nodes, hulls);
+  drawHulls(svg, hulls);
   link
     .attr("x1", function (d) {
       return d.source.x;
@@ -255,12 +262,12 @@ function mapNodesToCliqueColors(cliques) {
 // Function to handle mouseover event
 function handleMouseOver(d) {
   // Highlight the hovered node
-  d3.select(this).attr("stroke", "black").attr("stroke-width", 2);
+  d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2);
 
   // Highlight adjacent nodes
   node.each(function (n) {
     if (isAdjacent(d, n)) {
-      d3.select(this).attr("stroke", "black").attr("stroke-width", 2).attr("stroke-opacity", 1);
+      d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2).attr("stroke-opacity", 1);
     }
   });
 
@@ -268,8 +275,8 @@ function handleMouseOver(d) {
   link.each(function (l) {
     if (l.source === d || l.target === d) {
       d3.select(this)
-        .attr("stroke", "black") // Change link color to black
-        .attr("stroke-width", 3)
+        .attr("stroke", "DarkSlateGrey") // Change link color to black
+        .attr("stroke-width", 2)
         .attr("stroke-opacity", 1); // Increase link thickness
     }
   });
@@ -374,4 +381,68 @@ function isAdjacent(source, target) {
     (link.source === source && link.target === target) || 
     (link.source === target && link.target === source)
   );
+}
+
+function computeHulls(nodes, types) {
+  let hulls = {};
+
+  types.forEach(type => {
+    let points = nodes
+      .filter(d => d.type.includes(type)) // Filtra i nodi con il type specifico
+      .map(d => [d.x, d.y]); // Estrai coordinate dei nodi
+
+    if (points.length > 2) {
+      hulls[type] = d3.polygonHull(points); // Crea la convex hull
+    }
+  });
+
+  // Handle nodes with multiple types
+  nodes.forEach(node => {
+    if (node.type.length > 1) {
+      node.type.forEach(type => {
+        if (!hulls[type]) {
+          hulls[type] = [];
+        }
+        hulls[type].push([node.x, node.y]);
+      });
+    }
+  });
+
+  // Recompute hulls for types with added points
+  Object.keys(hulls).forEach(type => {
+    if (hulls[type].length > 2) {
+      hulls[type] = d3.polygonHull(hulls[type]);
+    }
+  });
+
+  return hulls;
+}
+function drawHulls(svg, hulls) {
+  svg.selectAll(".hull").remove(); // Rimuove eventuali hull esistenti
+  
+  Object.keys(hulls).forEach(type => {
+      if (hulls[type]) {
+          svg.select(".hulls-group")
+              .append("path")
+              .attr("class", "hull")
+              .attr("d", "M" + hulls[type].join("L") + "Z") // Genera il path della hull
+              .style("fill", colorScaleType(type)) // Colore in base al type
+              .style("opacity", 0.2)
+              .style("pointer-events", "none");
+      }
+  });
+}
+function adjustNodePositions(nodes, hulls) {
+  nodes.forEach(node => {
+      if (node.type.length > 1) {
+          let centers = node.type
+              .filter(type => hulls[type])
+              .map(type => d3.polygonCentroid(hulls[type])); // Trova i centroidi dei type
+          
+          if (centers.length > 0) {
+              node.x = d3.mean(centers, d => d[0]); // Media delle x
+              node.y = d3.mean(centers, d => d[1]); // Media delle y
+          }
+      }
+  });
 }

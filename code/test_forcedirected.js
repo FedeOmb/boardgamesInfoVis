@@ -2,9 +2,9 @@ var svg = d3.select("svg"),
   width = +svg.node().getBoundingClientRect().width,
   height = +svg.node().getBoundingClientRect().height;
 
-  var svg = d3.select("svg")
-  .attr("width", "100%")
-  .attr("height", "100%");
+  //var svg = d3.select("svg")
+  //.attr("width", "100%")
+  //.attr("height", "100%");
 
 function updateSize() {
   width = +svg.node().getBoundingClientRect().width;
@@ -434,17 +434,15 @@ function handleNodeClick(d) {
   d3.select("#info-panel").style("display", "block");
 
   // Sposta la rete verso sinistra e ridimensiona il pannello SVG
-  d3.select("svg").transition()
-    .duration(500)
-    .style("flex-basis", "75%") // Riduci la larghezza del pannello SVG
-    .on("end", function() {
-      width = +svg.node().getBoundingClientRect().width;
-      updateForces();
-    });
-
-  networkGroup.transition()
-    .duration(500)
-    //.attr("transform", "translate(-300, 0)"); // Sposta di -200px
+  if(svg.style("flex-basis") === "100%"){
+    svg.transition()
+      .duration(200)
+      .style("flex-basis", "75%") // Riduci la larghezza del pannello SVG
+      .on("end", function() {
+        width = +svg.node().getBoundingClientRect().width;
+        updateForces();
+      });
+  }
 
   d3.select("#node-details").html(""); // Pulisce il pannello
 
@@ -528,10 +526,15 @@ function handleNodeClick(d) {
         .text(d => d.value);
 }
 
+//chiude il pannello info al click su un area vuota
 svg.on("click", function() {
-  if (d3.event.target.tagName !== "circle") {
-    networkGroup.transition().duration(500).attr("transform", "translate(0, 0)");
-    d3.select("#info-panel").style("display", "none");
+  const infoPanel = d3.select("#info-panel");
+  //verifica se il pannello è già aperto
+  if (d3.event.target.tagName !== "circle" && infoPanel.style("display") === "block") {
+    infoPanel.style("display", "none");
+    svg.style("flex-basis", "100%");
+    width = +svg.node().getBoundingClientRect().width;
+    updateForces();
     node.each(function(n) {
       d3.select(this).attr("fill", d => colorScaleType(d.type[0]))
     })

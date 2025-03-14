@@ -27,6 +27,20 @@
     </head>
     <body>
         <svg width="800" height="600"></svg>
+        <div id="info-panel" style="
+          position: absolute;
+          right: 0;
+          top: 0;
+          width: 600px;
+          height: 100%;
+          border-left: 2px solid gray;
+          padding: 10px;
+          box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+          overflow-y: auto;
+          display: none;">
+          <h3>Dettagli Nodo</h3>
+          <div id="node-details"></div>
+        </div>
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <script type="text/javascript" src="data/cliques.js"></script>
         <!-- <script type="text/javascript" src="data/data.js"></script> -->

@@ -3,6 +3,8 @@ var svg = d3.select("svg"),
   width = +svg.node().getBoundingClientRect().width,
   height = +svg.node().getBoundingClientRect().height;
 
+var networkGroup = svg.append("g").attr("class", "network-group");
+
 // svg objects
 var link, node;
 // the data - an object with nodes and links
@@ -10,10 +12,9 @@ var graph;
 var types = [];
 var bidirectionalLinks = []
 
-const radiusScale = d3.scaleLinear()
-  .domain([1, 100]) // Input data range
-  .range([13, 3]);
+//const radiusScale = d3.scaleLinear().domain([1, 100]).range([13, 3]);
 
+const radiusScale = d3.scaleSqrt().domain([1, 100]).range([15, 5]);
 
 var colorScaleType  = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -158,9 +159,9 @@ function updateForces() {
 // generate the svg objects and force simulation
 function initializeDisplay() {
 
-  svg.append("g").attr("class", "hulls-group");
+  networkGroup.append("g").attr("class", "hulls-group");
   // set the data and properties of link lines
-  link = svg
+  link = networkGroup
     .append("g")
     .attr("class", "links")
     .selectAll("line")
@@ -174,7 +175,7 @@ function initializeDisplay() {
 
   
   // set the data and properties of node circles
-  node = svg
+  node = networkGroup
     .append("g")
     .attr("class", "nodes")
     .selectAll("circle")
@@ -182,9 +183,10 @@ function initializeDisplay() {
     .enter()
     .append("circle")
     .attr("r", (d) => radiusScale(d.rank))
-    .attr("fill", d => colorScaleType(d.type[0])) // Default to gray if no clique color
+    .attr("fill", d => colorScaleType(d.type[0])) 
     .on("mouseover", handleMouseOver) // Add mouseover event listener
-    .on("mouseout", handleMouseOut);   // Add mouseout event listener
+    .on("mouseout", handleMouseOut)
+    .on("click", handleNodeClick);   
 
     // visualize the graph
     updateDisplay();
@@ -400,6 +402,37 @@ function mouseLeaveEdge(d) {
   
       tooltip.style("visibility", "hidden");
 }
+
+function handleNodeClick(d) {
+  // Sposta la rete verso sinistra
+  networkGroup.transition()
+    .duration(500)
+    .attr("transform", "translate(-300, 0)"); // Sposta di -200px
+
+  // Mostra il pannello laterale
+  d3.select("#info-panel").style("display", "block");
+
+  // Aggiorna il contenuto del pannello con i dettagli del nodo
+  d3.select("#node-details").html(`
+    <strong>${d.rank}°: ${d.title}</strong><br>
+    <strong>Type:</strong> ${d.type.join(", ")}<br>
+    <strong>Vicini:</strong> ${getNeighbors(d).map(n => n.title).join(", ")}
+  `);
+}
+
+// Funzione per ottenere i vicini di un nodo
+function getNeighbors(node) {
+  return graph.links
+    .filter(link => link.source === node || link.target === node)
+    .map(link => (link.source === node ? link.target : link.source));
+}
+
+svg.on("click", function(event) {
+  if (event.target.tagName !== "circle") {
+    networkGroup.transition().duration(500).attr("transform", "translate(0, 0)");
+    d3.select("#info-panel").style("display", "none");
+  }
+});
 
 // Helper function to check if two nodes are adjacent
 function isAdjacent(source, target) {

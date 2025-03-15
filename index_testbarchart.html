@@ -10,33 +10,68 @@
               width: 100%;
               margin: 0;
               padding: 0;
-              display: flex;
               font-family: sans-serif;
               font-size: 75%;
             }
             .container {
               margin-right: auto;
               margin-left: auto;
+              background-color: #fff;
+              border-radius: 8px;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
               padding-right: 30px;
               padding-left: 30px;
-              width: 100%;
               max-width: 2000px;
+              height:100%;
             }
-            .row {
+            .tabs {
               display: flex;
-              flex-wrap: nowrap;
-              margin-left: -15px;
-              margin-right: -15px;
+              background-color: #f0f0f0;
+              border-bottom: 1px solid #ddd;            
+            }
+
+            .tab-button {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            outline: none;
+            flex-grow: 1;
+        }
+
+            .tab-button:hover {
+                background-color: #e0e0e0;
+            }
+
+            .tab-button.active {
+                background-color: #fff;
+                border-bottom: 3px solid #3498db;
+                color: #3498db;
+            }
+
+            .tab-content {
+                display: none;
+                padding: 20px;
+            }
+
+            .tab-content.active {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
             }
             .col {
+            min-height: 500px;
+            height:90vh;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            padding: 20px;
+            margin-right: 20px;
+            border: 1px solid #eee;
               position: relative;
-              width: 100%;
-              min-height: 1px;
-              padding-right: 15px;
-              padding-left: 15px;
-              flex-basis: 0;
-              flex-grow: 1;
-              max-width: 100%;
             }
             .col-9 {
               flex: 0 0 75%;
@@ -48,11 +83,11 @@
             }
       
             /* SVG styles */
-            .responsive-svg-container {
+            .svg-container {
               width: 100%;
               height: 100%;
             }
-            .responsive-controls-container {
+            .controls-container {
               margin: 0 auto;
               max-width: 200px;
             }
@@ -61,41 +96,120 @@
     <body>
       <div class="container">
         <h1>Board Games Visualization</h1>
-        <div class="row">
+
+        <div class="tabs">
+          <button class="tab-button active" onclick="openTab(event, 'tab-1')">Grafico 1</button>
+          <button class="tab-button" onclick="openTab(event, 'tab-2')">Grafico 2</button>
+          <button class="tab-button" onclick="openTab(event, 'tab-3')">Grafico 3</button>
+        </div>
+
+        <div class="tab-content active" id="tab-1">
+
           <div class="col col-9">
-            <h2>Bar Chart</h2>
-            <div class="responsive-svg-container">
-              <div id="bar-chart"></div>
+            <div class="svg-container" id="bar-chart-1">
             </div>
           </div>
+
           <div class="col col-3">
             <h2>Controlli filtri</h2>
-            <div class="responsive-controls-container">
-              <div id="radio-container">
+            <div class="controls-container" id="controls-1">
+              <br>
+              <div class="select-container">
+                <label for="select-attribute-1">Visualizza la diffusione di un determinato attributo nella top 100</label>
+                <select id="select-attribute-1"></select>
+                <br>
+                <label for="max-items-1">Seleziona il max num di elementi da visualizzare</label>
+                <br>
+                <input type="range" name="max-items-1" id="max-items-1" min="10" max="10" value="1">
+                <span id="range-value-1">0</span>
+              </div>
+              <br>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab-2">
+
+          <div class="col col-9">
+            <h2>Bar Chart</h2>
+            <div class="svg-container" id="bar-chart-2">
+            </div>
+          </div>
+
+          <div class="col col-3">
+            <h2>Controlli filtri</h2>
+            <div class="controls-container" id="controls-2">
+              <div class="radio-container">
                 <input type="radio" id="classic" name="barchart-type" value="classic" checked>
                 <label for="barchart-type">BarChart classico (1 attributo)</label>
                 <input type="radio" id="stacked" name="barchart-type" value="stacked" >
                 <label for="barchart-type">Stacked BarChart (2 attributi)</label>                
               </div>
               <br>
-              <div id="select-container">
-                <label for="select-attribute">Visualizza la diffusione di un determinato attributo nella top 100</label>
-                <select id="select-attribute"></select>
-                <br>
-                <label for="max-items">Seleziona il max num di elementi da visualizzare</label>
-                <br>
-                <input type="range" name="max-items" id="max-items" min="10" max="10" value="1">
-                <span id="range-value">0</span>
-              </div>
               <br>
               <div>
                 <label for="view-ages">Visualizza l'età dei giochi nella top 100</label>
                 <br>
                 <input type="checkbox" id="view-ages" name="view-ages">
               </div>
+
             </div>
           </div>
         </div>
+
+        <div class="tab-content" id="tab-3">
+
+          <div class="col col-9">
+            <h2>Bar Chart</h2>
+            <div class="svg-container" id="bar-chart-3">
+            </div>
+          </div>
+
+          <div class="col col-3">
+            <h2>Controlli filtri</h2>
+            <div class="controls-container" id="controls-3">
+              <div class="radio-container">
+                <input type="radio" id="classic" name="barchart-type" value="classic" checked>
+                <label for="barchart-type">BarChart classico (1 attributo)</label>
+                <input type="radio" id="stacked" name="barchart-type" value="stacked" >
+                <label for="barchart-type">Stacked BarChart (2 attributi)</label>                
+              </div>
+              <br>
+              <br>
+              <div>
+                <label for="view-ages">Visualizza l'età dei giochi nella top 100</label>
+                <br>
+                <input type="checkbox" id="view-ages" name="view-ages">
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <script>
+          function openTab(event, tabName) {
+            var i, tabContent, tabButtons;
+            
+            // Nasconde tutti i contenuti delle schede
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+            }
+            
+            // Rimuove la classe "active" da tutti i pulsanti
+            tabButtons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+            }
+            
+            // Mostra la scheda corrente e aggiunge una classe "active" al pulsante
+            document.getElementById(tabName).style.display = "flex";
+            event.currentTarget.className += " active";
+          }
+        </script>
+
+
         <script src="https://d3js.org/d3.v6.min.js"></script>
         <script type="text/javascript" src="code/test_barchart.js"></script>
     </body>

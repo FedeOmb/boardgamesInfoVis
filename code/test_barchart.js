@@ -10,8 +10,6 @@ var mechanics = [];
 var designers = [];
 var dataset = {};
 
-var maxItemsToVis = 10;
-
 const svg1 = d3
   .select("#bar-chart-1")
   .append("svg")
@@ -27,64 +25,66 @@ const svg3 = d3
   .append("svg")
   .attr("viewBox", `0 0 ${width} ${height}`);
 
-  const attrList = ["categories", "mechanics"];
-  const attrSelector = d3.select("#select-attribute-1");
-  const rangeSlider = d3.select("#max-items-1");
-  const rangeValue = d3.select("#range-value-1");
+  var maxItemsToVis1 = 10;
+  var maxItemsToVis2 = 10;
+  const attrList1 = ["categories", "mechanics"];
+  const attrSelector1 = d3.select("#select-attribute-1");
+  const rangeSlider1 = d3.select("#max-items-1");
+  const rangeValue1 = d3.select("#range-value-1");
 
-loadDatasets();
+  const rangeSlider2 = d3.select("#max-items-2");
+  const rangeValue2 = d3.select("#range-value-2");
 
   //--- controlli tab 1 ----
   //aggiungi opzioni attributi al selettore
-  attrSelector.selectAll("option")
-    .data(attrList)
+  attrSelector1.selectAll("option")
+    .data(attrList1)
     .join("option")
     .attr("value", (d) => d)
     .text((d) => d)
     .property("selected", (d) => d == "categories");
 
   //listener per cambio attributo
-  attrSelector.on("change", () => {
-    const attr = attrSelector.property("value");
-      if(attr == "categories"){
-        maxItemsToVis = categories.length;
-        rangeSlider.attr("max", maxItemsToVis)
-        rangeSlider.attr("value", maxItemsToVis)
-        rangeValue.text(maxItemsToVis.toString())
-        createBarchart1(categories, "name", "count");
-      }if(attr == "mechanics"){
-        maxItemsToVis = mechanics.length;
-        rangeSlider.attr("max", maxItemsToVis)
-        rangeSlider.attr("value", maxItemsToVis)
-        rangeValue.text(maxItemsToVis.toString())
-        createBarchart1(mechanics, "name", "count");
-      }
+  attrSelector1.on("change", () => {
+    const attr = attrSelector1.property("value");
+
+    maxItemsToVis1 = window[attr].length;
+    rangeSlider1.attr("max", maxItemsToVis1)
+    rangeSlider1.attr("value", maxItemsToVis1)
+    rangeValue1.text(maxItemsToVis1.toString())
+    createBarchart1(window[attr], "name", "count");
     });
 
     //listener per modifica slider
-    rangeSlider.on("change", () => {
-      maxItemsToVis = rangeSlider.property("value");
-      rangeValue.text(maxItemsToVis.toString())
-      attr = attrSelector.property("value");
-      if(attr == "categories"){
-        createBarchart1(categories, "name", "count");
-      }if(attr == "mechanics"){
-        createBarchart1(mechanics, "name", "count");
-      }
+    rangeSlider1.on("change", () => {
+      maxItemsToVis1 = rangeSlider1.property("value");
+      rangeValue1.text(maxItemsToVis1.toString())
+      attr = attrSelector1.property("value");
+      createBarchart1(window[attr], "name", "count");
     })
 
   //---controlli tab2 ---
-const agesBtn = d3.select("#view-ages");
-agesBtn.on("change", () => {
-  if(agesBtn.property("checked")){
-    maxItemsToVis = ages.length;
-    rangeSlider.attr("max", maxItemsToVis)
-    rangeSlider.attr("value", maxItemsToVis)
-    rangeValue.text(maxItemsToVis.toString())
-    createBarchart1(ages, "age", "count");
-  }
-});
 
+  rangeSlider2.on("change", () => {
+    maxItemsToVis2 = rangeSlider2.property("value");
+    rangeValue2.text(maxItemsToVis2.toString())
+    createBarchart2(ages, "age", "count");
+  })
+loadDatasets();
+
+function updateTab(tabName){
+  if(tabName == "tab-1"){
+    const attr = attrSelector1.property("value");
+    createBarchart1(window[attr], "name", "count");
+  }
+  if(tabName == "tab-2"){
+    maxItemsToVis2 = ages.length;
+    rangeSlider2.attr("max", maxItemsToVis2)
+    rangeSlider2.attr("value", maxItemsToVis2)
+    rangeValue2.text(maxItemsToVis2.toString());
+    createBarchart2(ages, "age", "count");
+  }
+}
 
 //vers6 di d3 funziona solo con d3.json().then()
 
@@ -121,10 +121,10 @@ async function loadDatasets(){
     console.log("designers",designers);
     console.log("fulldataset",dataset);
 
-    maxItemsToVis = categories.length;
-    rangeSlider.attr("max", maxItemsToVis)
-    rangeSlider.attr("value", maxItemsToVis)
-    rangeValue.text(maxItemsToVis.toString())
+    maxItemsToVis1 = categories.length;
+    rangeSlider1.attr("max", maxItemsToVis1)
+    rangeSlider1.attr("value", maxItemsToVis1)
+    rangeValue1.text(maxItemsToVis1.toString())
     createBarchart1(categories, "name", "count");
  
   });
@@ -259,7 +259,7 @@ function createVertBarchart(data){
 
 function createBarchart1(dataToVis, varY, varX){
 
-  data = dataToVis.slice(0, maxItemsToVis);
+  var data = dataToVis.slice(0, maxItemsToVis1);
 
   const chartMargin = { top: 20, right: 20, bottom: 20, left: 120 };
   const chartWidth = width - (chartMargin.right + chartMargin.left);
@@ -277,6 +277,67 @@ function createBarchart1(dataToVis, varY, varX){
   svg1.selectAll("*").remove();
 
   const innerChart = svg1
+    .append("g")
+    .attr("width", chartWidth)
+    .attr("height", chartHeight)
+    .attr("transform", `translate(${chartMargin.left},${chartMargin.top})`)
+
+  // gruppo rect + label interna
+  const barAndLabel = innerChart
+    .selectAll("g")
+    .data(data)
+    .join("g")
+    .attr("transform", (d) => `translate(0, ${yScale(d[varY])})`);
+
+  barAndLabel
+    .append("rect")
+    .attr("width", (d) => xScale(d[varX]))
+    .attr("height", yScale.bandwidth())
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("fill", "teal");
+
+  barAndLabel
+    .append("text")
+    .text((d) => d.count)
+    .attr("x", (d) => xScale(d[varX]) + 3)
+    .attr("y", yScale.bandwidth() / 2)
+    .style("font-family", "sans-serif")
+    .style("font-size", "9px");
+
+    //aggiunta assi
+  innerChart
+    .append("g")
+    .call(d3.axisLeft(yScale))
+    .selectAll("text")
+    .attr("transform", "translate(-10,0)")
+    .style("text-anchor", "end");
+
+  innerChart
+    .append("g")
+    .call(d3.axisTop(xScale));
+};
+
+function createBarchart2(dataToVis, varY, varX){
+
+  var data = dataToVis.slice(0, maxItemsToVis2);
+
+  const chartMargin = { top: 20, right: 20, bottom: 20, left: 120 };
+  const chartWidth = width - (chartMargin.right + chartMargin.left);
+  const chartHeight = height - (chartMargin.top + chartMargin.bottom);
+  const max_count = d3.max(data, (d) => d[varX]);
+  
+  //definizione scale per gli assi
+  const xScale = d3.scaleLinear().domain([0, max_count]).range([0, chartWidth]);
+  const yScale = d3
+  .scaleBand()
+  .domain(data.map((d) => d[varY]))
+  .range([0, chartHeight])
+  .padding(0.2);
+
+  svg2.selectAll("*").remove();
+
+  const innerChart = svg2
     .append("g")
     .attr("width", chartWidth)
     .attr("height", chartHeight)

@@ -21,7 +21,7 @@
               box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
               padding-right: 30px;
               padding-left: 30px;
-              max-width: 2000px;
+              max-width: 90vw;
               height:100%;
             }
             .tabs {
@@ -31,17 +31,17 @@
             }
 
             .tab-button {
-            padding: 15px 25px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-            outline: none;
-            flex-grow: 1;
-        }
+              padding: 15px 25px;
+              background: none;
+              border: none;
+              cursor: pointer;
+              font-size: 16px;
+              font-weight: 500;
+              transition: all 0.3s ease;
+              position: relative;
+              outline: none;
+              flex-grow: 1;
+            }
 
             .tab-button:hover {
                 background-color: #e0e0e0;
@@ -64,22 +64,22 @@
                 flex-wrap: nowrap;
             }
             .col {
-            min-height: 500px;
-            height:90vh;
-            background-color: #f9f9f9;
-            border-radius: 6px;
-            padding: 20px;
-            margin-right: 20px;
-            border: 1px solid #eee;
+              min-height: 500px;
+              height:90vh;
+              background-color: #f9f9f9;
+              border-radius: 6px;
+              padding: 20px;
+              margin-right: 20px;
+              border: 1px solid #eee;
               position: relative;
             }
             .col-9 {
-              flex: 0 0 75%;
-              max-width: 75%;
+              flex: 1 0 70%;
+              max-width: 80%;
             }
             .col-3 {
-              flex: 0 0 25%;
-              max-width: 25%;
+              flex: 1 0 15%;
+              max-width: 20%;
             }
       
             /* SVG styles */
@@ -106,6 +106,7 @@
         <div class="tab-content active" id="tab-1">
 
           <div class="col col-9">
+            <h2>Bar Chart - Visualizza la diffusione di un attributo tra i giochi in top 100</h2>
             <div class="svg-container" id="bar-chart-1">
             </div>
           </div>
@@ -117,13 +118,15 @@
               <div class="select-container">
                 <label for="select-attribute-1">Visualizza la diffusione di un determinato attributo nella top 100</label>
                 <select id="select-attribute-1"></select>
-                <br>
+              </div>
+              <br>
+              <div class="range-container">
                 <label for="max-items-1">Seleziona il max num di elementi da visualizzare</label>
                 <br>
                 <input type="range" name="max-items-1" id="max-items-1" min="10" max="10" value="1">
                 <span id="range-value-1">0</span>
+                <br>
               </div>
-              <br>
 
             </div>
           </div>
@@ -132,7 +135,7 @@
         <div class="tab-content" id="tab-2">
 
           <div class="col col-9">
-            <h2>Bar Chart</h2>
+            <h2>Bar Chart - Visualizza la distribuzione dell'età dei giochi in top 100</h2>
             <div class="svg-container" id="bar-chart-2">
             </div>
           </div>
@@ -149,9 +152,11 @@
               <br>
               <br>
               <div>
-                <label for="view-ages">Visualizza l'età dei giochi nella top 100</label>
                 <br>
-                <input type="checkbox" id="view-ages" name="view-ages">
+                <label for="max-items-2">Seleziona il max num di elementi da visualizzare</label>
+                <br>
+                <input type="range" name="max-items-2" id="max-items-2" min="10" max="10" value="1">
+                <span id="range-value-2">0</span>
               </div>
 
             </div>
@@ -206,6 +211,8 @@
             // Mostra la scheda corrente e aggiunge una classe "active" al pulsante
             document.getElementById(tabName).style.display = "flex";
             event.currentTarget.className += " active";
+
+            updateTab(tabName);
           }
         </script>
 

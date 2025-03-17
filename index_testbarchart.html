@@ -143,13 +143,6 @@
           <div class="col col-3">
             <h2>Controlli filtri</h2>
             <div class="controls-container" id="controls-2">
-              <div class="radio-container">
-                <input type="radio" id="classic" name="barchart-type" value="classic" checked>
-                <label for="barchart-type">BarChart classico (1 attributo)</label>
-                <input type="radio" id="stacked" name="barchart-type" value="stacked" >
-                <label for="barchart-type">Stacked BarChart (2 attributi)</label>                
-              </div>
-              <br>
               <br>
               <div>
                 <br>
@@ -158,7 +151,14 @@
                 <input type="range" name="max-items-2" id="max-items-2" min="10" max="10" value="1">
                 <span id="range-value-2">0</span>
               </div>
-
+              <br>
+              <div class="radio-container">
+                <input type="radio" name="order-type" value="count" checked>
+                <label for="order-type">Ordina per numero di giochi</label>
+                <br>
+                <input type="radio" name="order-type" value="age" >
+                <label for="order-type">Ordina per età</label>                
+              </div>
             </div>
           </div>
         </div>
@@ -174,19 +174,15 @@
           <div class="col col-3">
             <h2>Controlli filtri</h2>
             <div class="controls-container" id="controls-3">
-              <div class="radio-container">
-                <input type="radio" id="classic" name="barchart-type" value="classic" checked>
-                <label for="barchart-type">BarChart classico (1 attributo)</label>
-                <input type="radio" id="stacked" name="barchart-type" value="stacked" >
-                <label for="barchart-type">Stacked BarChart (2 attributi)</label>                
-              </div>
-              <br>
-              <br>
+              
               <div>
-                <label for="view-ages">Visualizza l'età dei giochi nella top 100</label>
                 <br>
-                <input type="checkbox" id="view-ages" name="view-ages">
+                <label for="max-items-3">Seleziona il max num di elementi da visualizzare</label>
+                <br>
+                <input type="range" name="max-items-3" id="max-items-3" min="10" max="10" value="1">
+                <span id="range-value-3">0</span>
               </div>
+              <br>
 
             </div>
           </div>

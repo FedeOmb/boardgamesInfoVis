@@ -5,10 +5,22 @@
 
       //find cliques
       const cliques = findCliquesInGraph(graph);
-      console.log("cliques:", JSON.stringify(cliques));
+      //console.log("cliques:", JSON.stringify(cliques));
 
       //groupNodes(graph)
-      groupNodes2(graph)
+      //groupNodes2(graph)
+
+      //stampa dei titoli con lunghezza superiore a 35
+      graph.nodes.forEach(node =>{
+        var title = String(node.title)
+        if(title.length > 35){
+            console.log("true")
+            if(title.includes(":"))
+                console.log(title.split(":")[0])
+            else if(title.includes("("))
+                console.log(title.split("(")[0])
+        }
+    })
   })
 
   function findCliquesInGraph(graph, minSize = 12) {

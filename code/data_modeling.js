@@ -36,34 +36,34 @@
                 links.push(temp)
             }
         }
-        console.log("LINKS")
-        console.log(JSON.stringify(links))
+        //console.log("LINKS")
+        //console.log(JSON.stringify(links))
 
         for(let i in data){
             let temp = data[i]
             delete temp.recommendations
             nodes.push(temp)
         }
-        console.log("NODES")
-        console.log(JSON.stringify(nodes))
+        //console.log("NODES")
+        //console.log(JSON.stringify(nodes))
 
-        create_categories(data)
-        create_designers(data)
-        create_mechanics(data)
+        //create_categories(data)
+        //create_designers(data)
+        //create_mechanics(data)
         
         dataset_conv_clean = {}
         dataset_conv_clean.nodes = nodes
         dataset_conv_clean.links = links
 
-        console.log("DATASET CONVERTED CLEANED")
-        console.log(dataset_conv_clean)
-        console.log(JSON.stringify(dataset_conv_clean))
+        //console.log("DATASET CONVERTED CLEANED")
+        //console.log(dataset_conv_clean)
+        //console.log(JSON.stringify(dataset_conv_clean))
 
         //dataset con solo i link bidirezionali
         const bidirectionalLinks = filterBidirectionalLinks(dataset_conv_clean.links);
         dataset_conv_clean.links = bidirectionalLinks
-        console.log("DATASET BIDIRECTIONAL")
-        console.log(JSON.stringify(dataset_conv_clean));
+        //console.log("DATASET BIDIRECTIONAL")
+        //console.log(JSON.stringify(dataset_conv_clean));
       }
     );
 

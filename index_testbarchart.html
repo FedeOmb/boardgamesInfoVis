@@ -55,7 +55,7 @@
 
             .tab-content {
                 display: none;
-                padding: 20px;
+                padding: 10px;
             }
 
             .tab-content.active {
@@ -64,12 +64,11 @@
                 flex-wrap: nowrap;
             }
             .col {
-              min-height: 500px;
-              height:90vh;
+              min-height: 90vh;
               background-color: #f9f9f9;
               border-radius: 6px;
-              padding: 20px;
-              margin-right: 20px;
+              padding: 10px;
+              margin-right: 10px;
               border: 1px solid #eee;
               position: relative;
             }
@@ -95,7 +94,7 @@
     </head>
     <body>
       <div class="container">
-        <h1>Board Games Visualization</h1>
+        <!--- <h1>Board Games Visualization</h1>--->
 
         <div class="tabs">
           <button class="tab-button active" onclick="openTab(event, 'tab-1')">Grafico 1</button>
@@ -177,41 +176,23 @@
               
               <div>
                 <br>
-                <label for="max-items-3">Seleziona il max num di elementi da visualizzare</label>
+                <label for="min-year">Seleziona l'anno minimo</label>
                 <br>
-                <input type="range" name="max-items-3" id="max-items-3" min="10" max="10" value="1">
-                <span id="range-value-3">0</span>
+                <input type="range" name="min-year" id="min-year"  step="1" >
+                <span id="min-year-value">2015</span>
+                <br>
+                <label for="max-year">Seleziona l'anno massimo</label>
+                <br>
+                <input type="range" name="max-year" id="max-year"  step="1" >
+                <span id="max-year-value">2021</span>
+                <datalist id="year-values">
+                </datalist>
               </div>
               <br>
 
             </div>
           </div>
         </div>
-
-        <script>
-          function openTab(event, tabName) {
-            var i, tabContent, tabButtons;
-            
-            // Nasconde tutti i contenuti delle schede
-            tabContent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabContent.length; i++) {
-                tabContent[i].style.display = "none";
-            }
-            
-            // Rimuove la classe "active" da tutti i pulsanti
-            tabButtons = document.getElementsByClassName("tab-button");
-            for (i = 0; i < tabButtons.length; i++) {
-                tabButtons[i].className = tabButtons[i].className.replace(" active", "");
-            }
-            
-            // Mostra la scheda corrente e aggiunge una classe "active" al pulsante
-            document.getElementById(tabName).style.display = "flex";
-            event.currentTarget.className += " active";
-
-            updateTab(tabName);
-          }
-        </script>
-
 
         <script src="https://d3js.org/d3.v6.min.js"></script>
         <script type="text/javascript" src="code/test_barchart.js"></script>

@@ -29,8 +29,9 @@ const svg3 = d3
 
   var maxItemsToVis1 = 10;
   var maxItemsToVis2 = 10;
-  var maxItemsToVis3 = 10;
-  const attrList1 = ["categories", "mechanics"];
+  var minYearToVis = 0;
+  var maxYearToVis = 10;
+  const attrList1 = ["categories", "mechanics", "designers"];
   const attrSelector1 = d3.select("#select-attribute-1");
   const rangeSlider1 = d3.select("#max-items-1");
   const rangeValue1 = d3.select("#range-value-1");
@@ -39,18 +40,13 @@ const svg3 = d3
   const rangeSlider2 = d3.select("#max-items-2");
   const rangeValue2 = d3.select("#range-value-2");
 
-  const rangeSlider3 = d3.select("#max-items-3");
-  const rangeValue3 = d3.select("#range-value-3");
+  const yearSliderMax = d3.select("#max-year");
+  const yearSliderMaxValue = d3.select("#max-year-value");
+  const yearSliderMin = d3.select("#min-year");
+  const yearSliderMinValue = d3.select("#min-year-value");
+  var years = [];
 
-  //--- controlli tab 1 ----
-  //aggiungi opzioni attributi al selettore
-  attrSelector1.selectAll("option")
-    .data(attrList1)
-    .join("option")
-    .attr("value", (d) => d)
-    .text((d) => d)
-    .property("selected", (d) => d == "categories");
-
+  //--- listener controlli tab 1 ----
   //listener per cambio attributo
   attrSelector1.on("change", () => {
     const attr = attrSelector1.property("value");
@@ -70,7 +66,7 @@ const svg3 = d3
       createBarchart1(window[attr], "name", "count");
     })
 
-  //---controlli tab2 ---
+  //--- listener controlli tab2 ---
 
   rangeSlider2.on("change", () => {
     maxItemsToVis2 = rangeSlider2.property("value");
@@ -90,32 +86,45 @@ const svg3 = d3
     createBarchart2(ages, "count", "age");
   })
 
-  //---controlli tab3 ---
-  rangeSlider3.on("change", () => {
-    maxItemsToVis3 = rangeSlider3.property("value");
-    rangeValue3.text(maxItemsToVis3.toString())
+  //--- listener controlli tab3 ---
+  yearSliderMax.on("change", () => {
+    maxYearToVis = yearSliderMax.property("value");
+    yearSliderMaxValue.text(years[maxYearToVis].toString())
+    createBarchart3(typeByYear);
+  })
+  yearSliderMin.on("change", () => {
+    minYearToVis = yearSliderMin.property("value");
+    yearSliderMinValue.text(years[minYearToVis].toString())
     createBarchart3(typeByYear);
   })
 
 loadDatasets();
 
-function updateTab(tabName){
+function openTab(event, tabName) {
+  var i, tabContent, tabButtons;
+  
+  // Nasconde tutti i contenuti delle schede
+  tabContent = document.getElementsByClassName("tab-content");
+  for (i = 0; i < tabContent.length; i++) {
+      tabContent[i].style.display = "none";
+  }
+  // Rimuove la classe "active" da tutti i pulsanti
+  tabButtons = document.getElementsByClassName("tab-button");
+  for (i = 0; i < tabButtons.length; i++) {
+      tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+  }
+  // Mostra la scheda corrente e aggiunge una classe "active" al pulsante
+  document.getElementById(tabName).style.display = "flex";
+  event.currentTarget.className += " active";
+
   if(tabName == "tab-1"){
     const attr = attrSelector1.property("value");
     createBarchart1(window[attr], "name", "count");
   }
   if(tabName == "tab-2"){
-    maxItemsToVis2 = ages.length;
-    rangeSlider2.attr("max", maxItemsToVis2)
-    rangeSlider2.attr("value", maxItemsToVis2)
-    rangeValue2.text(maxItemsToVis2.toString());
     createBarchart2(ages, "count", "age");
   }
   if(tabName == "tab-3"){
-    maxItemsToVis3 = [...new Set(typeByYear.map(d => d.year))].length;
-    rangeSlider3.attr("max", maxItemsToVis3)
-    rangeSlider3.attr("value", maxItemsToVis3)
-    rangeValue3.text(maxItemsToVis3.toString());
     createBarchart3(typeByYear);
   }
 }
@@ -156,10 +165,34 @@ async function loadDatasets(){
     console.log("designers",designers);
     console.log("fulldataset",dataset);
 
+    //inizializzazione controlli filtri in tutte le tab
+    //aggiungi opzioni attributi al selettore
+    attrSelector1.selectAll("option")
+      .data(attrList1)
+      .join("option")
+      .attr("value", (d) => d)
+      .text((d) => d)
+      .property("selected", (d) => d == "categories");
+
     maxItemsToVis1 = categories.length;
     rangeSlider1.attr("max", maxItemsToVis1)
     rangeSlider1.attr("value", maxItemsToVis1)
     rangeValue1.text(maxItemsToVis1.toString())
+
+    maxItemsToVis2 = ages.length;
+    rangeSlider2.attr("max", maxItemsToVis2);
+    rangeSlider2.attr("value", maxItemsToVis2);
+    rangeValue2.text(maxItemsToVis2.toString());
+
+    maxYearToVis = years.length-1;
+    minYearToVis = 0;
+    yearSliderMax.attr("max", years.length-1).attr("min", 0);
+    yearSliderMax.attr("value", maxYearToVis);
+    yearSliderMaxValue.text(years[maxYearToVis].toString());
+    yearSliderMin.attr("max", years.length-1).attr("min", 0);
+    yearSliderMin.attr("value", minYearToVis);
+    yearSliderMinValue.text(years[minYearToVis].toString());
+
     createBarchart1(categories, "name", "count");
  
   });
@@ -263,7 +296,11 @@ function calcTypeByYears2(data){
 
   var types = data.nodes.flatMap(d => d.type);
   types = [...new Set(types)];  
+  years = data.nodes.flatMap(d => d.year);
+  years = [...new Set(years)];
+  years = years.sort((a, b) => d3.ascending(a, b));
   console.log(types);
+  console.log(years);
 
   const yearsType = [];
 
@@ -295,12 +332,18 @@ function calcTypeByYears2(data){
 
 
 function createBarchart1(dataToVis, varY, varX){
+  var svgWidth = width;
+  var svgHeight = height;
 
   var data = dataToVis.slice(0, maxItemsToVis1);
+  if(maxItemsToVis1 > 20){
+    svgHeight = height + (maxItemsToVis1 - 20) * 20;
+    svg1.attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
+  }
 
-  const chartMargin = { top: 20, right: 20, bottom: 20, left: 120 };
-  const chartWidth = width - (chartMargin.right + chartMargin.left);
-  const chartHeight = height - (chartMargin.top + chartMargin.bottom);
+  const chartMargin = { top: 20, right: 20, bottom: 20, left: 150 };
+  const chartWidth = svgWidth - (chartMargin.right + chartMargin.left);
+  const chartHeight = svgHeight - (chartMargin.top + chartMargin.bottom);
   const max_count = d3.max(data, (d) => d[varX]);
   
   //definizione scale per gli assi
@@ -419,12 +462,12 @@ function createBarchart2(dataToVis, varY, varX){
 function createBarchart3(dataToVis){
 
   var data = dataToVis; 
-  var years = [...new Set(data.map(d => d.year))];
-  years = years.sort((a, b) => d3.ascending(a, b));
-  console.log(years);
+  var yearsToVis = years
+  yearsToVis = years.sort((a, b) => d3.ascending(a, b));
+  console.log(yearsToVis);
+  yearsToVis = yearsToVis.slice(minYearToVis, maxYearToVis);
   const types = [...new Set(data.map(d => d.type))]; 
   console.log(types);
-  years = years.slice(0, maxItemsToVis3);
   
   const chartMargin = { top: 20, right: 20, bottom: 100, left: 50 };
   const chartWidth = width - (chartMargin.right + chartMargin.left);
@@ -435,7 +478,7 @@ function createBarchart3(dataToVis){
 
   const xScale = d3
   .scaleBand()
-  .domain(years)
+  .domain(yearsToVis)
   .range([0, chartWidth])
   .padding(0.2);
 
@@ -464,7 +507,7 @@ function createBarchart3(dataToVis){
   // gruppo rect per anno
   const yearGroups = innerChart
     .selectAll(".year-group")
-    .data(years)
+    .data(yearsToVis)
     .join("g")
     .attr("class", "year-group") 
     .attr("transform", (year) => `translate(${xScale(year)}, 0)`);

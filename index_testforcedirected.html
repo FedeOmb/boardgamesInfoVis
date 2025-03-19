@@ -7,12 +7,15 @@
               width: 100%;
             }
             body {
+              height: 100vh;
               width: 100%;
               margin: 0;
               padding: 0;
               display: flex;
               font-family: sans-serif;
               font-size: 75%;
+              overflow: hidden;
+              flex-direction: row;
             }
       
             /* SVG styles */
@@ -20,36 +23,202 @@
               flex-basis: 100%;
             }
             #graph-svg {
-              height:100vh;
-              width:100%;
+              flex-grow: 1;
+              transition: flex-basis 0.3s ease;
+              width: auto;
+              height: 100vh;
+            }
+            body.panel-open #graph-svg {
+              flex-basis: 65%;
             }
             .nodes circle {
               pointer-events: all;
             }
             #info-panel {
               position: absolute;
-                right: 0;
-                top: 0;
-                width: 35%;
-                height: 100vh;
-                border-left: 2px solid gray;
-                padding: 10px;
-                box-shadow: -2px 0 5px rgba(0,0,0,0.1);
-                overflow-y: auto;
-                display: none;
-                background-color:white;
+              right: 0;
+              top: 0;
+              width: 35%;
+              height: 100vh;      
+              padding: 10px;
+              box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+              overflow-y: auto;
+              display: none;
+              background-color:#F5F5F5;
+              border-radius: 6px 0 0 6px;
+              flex-shrink: 0;
             }
+            body.panel-open #info-panel {
+              display: block;
+            }
+            .close-btn {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              width: 20px;
+              height: 20px;
+              font-size: 12px;
+              background: #dc3545;
+              color: #fff;
+              border: none;
+              border-radius: 8px;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              text-align: center;
+            }
+            .close-btn:hover {
+              background: #a71d2a;
+            }
+            #zoom-controls {
+              position: absolute;
+              bottom: 20px;
+              left: 20px;
+              display: flex;
+              flex-direction: row;
+              gap: 8px;
+              background: rgba(255, 255, 255, 0.9);
+              border: 1px solid #ccc;
+              padding: 10px 12px;
+              border-radius: 12px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+              z-index: 1000;
+            }
+            .zoom-btn {
+              width: 40px;
+              height: 40px;
+              font-size: 20px;
+              background: #007bff;
+              color: #fff;
+              border: none;
+              border-radius: 8px;
+              cursor: pointer;
+              transition: all 0.3s ease;
+            }
+            .zoom-btn:hover {
+              background: #0056b3;
+            }
+            #node-header {
+              margin-bottom: 15px;
+              padding-bottom: 10px;
+              border-bottom: 1px solid #ccc;
+              padding: 15px;
+            }
+
+            #node-header h2 {
+              margin: 0 0 5px 0;
+              font-size: 1.4em;
+              color: #333;
+            }
+
+            #node-header p {
+              margin: 0 0 15px 0;
+              font-weight: bold;
+              color: #555;
+            }
+
+            .info-row {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 8px;
+            }
+
+            .info-label {
+              font-weight: 600;
+              color: #444;
+            }
+
+            .info-value {
+              color: #666;
+              max-width: 60%;
+              text-align: right;
+            }
+            #chart-selector {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 15px;
+              background: #ffffff;
+              padding: 8px;
+              border: 1px solid #ddd;
+              border-radius: 6px;
+              gap: 8px;
+              flex-wrap: wrap;
+            }
+            #chart-content {
+              margin-top: 10px;
+            }
+            .chart-btn {
+              flex: 1 1 20%;
+              min-width: 80px;
+              margin: 0 5px;
+              padding: 8px 12px;
+              font-size: 0.85rem;
+              background: #007bff;
+              color: #fff;
+              border: none;
+              border-radius: 6px;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              text-align: center;
+            }
+            .chart-btn:hover {
+              background: #0056b3;
+            }
+            .chart-btn.active {
+                background: #0056b3;
+                font-weight: bold;
+                box-shadow: 0 0 5px rgba(0,0,0,0.3);
+              }
           </style>
     </head>
     <body>
         <svg id="graph-svg"></svg>
+        <div id="zoom-controls">
+          <button id="zoom-out" class="zoom-btn">−</button>
+          <button id="zoom-reset" class="zoom-btn">⟳</button>
+          <button id="zoom-in" class="zoom-btn">+</button>
+        </div>
         <div id="info-panel">
+          <button id="close-info-panel" class="close-btn">✕</button>
+          <div id="node-header">
+            <h2 id="game-title"></h2>
+            <p id="game-rank"></p>
+            
+            <div class="info-row">
+              <span class="info-label">Year:</span>
+              <span class="info-value"></span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">Categories:</span>
+              <span class="info-value"></span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">Mechanics:</span>
+              <span class="info-value"></span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">Type:</span>
+              <span class="info-value"></span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">Designer:</span>
+              <span class="info-value"></span>
+            </div>
+          </div>
+          <div id="chart-selector">
+            <button class="chart-btn" data-chart="minage">Min Age</button>
+            <button class="chart-btn" data-chart="players">Players</button>
+            <button class="chart-btn" data-chart="playtime">Playtime</button>
+            <button class="chart-btn" data-chart="custom">Custom</button>
+          </div>
+          <div id="chart-content"></div>
           <div id="node-details"></div>
         </div>
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <script type="text/javascript" src="data/cliques.js"></script>
-        <!-- <script type="text/javascript" src="data/data.js"></script> -->
-        <!-- <script type="text/javascript" src="code/data_modeling.js"></script> -->
         <script type="text/javascript" src="code/test_forcedirected.js"></script>
     </body>
 </html>

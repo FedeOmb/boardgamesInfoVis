@@ -6,6 +6,8 @@ var svg = d3.select("svg"),
   //.attr("width", "100%")
   //.attr("height", "100%");
 
+var infoPanelVisible = false;
+
 function updateSize() {
   width = +svg.node().getBoundingClientRect().width;
   height = +svg.node().getBoundingClientRect().height;
@@ -20,11 +22,23 @@ window.addEventListener("resize", updateSize);
 var networkGroup = svg.append("g").attr("class", "network-group");
 
 var zoom = d3.zoom()
+  .scaleExtent([0.2, 5]) // limiti di zoom
   .on("zoom", function() {
-    svg.attr("transform", d3.event.transform); // Applica la trasformazione al gruppo
+    networkGroup.attr("transform", d3.event.transform); // Applica la trasformazione al gruppo
   });
 
 svg.call(zoom);
+
+// Funzioni zoom
+d3.select("#zoom-in").on("click", function() {
+  svg.transition().call(zoom.scaleBy, 1.2);
+});
+d3.select("#zoom-out").on("click", function() {
+  svg.transition().call(zoom.scaleBy, 0.8);
+});
+d3.select("#zoom-reset").on("click", function() {
+  svg.transition().call(zoom.transform, d3.zoomIdentity);
+});
 
 // svg objects
 var link, node;
@@ -188,7 +202,7 @@ function initializeDisplay() {
     .data(graph.links)
     .enter()
     .append("line")
-    .attr("stroke", "grey") // Explicitly set the default stroke color for links
+    .attr("stroke", "grey") 
     .attr("stroke-width", 1)
     .on("mouseover", mouseEnterEdge) // Add mouseover event listener
     .on("mouseout", mouseLeaveEdge);   // Add mouseout event listener;
@@ -288,79 +302,68 @@ function mapNodesToCliqueColors(cliques) {
 
 // Function to handle mouseover node event
 function handleMouseOver(d) {
-  // Highlight the hovered node
-  node.each(function(n) {
-    d3.select(this).attr("opacity", 0.4);
-  })
-  link.each(function (l) {
-    d3.select(this).attr("opacity", 0.4);
-  });
+  if(!infoPanelVisible){
+    // Highlight the hovered node
+    node.each(function(n) {
+      d3.select(this).attr("opacity", 0.4);
+    })
+    link.each(function (l) {
+      d3.select(this).attr("opacity", 0.4);
+    });
+    d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2).attr("opacity", 1);
 
-  d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2).attr("opacity", 1);
+    // Highlight adjacent nodes
+    node.each(function (n) {
+      if (isAdjacent(d, n)) {
+        d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2).attr("stroke-opacity", 1).attr("opacity", 1);
+      }
+    });
 
-  // Highlight adjacent nodes
-  node.each(function (n) {
-    if (isAdjacent(d, n)) {
-      d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2).attr("stroke-opacity", 1).attr("opacity", 1);
-    }
-  });
-
-  // Highlight adjacent links
-  link.each(function (l) {
-    if (l.source === d || l.target === d) {
-      d3.select(this)
-        .attr("stroke", "DarkSlateGrey") 
-        .attr("stroke-width", 2)
-        .attr("stroke-opacity", 1)
-        .attr("opacity", 1); 
-    }
-  });
-
+    // Highlight adjacent links
+    link.each(function (l) {
+      if (l.source === d || l.target === d) {
+        d3.select(this)
+          .attr("stroke", "DarkSlateGrey") 
+          .attr("stroke-width", 2)
+          .attr("stroke-opacity", 1)
+          .attr("opacity", 1); 
+      }
+    });
+  }
   tooltip.html(`<strong>${d.rank}°: ${d.title} <br>Type: ${d.type}</strong><br>`)
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY - 10) + "px")
         .style("visibility", "visible");
 }
 
-// Function to handle mouseout node event
 function handleMouseOut(d) {
-  // Unhighlight the hovered node
-  d3.select(this).attr("stroke", "grey").attr("stroke-width", 1);
+  if(!infoPanelVisible){
+    // Unhighlight the hovered node
+    d3.select(this).attr("stroke", "grey").attr("stroke-width", 1);
 
-  // Unhighlight adjacent nodes
-  node.each(function (n) {
-    if (isAdjacent(d, n)) {
-      d3.select(this).attr("stroke", "grey").attr("stroke-width", 1);
-    }
-  });
+    // Unhighlight adjacent nodes
+    node.each(function (n) {
+      if (isAdjacent(d, n)) {
+        d3.select(this).attr("stroke", "grey").attr("stroke-width", 1);
+      }
+    });
 
-  // Unhighlight adjacent links
-  link.each(function (l) {
-    if (l.source === d || l.target === d) {
-      d3.select(this)
-        .attr("stroke", "#999") // Revert link color to original
-        .attr("stroke-width", 1); // Revert link thickness to original
-    }
-  });
+    // Unhighlight adjacent links
+    link.each(function (l) {
+      if (l.source === d || l.target === d) {
+        d3.select(this)
+          .attr("stroke", "#999") // Revert link color to original
+          .attr("stroke-width", 1); // Revert link thickness to original
+      }
+    });
 
-  node.each(function(n) {
-    d3.select(this).attr("opacity", 1);
-  })
-  link.each(function (l) {
-    d3.select(this).attr("opacity", 1);
-  });
-
+    resetNetColors()
+  }
   tooltip.style("visibility", "hidden");
 }
 
 //handle mouseover edge
 function mouseEnterEdge(d) {
-  //highlight edge
-  d3.select(this)
-  .attr("stroke-color", "darkorange")
-  .attr("stroke", "darkorange")
-  .attr("stroke-width", 3);
-
   // Trova i nodi corrispondenti nel dataset
   const sourceNode = graph.nodes.find(n => n.id === (d.source.id || d.source));
   const targetNode = graph.nodes.find(n => n.id === (d.target.id || d.target));
@@ -373,16 +376,22 @@ function mouseEnterEdge(d) {
   const targetCategories = new Set(targetNode.categories?.map(c => c.name) || []);
   const commonCategories = [...sourceCategories].filter(c => targetCategories.has(c));
 
-  //highlight source and target node if any
-  d3.selectAll(".network-circle")
-    .select(function (data) {
-      return data == d.source || data == d.target ? this : null;
-    })
-    .attr("stroke-width", "3")
-    .attr("stroke-color", "darkorange")
-    .attr("stroke", "darkorange")
-    .attr("stroke-width", 3);
-
+  if(!infoPanelVisible){
+    //highlight edge
+    d3.select(this)
+      .attr("stroke-color", "lime")
+      .attr("stroke", "lime")
+      .attr("stroke-width", 3);
+    //highlight source and target node if any
+    d3.selectAll(".network-circle")
+      .select(function (data) {
+        return data == d.source || data == d.target ? this : null;
+      })
+      .attr("stroke-width", "3")
+      .attr("stroke-color", "lime")
+      .attr("stroke", "lime")
+      .attr("stroke-width", 3);
+  }
   tooltip.transition().duration(200).style("opacity", 0.9);
 
   edgeData = d3.select(this).datum();
@@ -410,7 +419,8 @@ function mouseEnterEdge(d) {
 
 //handle mouseout edge
 function mouseLeaveEdge(d) {
-  d3.select(this).attr("stroke-color", "grey")
+  if(!infoPanelVisible){
+    d3.select(this).attr("stroke-color", "grey")
     .attr("stroke", "grey")
     .attr("stroke-width", 1);
   
@@ -422,17 +432,39 @@ function mouseLeaveEdge(d) {
       .attr("stroke-color", "grey")
       .attr("stroke", "grey")
       .attr("stroke-width", 1);
-  
-      tooltip.style("visibility", "hidden");
+  }
+  tooltip.style("visibility", "hidden");
 }
 
 function handleNodeClick(d) {
-  //colora di nero il nodo cliccato
-  node.each(function(n) {
-    d3.select(this).attr("fill", d => colorScaleType(d.type[0]))
-  })
+
+  infoPanelVisible = true
+  d3.select("body").classed("panel-open", true);
+  resetNetColors()
+  networkGroup.selectAll("line").attr("opacity", 0.4);
+  networkGroup.selectAll("circle").attr("opacity", 0.4);
+
+  //evidenzia i nodi adiacenti
+  node.each(function (n) {
+    if (isAdjacent(d, n)) {
+      d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2).attr("stroke-opacity", 1).attr("opacity", 1);
+    }
+  });
+
+  // evidenzia i link adiacenti
+  link.each(function (l) {
+    if (l.source === d || l.target === d) {
+      d3.select(this)
+        .attr("stroke", "DarkSlateGrey") 
+        .attr("stroke-width", 2)
+        .attr("stroke-opacity", 1)
+        .attr("opacity", 1); 
+    }
+  });
+
   d3.select(this)
-  .attr("fill", "black");
+  .attr("fill", "black")
+  .attr("opacity", 1);
 
   d3.select("#info-panel").style("display", "block");
 
@@ -440,7 +472,7 @@ function handleNodeClick(d) {
   if(svg.style("flex-basis") === "100%"){
     svg.transition()
       .duration(200)
-      .style("flex-basis", "75%") // Riduci la larghezza del pannello SVG
+      .style("flex-basis", "70%") // Riduci la larghezza del pannello SVG
       .on("end", function() {
         width = +svg.node().getBoundingClientRect().width;
         updateForces();
@@ -449,11 +481,28 @@ function handleNodeClick(d) {
 
   d3.select("#node-details").html(""); // Pulisce il pannello
 
+  d3.select("#info-panel")
+  .style("position", "relative"); // Per posizionare il tasto in assoluto all'interno
+
+  d3.select("#close-info-panel").on("click", () => {
+    d3.select("#info-panel").style("display", "none");
+    infoPanelVisible = false
+    d3.select("body").classed("panel-open", false);
+    const infoPanel = d3.select("#info-panel");
+    infoPanel.style("display", "none");
+    svg.style("flex-basis", "100%");
+    width = +svg.node().getBoundingClientRect().width;
+    updateForces();
+    resetNetColors()
+  });
+
   // Aggiorna il contenuto del pannello con i dettagli del nodo
-  d3.select("#node-details").html(`
+  d3.select("#node-header").html(`
     <strong>${d.rank}°: ${d.title}</strong><br>
     <strong>Type:</strong> ${d.type.join(", ")}<br>
   `);
+  
+  d3.select("#chart-content").html(""); // pulizia iniziale
 
   const neighbors = graph.links
     .filter(l => l.source.id === d.id)
@@ -461,62 +510,88 @@ function handleNodeClick(d) {
 
   const data = [d, ...neighbors];
 
-  // Ordina per minage decrescente
-  data.sort((a, b) => d3.descending(a.minage, b.minage));
+  d3.select("#chart-selector button[data-chart='minage']").classed("active", true);
+  createMinAgeChart(data);
 
-  // SVG dimensions
-  const svgWidth = 500, svgHeight = neighbors.length * 20 + 100 //= 200;
-  const margin = { top: 30, right: 10, bottom: 30, left: 180 };
+  d3.selectAll(".chart-btn").on("click", function() {
+    const chartType = d3.select(this).attr("data-chart");
 
-  // --------- Bar Chart: minage ---------
-  const ageSvg = d3.select("#node-details")
-    .append("svg")
-    .attr("width", svgWidth)
-    .attr("height", svgHeight);
+    // Rimuove la classe active da tutti i bottoni
+    d3.selectAll(".chart-btn").classed("active", false);
+
+    // Aggiunge la classe active solo al bottone cliccato
+    d3.select(this).classed("active", true);
+    
+    // Pulisce l'area dei grafici prima di inserire il nuovo grafico
+    d3.select("#chart-content").html("");
   
-  ageSvg.append("text")
-    .attr("x", svgWidth / 2)
-    .attr("y", margin.top / 2)
-    .attr("text-anchor", "middle")
-    .text("Min age")
-    .style("font-weight", "bold");
+    if (chartType === "minage") {
+      // Ordina per minage decrescente
+      data.sort((a, b) => d3.descending(a.minage, b.minage));
+      createMinAgeChart(data);
+    } else if (chartType === "players") {
+      data.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
+      createDumbbellChart(data, "minplayers", "maxplayers", "#chart-content", "Players", neighbors.length);
+    } else if (chartType === "playtime") {
+      data.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
+      createDumbbellChart(data, "minplaytime", "maxplaytime", "#chart-content", "Playtime (min)", neighbors.length);
+    } else if (chartType === "custom") {
+      // Placeholder per un grafico custom
+      d3.select("#chart-content").append("p").text("Custom chart here!");
+    }
+  });
 
-  const ageX = d3.scaleLinear()
-    .domain([0, d3.max(data, n => n.minage)])
-    .range([margin.left, svgWidth - margin.right]);
-
-  const ageY = d3.scaleBand()
-    .domain(data.map(n => getShortTitle(n.title)))
-    .range([margin.top, svgHeight - margin.bottom])
-    .padding(0.1);
-
-  ageSvg.selectAll("rect")
-    .data(data)
-    .enter()
-    .append("rect")
-    .attr("x", ageX(0))
-    .attr("y", n => ageY(getShortTitle(n.title)))
-    .attr("width", n => ageX(n.minage) - ageX(0))
-    .attr("height", ageY.bandwidth())
-    .attr("fill", "steelblue");
-
-  // Axis
-  ageSvg.append("g")
-    .attr("transform", `translate(0,${svgHeight - margin.bottom})`)
-    .call(d3.axisBottom(ageX));
-
-  ageSvg.append("g")
-    .attr("transform", `translate(${margin.left},0)`)
-    .call(d3.axisLeft(ageY));
+  function createMinAgeChart(data) {
+    const svgWidth = 500, svgHeight = data.length * 20 + 100;
+    const margin = { top: 30, right: 10, bottom: 30, left: 180 };
+  
+    const ageSvg = d3.select("#chart-content")
+      .append("svg")
+      .attr("width", svgWidth)
+      .attr("height", svgHeight);
+    
+    ageSvg.append("text")
+      .attr("x", svgWidth / 2)
+      .attr("y", margin.top / 2)
+      .attr("text-anchor", "middle")
+      .text("Min age")
+      .style("font-weight", "bold");
+  
+    const ageX = d3.scaleLinear()
+      .domain([0, d3.max(data, n => n.minage)])
+      .range([margin.left, svgWidth - margin.right]);
+  
+    const ageY = d3.scaleBand()
+      .domain(data.map(n => getShortTitle(n.title)))
+      .range([margin.top, svgHeight - margin.bottom])
+      .padding(0.1);
+  
+    ageSvg.selectAll("rect")
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("x", ageX(0))
+      .attr("y", n => ageY(getShortTitle(n.title)))
+      .attr("width", n => ageX(n.minage) - ageX(0))
+      .attr("height", ageY.bandwidth())
+      .attr("fill", "steelblue");
+  
+    ageSvg.append("g")
+      .attr("transform", `translate(0,${svgHeight - margin.bottom})`)
+      .call(d3.axisBottom(ageX));
+  
+    ageSvg.append("g")
+      .attr("transform", `translate(${margin.left},0)`)
+      .call(d3.axisLeft(ageY));
+  }
 
   // --------- Dumbbell Chart: min/max players ---------
-  // Ordina per minage decrescente
-  data.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
-  createDumbbellChart(data, "minplayers", "maxplayers", "#node-details", "Players", neighbors.length);
+  //data.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
+  //createDumbbellChart(data, "minplayers", "maxplayers", "#node-details", "Players", neighbors.length);
 
   // --------- Dumbbell Chart: min/max playtime ---------
-  data.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
-  createDumbbellChart(data, "minplaytime", "maxplaytime", "#node-details", "Playtime (min)", neighbors.length);
+  //data.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
+  //createDumbbellChart(data, "minplaytime", "maxplaytime", "#node-details", "Playtime (min)", neighbors.length);
   }
 
   // Dumbbell chart reusable function
@@ -553,8 +628,8 @@ function handleNodeClick(d) {
       .attr("x2", d => x(d[maxProp]))
       .attr("y1", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
       .attr("y2", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
-      .attr("stroke", "gray")
-      .attr("stroke-width", 2);
+      .attr("stroke", "grey")
+      .attr("stroke-width", "1px");
 
     svg.selectAll("circle.min")
       .data(data)
@@ -564,7 +639,7 @@ function handleNodeClick(d) {
       .attr("cx", d => x(d[minProp]))
       .attr("cy", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
       .attr("r", 5)
-      .attr("fill", "steelblue");
+      .attr("fill", "#69b3a2");
 
     svg.selectAll("circle.max")
       .data(data)
@@ -574,7 +649,7 @@ function handleNodeClick(d) {
       .attr("cx", d => x(d[maxProp]))
       .attr("cy", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
       .attr("r", 5)
-      .attr("fill", "darkorange");
+      .attr("fill", "#4C4082");
 
     // Axes
     svg.append("g")
@@ -588,16 +663,16 @@ function handleNodeClick(d) {
 
   //chiude il pannello info al click su un area vuota
   svg.on("click", function() {
-    const infoPanel = d3.select("#info-panel");
-    //verifica se il pannello è già aperto
-    if (d3.event.target.tagName !== "circle" && infoPanel.style("display") === "block") {
+    if (d3.event.target.tagName !== "circle" && infoPanelVisible) {
+      infoPanelVisible = false
+      d3.select("body").classed("panel-open", false);
+      d3.select("#info-panel").style("display", "none");
+      const infoPanel = d3.select("#info-panel");
       infoPanel.style("display", "none");
       svg.style("flex-basis", "100%");
       width = +svg.node().getBoundingClientRect().width;
       updateForces();
-      node.each(function(n) {
-        d3.select(this).attr("fill", d => colorScaleType(d.type[0]))
-      })
+      resetNetColors()
     }
 });
 
@@ -694,4 +769,17 @@ function getShortTitle(title){
     else if(title.includes("("))
         return title.split("(")[0]
   }else return title
+}
+
+function resetNetColors(){
+  networkGroup.selectAll("line")
+  .attr("opacity", 1)
+  .attr("stroke", "grey") 
+  .attr("stroke-width", 1);
+
+  networkGroup.selectAll("circle")
+  .attr("opacity", 1)
+  .attr("fill", d => colorScaleType(d.type[0]))
+  .attr("stroke", "grey")
+  .attr("stroke-width", 1);
 }

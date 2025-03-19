@@ -375,7 +375,23 @@ function createBarchart1(dataToVis, varY, varX){
     .attr("height", yScale.bandwidth())
     .attr("x", 0)
     .attr("y", 0)
-    .attr("fill", "teal");
+    .attr("fill", "teal")
+    .on("click", (event,d) => {
+      console.log(d);
+      var games = d.games;
+      console.log(games);
+      var dataToVis = [];
+      games.forEach(game => {
+        var gameData = dataset.nodes.find(d => d.id == game);
+        dataToVis.push({
+          id: gameData.id,
+          name: gameData.title,
+          rating: gameData.rating,
+        });
+      });
+      console.log(dataToVis);
+      createAdditionalBarchart(dataToVis, "name", "rating");
+    });
 
   barAndLabel
     .append("text")
@@ -384,6 +400,7 @@ function createBarchart1(dataToVis, varY, varX){
     .attr("y", yScale.bandwidth() / 2)
     .style("font-family", "sans-serif")
     .style("font-size", "9px");
+
 
     //aggiunta assi
   innerChart
@@ -397,6 +414,76 @@ function createBarchart1(dataToVis, varY, varX){
     .append("g")
     .call(d3.axisTop(xScale));
 };
+
+function createAdditionalBarchart(dataToVis, varY, varX){
+  var svgWidth = d3.select("#additional-chart-1").node().getBoundingClientRect().width;
+  var svgHeight = d3.select("#additional-chart-1").node().getBoundingClientRect().height;
+
+  var data = dataToVis;
+  data = data.sort((a, b) => d3.descending(a.rating, b.rating));
+
+  //svgHeight = data.length * 20;
+
+  var svg = d3.select("#additional-chart-1");
+  svg.selectAll("*").remove();
+  svg = svg.append("svg").attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
+
+  const chartMargin = { top: 20, right: 20, bottom: 20, left: 150 };
+  const chartWidth = svgWidth - (chartMargin.right + chartMargin.left);
+  const chartHeight = svgHeight - (chartMargin.top + chartMargin.bottom);
+  const max_count = d3.max(data, (d) => d[varX]);
+  
+  //definizione scale per gli assi
+  const xScale = d3.scaleLinear().domain([0, max_count]).range([0, chartWidth]);
+  const yScale = d3
+  .scaleBand()
+  .domain(data.map((d) => d[varY]))
+  .range([0, chartHeight])
+  .padding(0.2);
+
+
+  const innerChart = svg
+    .append("g")
+    .attr("width", chartWidth)
+    .attr("height", chartHeight)
+    .attr("transform", `translate(${chartMargin.left},${chartMargin.top})`)
+
+  // gruppo rect + label interna
+  const barAndLabel = innerChart
+    .selectAll("g")
+    .data(data)
+    .join("g")
+    .attr("transform", (d) => `translate(0, ${yScale(d[varY])})`);
+
+  barAndLabel
+    .append("rect")
+    .attr("width", (d) => xScale(d[varX]))
+    .attr("height", yScale.bandwidth())
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("fill", "teal");
+
+  barAndLabel
+    .append("text")
+    .text((d) => d.count)
+    .attr("x", (d) => xScale(d[varX]) + 3)
+    .attr("y", yScale.bandwidth() / 2)
+    .style("font-family", "sans-serif")
+    .style("font-size", "9px")
+
+    //aggiunta assi
+  innerChart
+    .append("g")
+    .call(d3.axisLeft(yScale))
+    .selectAll("text")
+    .attr("transform", "translate(-10,0)")
+    .style("text-anchor", "end");
+
+  innerChart
+    .append("g")
+    .call(d3.axisTop(xScale));
+};
+
 
 function createBarchart2(dataToVis, varY, varX){
 

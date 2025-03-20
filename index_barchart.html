@@ -55,7 +55,6 @@
 
             .tab-content {
                 display: none;
-                padding: 10px;
             }
 
             .tab-content.active {
@@ -75,8 +74,6 @@
             }
             .col-3 {
               display: block;
-              flex-direction: column;
-              justify-content: flex-start;
               flex: 1 0 20%;
               max-width: 30%;
             }
@@ -87,19 +84,27 @@
               height: 100%;
             }
             .controls-container {
-              margin-bottom:20px;
+              display:flex;
+              flex-direction: row;
+              flex-wrap: nowrap;
+              margin-bottom:10px;
               padding:10px;
               height:auto;
-              max-height: 30vh;
+              max-height: 20vh;
             }
             .additional-info {
               min-height:80vh;
               height:auto;
             }
-            .col-9, .controls-container, .additional-info {
+            .controls-container, .additional-info, .svg-container{
               background-color: #f9f9f9;
               border-radius: 6px;
               border: 1px solid #eee;
+            }
+            .select-container, .range-container, .radio-container{
+              flex-grow: 1;
+              margin-left: 10px;
+              margin-right: 10px;
             }
             #bar-chart-1 {
               min-height: 80vh;
@@ -117,6 +122,12 @@
               stroke: lightgrey;
               stroke-width: 0.5;
             }
+            .games-infolist {
+              display:flex;
+              flex-direction: row;
+              flex-wrap: wrap;
+              justify-content: flex-start;
+            }
           </style>
     </head>
     <body>
@@ -124,45 +135,39 @@
         <!--- <h1>Board Games Visualization</h1>--->
 
         <div class="tabs">
-          <button class="tab-button active" onclick="openTab(event, 'tab-1')">Grafico 1</button>
-          <button class="tab-button" onclick="openTab(event, 'tab-2')">Grafico 2</button>
-          <button class="tab-button" onclick="openTab(event, 'tab-3')">Grafico 3</button>
+          <button class="tab-button active" onclick="openTab(event, 'tab-1')">View the diffusion of an attribute among all games</button>
+          <button class="tab-button" onclick="openTab(event, 'tab-2')">View longevity of all games in top 100</button>
+          <button class="tab-button" onclick="openTab(event, 'tab-3')">View game types by year of release</button>
         </div>
 
         <div class="tab-content active" id="tab-1">
 
           <div class="col col-9">
-            <h2>Bar Chart - Visualizza la diffusione di un attributo tra i giochi in top 100</h2>
+            <div class="controls-container" id="controls-1">
+              <br>
+              <div class="select-container">
+              <label for="select-attribute-1">Select the attribute to show</label>
+              <br>
+              <select id="select-attribute-1"></select>
+              </div>
+              <div class="range-container">
+              <label for="max-items-1">Select max number of items to show</label>
+              <br>
+              <span id="min-value-1">10</span>
+              <input type="range" name="max-items-1" id="max-items-1" min="10" max="100" value="10" >
+              <span id="max-value-1">100</span>
+              <span>| Showing first <label id="range-value-1">10</label> elements</span>
+              </div>
+            </div>
             <div class="svg-container" id="bar-chart-1">
             </div>
           </div>
 
           <div class="col col-3">
-
-            <div class="controls-container" id="controls-1">
-              <h2>Controlli filtri</h2>
-              <br>
-              <div class="select-container">
-              <label for="select-attribute-1">Visualizza la diffusione di un determinato attributo nella top 100</label>
-              <select id="select-attribute-1"></select>
-              </div>
-              <br>
-              <div class="range-container">
-              <label for="max-items-1">Seleziona il max num di elementi da visualizzare</label>
-              <br>
-              <span id="min-value-1">10</span>
-              <input type="range" name="max-items-1" id="max-items-1" min="10" max="100" value="10" >
-              <span id="max-value-1">100</span>
-              <br>
-              <div>Stai visualizzando i primi <label id="range-value-1">10</label> elementi</div>
-              <br>
-              </div>
-            </div>
-            <div></div>
             <div class="additional-info" id="additional-info-1">
-              <h3>Grafici aggiuntivi</h3>
-              <div class="additional-chart" id="additional-chart-1">
-              </div>
+              <h3>Additional info</h3>
+              <div class="additional-chart" id="additional-chart-1"></div>
+              <div class="games-infolist" id="infolist-1"></div>
             </div>
           </div>
         </div>
@@ -170,17 +175,9 @@
         <div class="tab-content" id="tab-2">
 
           <div class="col col-9">
-            <h2>Bar Chart - Visualizza la distribuzione dell'età dei giochi in top 100</h2>
-            <div class="svg-container" id="bar-chart-2">
-            </div>
-          </div>
-
-          <div class="col col-3">
-
             <div class="controls-container" id="controls-2">
-              <h2>Controlli filtri</h2>
-              <div>
-                <label for="max-items-2">Seleziona il max num di elementi da visualizzare</label>
+              <div class="range-container">
+                <label for="max-items-2">Select max number of items to show</label>
                 <br>
                 <input type="range" name="max-items-2" id="max-items-2" min="10" max="10" value="1">
                 <span id="range-value-2">0</span>
@@ -188,11 +185,21 @@
               <br>
               <div class="radio-container">
                 <input type="radio" name="order-type" value="count" checked>
-                <label for="order-type">Ordina per numero di giochi</label>
+                <label for="order-type">Order by number of games</label>
                 <br>
                 <input type="radio" name="order-type" value="age" >
-                <label for="order-type">Ordina per età</label>                
+                <label for="order-type">Order by age</label>                
               </div>
+            </div>
+            <div class="svg-container" id="bar-chart-2">
+            </div>
+          </div>
+
+          <div class="col col-3">
+            <div class="additional-info" id="additional-info-1">
+              <h3>Additional info</h3>
+              <div class="additional-chart" id="additional-chart-1"></div>
+              <div class="games-infolist" id="infolist-1"></div>
             </div>
           </div>
         </div>
@@ -200,34 +207,37 @@
         <div class="tab-content" id="tab-3">
 
           <div class="col col-9">
-            <h2>Grouped Bar Chart - visualizzazione delle tipologie di giochi per anno di uscita</h2>
-            <div class="svg-container" id="bar-chart-3">
-            </div>
-          </div>
-
-          <div class="col col-3">
             <div class="controls-container" id="controls-3">
-              <h2>Controlli filtri</h2>
-              <div>
-                <label for="min-year">Seleziona l'anno minimo</label>
+              <div class="range container">
+                <label for="min-year">Select min year</label>
                 <br>
                 <input type="range" name="min-year" id="min-year"  step="1" >
                 <span id="min-year-value">2015</span>
-                <br>
-                <label for="max-year">Seleziona l'anno massimo</label>
+              </div>
+              <div class="range container">
+                <label for="max-year">Select max year</label>
                 <br>
                 <input type="range" name="max-year" id="max-year"  step="1" >
                 <span id="max-year-value">2021</span>
                 <datalist id="year-values">
                 </datalist>
               </div>
-              <br>
+            </div>
+            <div class="svg-container" id="bar-chart-3">
+            </div>
+          </div>
 
+          <div class="col col-3">
+            <div class="additional-info" id="additional-info-1">
+              <h3>Additional info</h3>
+              <div class="additional-chart" id="additional-chart-1"></div>
+              <div class="games-infolist" id="infolist-1"></div>
             </div>
           </div>
         </div>
 
         <script src="https://d3js.org/d3.v6.min.js"></script>
-        <script type="text/javascript" src="code/test_barchart.js"></script>
+        <script type="text/javascript" src="code/utils.js"></script>
+        <script type="text/javascript" src="code/barchart.js"></script>
     </body>
 </html>

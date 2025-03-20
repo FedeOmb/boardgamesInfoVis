@@ -149,9 +149,9 @@ async function loadDatasets(){
     d3.json("data/designers.json")
   ]).then(([data, catData, mecData, desData]) =>{
 
-    calcAges(data);
-    calcCategByYears(data);
-    calcTypeByYears2(data);
+    ages = calcAges(data);
+    categByYear = calcCategByYears(data);
+    typeByYear = calcTypeByYears2(data);
     catData.forEach( d => {
       d.count = d.games.length
     });
@@ -176,8 +176,6 @@ async function loadDatasets(){
 
     //inizializzazione controlli filtri in tutte le tab
     //aggiungi opzioni attributi al selettore
-
-      
     attrSelector1.selectAll("option")
       .data(attrList1)
       .join("option")
@@ -205,140 +203,9 @@ async function loadDatasets(){
     yearSliderMinValue.text(years[minYearToVis].toString());
 
     createBarchart1(categories, "name", "count");
- 
   });
 
 }
-
-function calcAges(data) {
-  console.log(data);
-  
-  data.nodes.forEach(d => {
-      d.age = 2023 - d.year;
-  });
-
-  data.nodes.forEach(game => {
-      const age = game.age;
-
-      let ageEntry = ages.find(d => d.age == age)
-      if (!ageEntry) {
-        ageEntry = { 
-          age: age,
-          games: []
-        };
-          ages.push(ageEntry);
-      }
-      ageEntry.games.push(game.id);
-    });
-
-  ages.forEach(game => {
-    game.count = game.games.length;
-  })
-  ages = d3.sort(ages, (a, b) => d3.descending(a.count, b.count));
-  console.log("ages",ages);
-}
-
-
-function calcCategByYears(data){
-
-  const yearsCateg = [];
-
-  data.nodes.forEach(game => {
-      const year = game.year;
-      let yearEntry = yearsCateg.find(d => d.year == year)
-      if (!yearEntry) {
-        yearEntry = { 
-          year: year,
-          count: 0
-        };
-          yearsCateg.push(yearEntry);
-      }
-  
-      const gameCategories = game.categories.map(c => c.name);
-      
-      gameCategories.forEach(category => {
-        let yearEntry = yearsCateg.find(d => d.year == year)
-        if (!yearEntry[category]) {
-          yearEntry[category] = [];
-        }
-        yearEntry[category].push(game.id);
-
-      });
-      yearEntry.count++;
-  });
-  console.log(yearsCateg)
-  categByYear = yearsCateg;
-}
-
-
-/*function calcTypeByYears(data){
-
-  const yearsType = [];
-
-  data.nodes.forEach(game => {
-      const year = game.year;
-      let yearEntry = yearsType.find(d => d.year == year)
-      if (!yearEntry) {
-        yearEntry = { 
-          year: year,
-          count: 0
-        };
-          yearsType.push(yearEntry);
-      }
-  
-      const gameTypes = game.type;
-      
-      gameTypes.forEach(type => {
-        let yearEntry = yearsType.find(d => d.year == year)
-        if (!yearEntry[type]) {
-          yearEntry[type] = [];
-        }
-        yearEntry[type].push(game.id);
-
-      });
-      yearEntry.count++;
-  });
-  console.log(yearsType)
-  typeByYear = yearsType;
-}
-*/
-
-function calcTypeByYears2(data){
-
-  var types = data.nodes.flatMap(d => d.type);
-  types = [...new Set(types)];  
-  years = data.nodes.flatMap(d => d.year);
-  years = [...new Set(years)];
-  years = years.sort((a, b) => d3.ascending(a, b));
-  console.log(types);
-  console.log(years);
-
-  const yearsType = [];
-
-  data.nodes.forEach(game => {
-      const year = game.year;
-      types.forEach(t => {
-        let yearEntry = yearsType.find(d => (d.year == year && d.type == t));
-        if(!yearEntry){
-          yearEntry = { 
-            year: year,
-            type: t,
-            games: []
-          };
-            yearsType.push(yearEntry);
-        }
-      })
-      game.type.forEach(t => {
-        let entry = yearsType.find(d => (d.year == year && d.type == t));
-        entry.games.push(game.id);
-      })
-
-      });
-
-      console.log(yearsType)
-      typeByYear = yearsType;
-
-  };
 
 function createBarchart1(dataToVis, varY, varX){
   var svgWidth = svg1Width;
@@ -405,14 +272,13 @@ function createBarchart1(dataToVis, varY, varX){
       var dataToVis = [];
       games.forEach(game => {
         var gameData = dataset.nodes.find(d => d.id == game);
-        dataToVis.push({
-          id: gameData.id,
-          name: gameData.title,
-          rating: gameData.rating,
-        });
+        dataToVis.push(
+          gameData
+        );
       });
       console.log(dataToVis);
-      createAdditionalBarchart(dataToVis, "name", "rating");
+      //createAdditionalBarchart(dataToVis, "name", "rating");
+      showAdditionalInfo(dataToVis);
     });
 
   barAndLabel
@@ -422,7 +288,6 @@ function createBarchart1(dataToVis, varY, varX){
     .attr("y", yScale.bandwidth() / 2)
     .style("font-family", "sans-serif")
     .style("font-size", "9px");
-
 
     //aggiunta assi
   innerChart
@@ -459,6 +324,58 @@ function createBarchart1(dataToVis, varY, varX){
       }
     });
 };
+
+function showAdditionalInfo(dataToVis) {
+
+  var infoList = d3.select("#infolist-1");
+
+  var data = dataToVis;
+  data = data.sort((a, b) => d3.descending(a.rating, b.rating));
+
+  infoList.selectAll("*").remove();
+
+  var rectHeight = 30;
+  var rectMargin = 2;
+  var rectWidth = 100;
+
+  const tooltip = d3.select("#additional-info-1")
+  .append("div")
+  .attr("class", "tooltip")
+  .style("position", "fixed")
+  .style("padding", "8px")
+  .style("background", "rgba(0, 0, 0, 0.7)")
+  .style("color", "white")
+  .style("border-radius", "5px")
+  .style("pointer-events", "none")
+  .style("font-size", "12px")
+  .style("visibility", "hidden");
+
+
+  var rects = infoList.selectAll("g")
+    .data(data)
+    .join("g")
+    .append("rect")
+    .style("width", `${rectWidth}px`)
+    .style("height", `${rectHeight}px`)
+    .style("margin", `${rectMargin}px`)
+    .style("background-color", "lightblue")
+    .style("display", "flex")
+    .style("align-items", "center")
+    .style("position", "relative")
+    .style("justify-content", "center")
+    .text(d => `${d.title}`)
+    .on("mouseover", (event, d) => {
+    let rect = event.currentTarget.getBoundingClientRect(); // Otteniamo la posizione del rettangolo
+    tooltip.html(`<strong>${d.rank}°: ${d.title} <br>Year: ${d.year} <br>Designer: ${d.designer[0].name}<br>Min age: ${d.minage}</strong><br>`)
+    .style("left", (event.pageX) + "px")
+    .style("top", (event.pageY) + "px")
+      .style("visibility", "visible");
+  }).on("mouseout", () => {
+    tooltip.style("visibility", "hidden");
+  })
+  ;
+}
+
 
 function createAdditionalBarchart(dataToVis, varY, varX){
   var svgWidth = d3.select("#additional-chart-1").node().getBoundingClientRect().width;

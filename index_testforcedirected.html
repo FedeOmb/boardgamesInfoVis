@@ -69,10 +69,19 @@
             .close-btn:hover {
               background: #a71d2a;
             }
-            #zoom-controls {
+            #controls-wrapper {
               position: absolute;
               bottom: 20px;
               left: 20px;
+              display: flex;
+              flex-direction: row;
+              align-items: stretch; /* per farli allineare in altezza */
+              gap: 16px;
+              z-index: 1000;
+            }
+
+            /* Zoom controls */
+            #zoom-controls {
               display: flex;
               flex-direction: row;
               gap: 8px;
@@ -81,8 +90,8 @@
               padding: 10px 12px;
               border-radius: 12px;
               box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-              z-index: 1000;
             }
+
             .zoom-btn {
               width: 40px;
               height: 40px;
@@ -94,9 +103,39 @@
               cursor: pointer;
               transition: all 0.3s ease;
             }
+
             .zoom-btn:hover {
               background: #0056b3;
             }
+
+            /* Legenda */
+            #color-legend {
+              display: grid;
+              grid-template-columns: repeat(3, 1fr); /* 3 elementi per riga */
+              gap: 8px;
+              background: rgba(255, 255, 255, 0.9);
+              border: 1px solid #ccc;
+              padding: 10px 12px;
+              border-radius: 12px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+              min-width: 200px;
+              align-content: center; /* allinea le righe */
+            }
+
+            .legend-item {
+              display: flex;
+              align-items: center;
+              gap: 5px;
+              font-size: 0.85em;
+            }
+
+            .legend-color {
+              width: 14px;
+              height: 14px;
+              border-radius: 3px;
+              border: 1px solid #999;
+            }
+
             #node-header {
               margin-bottom: 15px;
               padding-bottom: 10px;
@@ -106,7 +145,7 @@
 
             #node-header h2 {
               margin: 0 0 5px 0;
-              font-size: 1.4em;
+              font-size: 1.7em;
               color: #333;
             }
 
@@ -114,12 +153,14 @@
               margin: 0 0 15px 0;
               font-weight: bold;
               color: #555;
+              font-size: 1.3em;
             }
 
             .info-row {
               display: flex;
               justify-content: space-between;
               margin-bottom: 8px;
+              font-size: 1.1em;
             }
 
             .info-label {
@@ -172,10 +213,13 @@
     </head>
     <body>
         <svg id="graph-svg"></svg>
-        <div id="zoom-controls">
-          <button id="zoom-out" class="zoom-btn">−</button>
-          <button id="zoom-reset" class="zoom-btn">⟳</button>
-          <button id="zoom-in" class="zoom-btn">+</button>
+        <div id="controls-wrapper">
+          <div id="zoom-controls">
+            <button id="zoom-out" class="zoom-btn">−</button>
+            <button id="zoom-reset" class="zoom-btn">⟳</button>
+            <button id="zoom-in" class="zoom-btn">+</button>
+          </div>
+          <div id="color-legend"></div>
         </div>
         <div id="info-panel">
           <button id="close-info-panel" class="close-btn">✕</button>

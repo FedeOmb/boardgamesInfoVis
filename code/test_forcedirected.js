@@ -63,6 +63,9 @@ function setScale(data){
 
 //var nodeColorMap = mapNodesToCliqueColors(cliques)
 
+// Crea la legenda
+var legend = d3.select("#color-legend");
+
 const tooltip = d3.select("body")
     .append("div")
     .attr("class", "tooltip")
@@ -84,7 +87,24 @@ d3.json("data/dataset_converted_cleaned_v2.json", function (error, _graph) {
   setScale(graph);
   initializeDisplay();
   initializeSimulation();
+  addLegend()
 });
+
+function addLegend(){
+  var allTypes = Array.from(new Set(graph.nodes.flatMap(d => d.type)));
+
+  allTypes.forEach(function(type) {
+      var item = legend.append("div")
+          .attr("class", "legend-item");
+      
+      item.append("div")
+          .attr("class", "legend-color")
+          .style("background-color", colorScaleType(type));
+      
+      item.append("span")
+          .text(type);
+  });
+}
 
 //////////// FORCE SIMULATION ////////////
 
@@ -444,6 +464,24 @@ function handleNodeClick(d) {
   networkGroup.selectAll("line").attr("opacity", 0.4);
   networkGroup.selectAll("circle").attr("opacity", 0.4);
 
+  //scrive le informazioni del gioco
+  d3.select("#game-title").text(d.title);
+  d3.select("#game-rank").html(`<strong>Rank:</strong> ${d.rank}`);
+
+  d3.select("#node-header").select(".info-row:nth-child(3) .info-value").text(d.year);
+
+  d3.select("#node-header").select(".info-row:nth-child(4) .info-value")
+    .text(d.categories.map(c => c.name).join(", "));
+
+  d3.select("#node-header").select(".info-row:nth-child(5) .info-value")
+    .text(d.mechanics.map(m => m.name).join(", "));
+
+  d3.select("#node-header").select(".info-row:nth-child(6) .info-value")
+    .text(d.type.map(t => t).join(", "));
+
+  d3.select("#node-header").select(".info-row:nth-child(7) .info-value")
+    .text(d.designer.map(des => des.name).join(", "));
+
   //evidenzia i nodi adiacenti
   node.each(function (n) {
     if (isAdjacent(d, n)) {
@@ -495,12 +533,6 @@ function handleNodeClick(d) {
     updateForces();
     resetNetColors()
   });
-
-  // Aggiorna il contenuto del pannello con i dettagli del nodo
-  d3.select("#node-header").html(`
-    <strong>${d.rank}°: ${d.title}</strong><br>
-    <strong>Type:</strong> ${d.type.join(", ")}<br>
-  `);
   
   d3.select("#chart-content").html(""); // pulizia iniziale
 

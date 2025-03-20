@@ -17,8 +17,6 @@
               margin-right: auto;
               margin-left: auto;
               background-color: #fff;
-              border-radius: 8px;
-              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
               padding-right: 10px;
               padding-left: 10px;
               max-width: 100%;
@@ -65,11 +63,8 @@
             }
             .col {
               min-height: 90vh;
-              background-color: #f9f9f9;
-              border-radius: 6px;
               padding: 10px;
               margin-right: 10px;
-              border: 1px solid #eee;
               position: relative;
             }
             .col-9 {
@@ -77,7 +72,7 @@
               max-width: 70%;
             }
             .col-3 {
-              display: flex;
+              display: block;
               flex-direction: column;
               justify-content: flex-start;
               flex: 1 0 20%;
@@ -90,17 +85,26 @@
               height: 100%;
             }
             .controls-container {
-              flex-shrink: 1;
-              flex-basis: 100px;
-              margin: 0 auto;
-              max-width: 300px;
-              max-height: 200px;
+              margin-bottom:20px;
+              padding:10px;
+              height:auto;
+              max-height: 30vh;
             }
-            .additional-chart {
-              flex-shrink: 1;
-              flex-grow: 1;
-              flex-basis: 200px;
-              max-height: 500px;
+            .additional-info {
+              min-height:80vh;
+              height:auto;
+            }
+            .col-9, .controls-container, .additional-info {
+              background-color: #f9f9f9;
+              border-radius: 6px;
+              border: 1px solid #eee;
+            }
+            #bar-chart-3{
+              max-height: 1000px;
+            }
+            .grid line {
+              stroke: lightgrey;
+              stroke-width: 0.5;
             }
           </style>
     </head>
@@ -123,23 +127,31 @@
           </div>
 
           <div class="col col-3">
-            <h2>Controlli filtri</h2>
+
             <div class="controls-container" id="controls-1">
+              <h2>Controlli filtri</h2>
               <br>
               <div class="select-container">
-                <label for="select-attribute-1">Visualizza la diffusione di un determinato attributo nella top 100</label>
-                <select id="select-attribute-1"></select>
+              <label for="select-attribute-1">Visualizza la diffusione di un determinato attributo nella top 100</label>
+              <select id="select-attribute-1"></select>
               </div>
               <br>
               <div class="range-container">
-                <label for="max-items-1">Seleziona il max num di elementi da visualizzare</label>
-                <br>
-                <input type="range" name="max-items-1" id="max-items-1" min="10" max="10" value="1">
-                <span id="range-value-1">0</span>
-                <br>
+              <label for="max-items-1">Seleziona il max num di elementi da visualizzare</label>
+              <br>
+              <span id="min-value-1">10</span>
+              <input type="range" name="max-items-1" id="max-items-1" min="10" max="100" value="10" >
+              <span id="max-value-1">100</span>
+              <br>
+              <div>Stai visualizzando i primi <label id="range-value-1">10</label> elementi</div>
+              <br>
               </div>
             </div>
-            <div class="additional-chart" id="additional-chart-1">
+            <div></div>
+            <div class="additional-info" id="additional-info-1">
+              <h2>Grafici aggiuntivi</h2>
+              <div class="additional-chart" id="additional-chart-1">
+              </div>
             </div>
           </div>
         </div>

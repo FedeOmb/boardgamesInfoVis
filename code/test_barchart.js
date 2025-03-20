@@ -84,18 +84,28 @@ svg1.attr("viewBox", `0 0 ${svg1Width} ${svg1Height}`);
     }
     createBarchart2(ages, "count", "age");
   })
-
   //--- listener controlli tab3 ---
   yearSliderMax.on("change", () => {
-    maxYearToVis = yearSliderMax.property("value");
-    yearSliderMaxValue.text(years[maxYearToVis].toString())
+    maxYearToVis = parseInt(yearSliderMax.property("value"));
+    minYearToVis = parseInt(yearSliderMin.property("value"));
+    if (maxYearToVis <= minYearToVis) {
+      maxYearToVis = minYearToVis + 1;
+      yearSliderMax.property("value", maxYearToVis);
+    }
+    yearSliderMaxValue.text(years[maxYearToVis].toString());
     createBarchart3(typeByYear);
-  })
+  });
+
   yearSliderMin.on("change", () => {
-    minYearToVis = yearSliderMin.property("value");
-    yearSliderMinValue.text(years[minYearToVis].toString())
+    maxYearToVis = parseInt(yearSliderMax.property("value"));
+    minYearToVis = parseInt(yearSliderMin.property("value"));
+    if (minYearToVis >= maxYearToVis) {
+      minYearToVis = maxYearToVis - 1;
+      yearSliderMin.property("value", minYearToVis);
+    }
+    yearSliderMinValue.text(years[minYearToVis].toString());
     createBarchart3(typeByYear);
-  })
+  });
 
 loadDatasets();
 
@@ -330,8 +340,6 @@ function calcTypeByYears2(data){
 
   };
 
-
-
 function createBarchart1(dataToVis, varY, varX){
   var svgWidth = svg1Width;
   var svgHeight = svg1Height
@@ -364,11 +372,23 @@ function createBarchart1(dataToVis, varY, varX){
     .attr("height", chartHeight)
     .attr("transform", `translate(${chartMargin.left},${chartMargin.top})`)
 
+    innerChart.append("g").call((g) => g
+    .attr('class', 'grid')
+    .selectAll('line')
+    .data(xScale.ticks())
+    .join('line')
+    .attr('x1', d => xScale(d))
+    .attr('x2', d => xScale(d))
+    .attr('y1', 0)
+    .attr('y2', chartHeight)
+  );
+
   // gruppo rect + label interna
   const barAndLabel = innerChart
-    .selectAll("g")
+    .selectAll(".bar-group")
     .data(data)
     .join("g")
+    .attr("class", "bar-group")
     .attr("transform", (d) => `translate(0, ${yScale(d[varY])})`);
 
   barAndLabel
@@ -475,9 +495,10 @@ function createAdditionalBarchart(dataToVis, varY, varX){
 
   // gruppo rect + label interna
   const barAndLabel = innerChart
-    .selectAll("g")
+    .selectAll(".bar-group")
     .data(data)
     .join("g")
+    .attr("class", "bar-group")
     .attr("transform", (d) => `translate(0, ${yScale(d[varY])})`);
 
   barAndLabel
@@ -600,7 +621,6 @@ function createBarchart2(dataToVis, varY, varX){
     .append("g")
     .call(d3.axisLeft(yScale));
     
-
 };
 
 function createBarchart3(dataToVis){
@@ -616,7 +636,8 @@ function createBarchart3(dataToVis){
   const types = [...new Set(data.map(d => d.type))]; 
   console.log(types);
   
-  const chartMargin = { top: 20, right: 20, bottom: 50, left: 20 };
+  const legendHeight = 20;
+  const chartMargin = { top: 20 + legendHeight, right: 20, bottom: 50, left: 20 };
   const chartWidth = svg3Width - (chartMargin.right + chartMargin.left);
   const chartHeight = svg3Height - (chartMargin.top + chartMargin.bottom);
   const max_count = d3.max(data, (d) => d.games.length);
@@ -645,11 +666,28 @@ function createBarchart3(dataToVis){
 
   svg3.selectAll("*").remove();
 
+  const legend = svg3
+    .append("g")
+    .attr("transform", `translate(${chartMargin.left}, 0)`)
+    .attr("width", chartWidth)
+    .attr("height", legendHeight);
+
   const innerChart = svg3
     .append("g")
     .attr("width", chartWidth)
     .attr("height", chartHeight)
     .attr("transform", `translate(${chartMargin.left},${chartMargin.top})`)
+  
+    // Aggiungi rettangoli di sfondo alternati
+  innerChart.selectAll(".background-rect")
+    .data(yearsToVis)
+    .join("rect")
+    .attr("class", "background-rect")
+    .attr("x", (d) => xScale(d))
+    .attr("y", 0)
+    .attr("width", xScale.bandwidth())
+    .attr("height", chartHeight)
+    .attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
 
     innerChart.append("g").call((g) => g
       .attr('class', 'grid')
@@ -697,26 +735,27 @@ function createBarchart3(dataToVis){
     .append("g")
     .call(d3.axisLeft(yScale));
 
-  const legend = svg3
-    .append("g")
-    .attr("transform", `translate(${chartWidth - 150}, ${chartMargin.top})`);
-
+    let legendX = 0;
     types.forEach((type, i) => {
-      const legendRow = legend.append("g")
-          .attr("transform", `translate(0, ${i * 20})`);
+      const legendItem = legend.append("g")
+          .attr("transform", `translate(${legendX}, 0)`);
 
-      legendRow.append("rect")
+      legendItem.append("rect")
         .attr("width", 15)
         .attr("height", 15)
+        .attr("x", 0)
+        .attr("y", 0)
         .attr("fill", color(type));
 
-      legendRow.append("text")
+      legendItem.append("text")
         .attr("x", 20)
         .attr("y", 12)
         .attr("font-size", "12px")
         .attr("text-anchor", "start")
         .text(type);
-      });
+
+      legendX += legendItem.node().getBBox().width + 10;
+    });
 };
 
 function getShortTitle(title){

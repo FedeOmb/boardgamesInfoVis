@@ -90,12 +90,13 @@ d3.json("data/dataset_converted_cleaned_v2.json", function (error, _graph) {
   addLegend()
 });
 
-function addLegend(){
+function addLegend() {
   var allTypes = Array.from(new Set(graph.nodes.flatMap(d => d.type)));
 
   allTypes.forEach(function(type) {
-      var item = legend.append("div")
-          .attr("class", "legend-item");
+      var item = legend.append("button")
+          .attr("class", "legend-item")
+          .attr("data-type", type); // Set the data-type attribute here
       
       item.append("div")
           .attr("class", "legend-color")
@@ -103,6 +104,21 @@ function addLegend(){
       
       item.append("span")
           .text(type);
+  });
+
+  // Attach the click event to the legend items
+  legend.selectAll(".legend-item").on("click", function() {
+    d3.select(this)
+    const type = d3.select(this).attr("data-type");
+  
+    if (activeHull === type) {
+      svg.selectAll(".hull").remove();
+      activeHull = null;
+    } else {
+      const hull = computeSingleHull(graph.nodes, type);
+      drawSingleHull(svg, hull, type);
+      activeHull = type;
+    }
   });
 }
 
@@ -251,7 +267,7 @@ function initializeDisplay() {
 function updateDisplay() {
   node
     .attr("r", d => radiusScale(d.rank))
-    .attr("fill", d => colorScaleType(d.type[0])) // Default to gray if no clique color
+    .attr("fill", d => colorScaleType(d.type[0])) 
     .attr("stroke", "grey")
     .attr("stroke-width", 1);
 
@@ -262,9 +278,10 @@ function updateDisplay() {
 
 // update the display positions after each simulation tick
 function ticked() {
-  let hulls = computeHulls(graph.nodes, types);
+  //let hulls = computeHulls(graph.nodes, types);
   //adjustNodePositions(graph.nodes, hulls);
-  drawHulls(svg, hulls);
+  //drawHulls(svg, hulls);
+  
   link
     .attr("x1", function (d) {
       return d.source.x;
@@ -286,6 +303,11 @@ function ticked() {
     .attr("cy", function (d) {
       return d.y;
     });
+
+  if (activeHull !== null) {
+    const hull = computeSingleHull(graph.nodes, activeHull);
+    drawSingleHull(svg, hull, activeHull);
+  }
   d3.select("#alpha_value").style("flex-basis", simulation.alpha() * 100 + "%");
 }
 
@@ -517,6 +539,12 @@ function handleNodeClick(d) {
       });
   }
 
+  // Update the hull if it's visible
+  if (activeHull !== null) {
+    const hull = computeSingleHull(graph.nodes, activeHull);
+    drawSingleHull(svg, hull, activeHull);
+  }
+
   d3.select("#node-details").html(""); // Pulisce il pannello
 
   d3.select("#info-panel")
@@ -532,6 +560,11 @@ function handleNodeClick(d) {
     width = +svg.node().getBoundingClientRect().width;
     updateForces();
     resetNetColors()
+    // Redraw the hull if it was visible
+    if (activeHull !== null) {
+      const hull = computeSingleHull(graph.nodes, activeHull);
+      drawSingleHull(svg, hull, activeHull);
+    }
   });
   
   d3.select("#chart-content").html(""); // pulizia iniziale
@@ -543,6 +576,7 @@ function handleNodeClick(d) {
   const data = [d, ...neighbors];
 
   d3.select("#chart-selector button[data-chart='minage']").classed("active", true);
+  data.sort((a, b) => d3.descending(a.minage, b.minage));
   createMinAgeChart(data);
 
   d3.selectAll(".chart-btn").on("click", function() {
@@ -590,7 +624,8 @@ function handleNodeClick(d) {
       .style("font-weight", "bold");
   
     const ageX = d3.scaleLinear()
-      .domain([0, d3.max(data, n => n.minage)])
+      //.domain([0, d3.max(data, n => n.minage)])
+      .domain([0, getMaxMinAge()])
       .range([margin.left, svgWidth - margin.right]);
   
     const ageY = d3.scaleBand()
@@ -616,14 +651,6 @@ function handleNodeClick(d) {
       .attr("transform", `translate(${margin.left},0)`)
       .call(d3.axisLeft(ageY));
   }
-
-  // --------- Dumbbell Chart: min/max players ---------
-  //data.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
-  //createDumbbellChart(data, "minplayers", "maxplayers", "#node-details", "Players", neighbors.length);
-
-  // --------- Dumbbell Chart: min/max playtime ---------
-  //data.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
-  //createDumbbellChart(data, "minplaytime", "maxplaytime", "#node-details", "Playtime (min)", neighbors.length);
   }
 
   // Dumbbell chart reusable function
@@ -660,7 +687,7 @@ function handleNodeClick(d) {
       .attr("x2", d => x(d[maxProp]))
       .attr("y1", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
       .attr("y2", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
-      .attr("stroke", "grey")
+      .attr("stroke", "gray")
       .attr("stroke-width", "1px");
 
     svg.selectAll("circle.min")
@@ -705,6 +732,11 @@ function handleNodeClick(d) {
       width = +svg.node().getBoundingClientRect().width;
       updateForces();
       resetNetColors()
+      // Redraw the hull if it was visible
+      if (activeHull !== null) {
+        const hull = computeSingleHull(graph.nodes, activeHull);
+        drawSingleHull(svg, hull, activeHull);
+      }
     }
 });
 
@@ -714,6 +746,33 @@ function isAdjacent(source, target) {
     (link.source === source && link.target === target) || 
     (link.source === target && link.target === source)
   );
+}
+
+let activeHull = null;
+
+function computeSingleHull(nodes, type) {
+  let points = nodes
+    .filter(d => d.type && d.type.includes(type))
+    .map(d => [d.x, d.y]);
+
+  if (points.length > 2) {
+    return d3.polygonHull(points);
+  }
+  return null;
+}
+
+function drawSingleHull(svg, hull, type) {
+  svg.selectAll(".hull").remove();
+
+  if (hull) {
+    networkGroup.select(".hulls-group")
+      .append("path")
+      .attr("class", "hull")
+      .attr("d", "M" + hull.join("L") + "Z")
+      .style("fill", colorScaleType(type))
+      .style("opacity", 0.15)
+      .style("pointer-events", "none");
+  }
 }
 
 function computeHulls(nodes, types) {
@@ -755,7 +814,7 @@ function drawHulls(svg, hulls) {
   
   Object.keys(hulls).forEach(type => {
       if (hulls[type]) {
-          svg.select(".hulls-group")
+          networkGroup.select(".hulls-group")
               .append("path")
               .attr("class", "hull")
               .attr("d", "M" + hulls[type].join("L") + "Z") // Genera il path della hull
@@ -814,4 +873,8 @@ function resetNetColors(){
   .attr("fill", d => colorScaleType(d.type[0]))
   .attr("stroke", "grey")
   .attr("stroke-width", 1);
+}
+
+function getMaxMinAge(){
+  return Math.max(...graph.nodes.map(item => item.minage));
 }

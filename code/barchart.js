@@ -1,6 +1,4 @@
 
-var activeTab = 1;
-
 var ages = [];
 var categories = [];
 var mechanics = [];
@@ -25,9 +23,13 @@ svg1.attr("viewBox", `0 0 ${svg1Width} ${svg1Height}`);
   var minYearToVis = 0;
   var maxYearToVis = 10;
   const attrList1 = [
-    {value: "categories", name: "Categorie"}, 
-    {value: "mechanics", name: "Meccaniche"}, 
+    {value: "categories", name: "Categories"}, 
+    {value: "mechanics", name: "Mechanics"}, 
     {value: "designers", name: "Designers"}];
+  const attrGameList = [
+      {value: "rank", name: "Rank in top 100"}, 
+      {value: "rating", name: "User Rating"}, 
+      {value: "minage", name: "Minimum Age"}];
   
   const attrSelector1 = d3.select("#select-attribute-1");
   const rangeSlider1 = d3.select("#max-items-1");
@@ -42,7 +44,6 @@ svg1.attr("viewBox", `0 0 ${svg1Width} ${svg1Height}`);
   const yearSliderMaxValue = d3.select("#max-year-value");
   const yearSliderMin = d3.select("#min-year");
   const yearSliderMinValue = d3.select("#min-year-value");
-
 
   //--- listener controlli tab 1 ----
   //listener per cambio attributo
@@ -272,13 +273,11 @@ function createBarchart1(dataToVis, varY, varX){
       var dataToVis = [];
       games.forEach(game => {
         var gameData = dataset.nodes.find(d => d.id == game);
-        dataToVis.push(
-          gameData
-        );
+        dataToVis.push(gameData);
       });
       console.log(dataToVis);
-      //createAdditionalBarchart(dataToVis, "name", "rating");
-      showAdditionalInfo(dataToVis);
+      //createAdditionalBarchart(dataToVis, "title", "rating");
+      showAdditionalInfo(dataToVis, "additional-info-1");
     });
 
   barAndLabel
@@ -306,7 +305,7 @@ function createBarchart1(dataToVis, varY, varX){
       .append("text")
       .attr("transform", `translate(${chartWidth / 2}, -30)`)
       .style("text-anchor", "middle")
-      .text("Numero di giochi");
+      .text("Number of games");
 
     innerChart
       .append("text")
@@ -319,37 +318,83 @@ function createBarchart1(dataToVis, varY, varX){
 
     svg1.on("click", (event) => {
       if (event.target.tagName === "svg") {
-        d3.select("#additional-chart-1").selectAll("*").remove();
+        d3.select("#additional-info-1 .gamelist" ).selectAll("*").remove();
+        d3.select("#additional-info-1 .gamelist-legend").selectAll("*").remove();
         d3.selectAll("rect").attr("fill", d3.color("teal"));
       }
     });
 };
 
-function showAdditionalInfo(dataToVis) {
-
-  var infoList = d3.select("#infolist-1");
-
+function showAdditionalInfo(dataToVis, containerId) {
   var data = dataToVis;
-  data = data.sort((a, b) => d3.descending(a.rating, b.rating));
+  data = data.sort((a, b) => d3.ascending(a.rank, b.rank));
+
+  var legendWidth = 300;
+  var legendHeight = 60;
+
+  var infoList = d3.select(`#${containerId} .gamelist`);
+  var legendContainer = d3.select(`#${containerId} .gamelist-legend`);
+  var attrSelector = d3.select(`#${containerId} .gamelist-controls select`);
+
+  if (attrSelector.selectAll("option").empty()) {
+    // Inizializza le opzioni del selettore se non presenti
+    attrSelector.selectAll("option")
+      .data(attrGameList)
+      .join("option")
+      .attr("value", (d) => d.value)
+      .text((d) => d.name)
+      .property("selected", (d) => d.value == "rating");
+  }
+
+  const updateColors = () => {
+    const coloringAttr = attrSelector.property("value");
+    var values = dataToVis.map(d => d[coloringAttr]);
+    const color = d3.scaleSequential([d3.min(values), d3.max(values)], d3.interpolateBlues);
+
+    // Aggiorna i colori dei rettangoli
+    infoList.selectAll("rect")
+      .style("background-color", (d) => color(d[coloringAttr]));
+
+    // Aggiorna la legenda
+    legendContainer.selectAll("*").remove();
+    var legendSvg = legendContainer.append("svg")
+      .attr("width", legendWidth)
+      .attr("height", legendHeight);
+    createSequentialLegend(legendSvg, color);
+  };
+
+  // Aggiungi il listener per il cambio del selettore
+  attrSelector.on("change", updateColors);
 
   infoList.selectAll("*").remove();
 
-  var rectHeight = 30;
+  var rectHeight = 50;
   var rectMargin = 2;
   var rectWidth = 100;
 
-  const tooltip = d3.select("#additional-info-1")
+  const tooltip = d3.select(`#${containerId}`)
   .append("div")
   .attr("class", "tooltip")
   .style("position", "fixed")
   .style("padding", "8px")
-  .style("background", "rgba(0, 0, 0, 0.7)")
-  .style("color", "white")
+  .style("background", "rgba(255, 255, 255, 1)")
+  .style("color", "black")
   .style("border-radius", "5px")
   .style("pointer-events", "none")
   .style("font-size", "12px")
   .style("visibility", "hidden");
 
+  var showTooltip = function(event,d){
+    var designers = d.designer.map(des => des.name).join(", ");
+    tooltip
+    .html(`<strong>(${d.rank}°) ${d.title} <br>Year: ${d.year} <br>Designers: ${designers}<br>Min age: ${d.minage} <br> User rating: ${d.rating} <br> Players:${d.minplayers} - ${d.maxplayers} Play Time: ${d.minplaytime} - ${d.maxplaytime}</strong><br>`)
+    .style("visibility", "visible");
+  }
+  var mousemove = function(event,d) {
+    tooltip
+    .style("left", (event.pageX) + "px")
+    .style("top", (event.pageY) + "px")
+  }
 
   var rects = infoList.selectAll("g")
     .data(data)
@@ -358,25 +403,66 @@ function showAdditionalInfo(dataToVis) {
     .style("width", `${rectWidth}px`)
     .style("height", `${rectHeight}px`)
     .style("margin", `${rectMargin}px`)
-    .style("background-color", "lightblue")
+    .style("padding", "3px")
+    .style("border-radius", "5px")
     .style("display", "flex")
     .style("align-items", "center")
     .style("position", "relative")
-    .style("justify-content", "center")
-    .text(d => `${d.title}`)
-    .on("mouseover", (event, d) => {
-    let rect = event.currentTarget.getBoundingClientRect(); // Otteniamo la posizione del rettangolo
-    tooltip.html(`<strong>${d.rank}°: ${d.title} <br>Year: ${d.year} <br>Designer: ${d.designer[0].name}<br>Min age: ${d.minage}</strong><br>`)
-    .style("left", (event.pageX) + "px")
-    .style("top", (event.pageY) + "px")
-      .style("visibility", "visible");
-  }).on("mouseout", () => {
+    .style("justify-content", "left")
+    .text(d => `${d.rank}° | ${d.title}`)
+    .on("mouseover", showTooltip)
+    .on("mousemove", mousemove)
+    .on("mouseout", () => {
     tooltip.style("visibility", "hidden");
-  })
-  ;
+  });
+
+    // Inizializza i colori dei rettangoli e la legenda
+    updateColors();
 }
 
+function createSequentialLegend(legendSvg, colorScale) {
+  const width = legendSvg.node().getBoundingClientRect().width;
+  const height = legendSvg.node().getBoundingClientRect().height;
 
+  const domain = colorScale.domain();
+  
+  const tickFormat = d => d;
+  const tickSize = 6;
+  
+  const legend = legendSvg.append("g")
+    .attr("class", "legend")
+    .attr("transform", `translate(10, 10)`);
+  
+  // Crea una scala x per la posizione dei tick
+  const x = d3.scaleLinear()
+    .domain(domain)
+    .range([0, width - 10 - 10]);
+  
+  const rectWidth = (width - 10 - 10) / 100;
+  const rects = legend.selectAll("rect")
+    .data(d3.range(domain[0], domain[1], (domain[1] - domain[0]) / 100))
+    .enter()
+    .append("rect")
+    .attr("x", d => x(d))
+    .attr("y", 0)
+    .attr("width", rectWidth + 1) // +1 per evitare spazi vuoti
+    .attr("height", 15)
+    .style("fill", d => colorScale(d));
+  
+  // Crea l'asse della legenda
+  const axis = d3.axisBottom(x)
+    .tickSize(tickSize)
+    .tickFormat(tickFormat);
+  
+  // Aggiungi l'asse
+  legend.append("g")
+    .attr("class", "legend-axis")
+    .attr("transform", "translate(0, 15)")
+    .call(axis)
+    .call(g => g.select(".domain").remove());
+}
+
+/*
 function createAdditionalBarchart(dataToVis, varY, varX){
   var svgWidth = d3.select("#additional-chart-1").node().getBoundingClientRect().width;
   var svgHeight = d3.select("#additional-chart-1").node().getBoundingClientRect().height;
@@ -453,7 +539,7 @@ function createAdditionalBarchart(dataToVis, varY, varX){
     .attr("transform", `translate(${chartWidth / 2}, -20)`)
     .style("text-anchor", "middle")
     .text("Voto");
-};
+};*/
 
 
 function createBarchart2(dataToVis, varY, varX){
@@ -484,13 +570,6 @@ function createBarchart2(dataToVis, varY, varX){
     .attr("height", chartHeight)
     .attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);
 
-/*     // griglia orizzontale
-    innerChart.append("g")
-    .attr("class", "grid")
-    .call(d3.axisLeft(yScale)
-      .tickSize(-chartWidth)
-      .tickFormat(""));
- */
     innerChart.append("g").call((g) => g
       .attr('class', 'grid')
       .selectAll('line')
@@ -516,7 +595,19 @@ function createBarchart2(dataToVis, varY, varX){
     .attr("height", (d) => chartHeight - yScale(d[varY]))
     .attr("x", 0)
     .attr("y", (d) => yScale(d[varY]))
-    .attr("fill", "teal");
+    .attr("fill", "teal")
+    .on("click", (event,d) => {
+      d3.selectAll("rect").attr("fill", d3.color("teal"));
+      d3.select(event.currentTarget).attr("fill", d3.color("teal").darker());
+      var games = d.games;
+      var dataToVis = [];
+      games.forEach(game => {
+        var gameData = dataset.nodes.find(d => d.id == game);
+        dataToVis.push(gameData);
+      });
+      console.log(dataToVis);
+      showAdditionalInfo(dataToVis, "additional-info-2");
+    });
 
   barAndLabel
     .append("text")
@@ -674,13 +765,3 @@ function createBarchart3(dataToVis){
       legendX += legendItem.node().getBBox().width + 10;
     });
 };
-
-function getShortTitle(title){
-  title = String(title)
-  if(title.length > 35){
-    if(title.includes(":"))
-        return title.split(":")[0]
-    else if(title.includes("("))
-        return title.split("(")[0]
-  }else return title
-}

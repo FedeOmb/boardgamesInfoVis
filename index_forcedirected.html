@@ -51,7 +51,7 @@
               flex-shrink: 0;
             }
             body.panel-open #info-panel {
-              display: block;
+              display: block !important;
             }
             .close-btn {
               position: absolute;
@@ -135,7 +135,7 @@
               box-shadow: none;
               border: none;
             }
-            .legend-item:active {
+            .legend-item.active {
               background: rgba(0, 0, 0, 0.15);
             }
             .legend-item:hover {
@@ -228,9 +228,9 @@
         <svg id="graph-svg"></svg>
         <div id="controls-wrapper">
           <div id="zoom-controls">
-            <button id="zoom-out" class="zoom-btn">−</button>
-            <button id="zoom-reset" class="zoom-btn">⟳</button>
-            <button id="zoom-in" class="zoom-btn">+</button>
+            <button type="button" id="zoom-out" class="zoom-btn">−</button>
+            <button type="button" id="zoom-reset" class="zoom-btn">⟳</button>
+            <button type="button" id="zoom-in" class="zoom-btn">+</button>
           </div>
           <div id="color-legend"></div>
         </div>
@@ -267,15 +267,15 @@
           </div>
           <div id="chart-selector">
             <button class="chart-btn" data-chart="minage">Min Age</button>
-            <button class="chart-btn" data-chart="players">Players</button>
+            <button class="chart-btn" data-chart="players">Number of Players</button>
             <button class="chart-btn" data-chart="playtime">Playtime</button>
-            <button class="chart-btn" data-chart="custom">Custom</button>
+            <button class="chart-btn" data-chart="categories">Categories distribution</button>
           </div>
           <div id="chart-content"></div>
           <div id="node-details"></div>
         </div>
         <script src="https://d3js.org/d3.v4.min.js"></script>
-        <script type="text/javascript" src="data/cliques.js"></script>
-        <script type="text/javascript" src="code/test_forcedirected.js"></script>
+        <script type="text/javascript" src="code/forcedirected_listeners.js"></script>
+        <script type="text/javascript" src="code/forcedirected.js"></script>
     </body>
 </html>

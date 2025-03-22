@@ -1,10 +1,6 @@
 var svg = d3.select("svg"),
-  width = +svg.node().getBoundingClientRect().width,
-  height = +svg.node().getBoundingClientRect().height;
-
-  //var svg = d3.select("svg")
-  //.attr("width", "100%")
-  //.attr("height", "100%");
+width = +svg.node().getBoundingClientRect().width,
+height = +svg.node().getBoundingClientRect().height;
 
 var infoPanelVisible = false;
 
@@ -13,7 +9,7 @@ function updateSize() {
   height = +svg.node().getBoundingClientRect().height;
 
   simulation.force("center", d3.forceCenter(width / 2, height / 2));
-  simulation.alpha(1).restart();
+  simulation.alpha(0).restart();
 }
 
 // Aggiungi un event listener per il resize
@@ -25,69 +21,59 @@ var zoom = d3.zoom()
   .scaleExtent([0.2, 5]) // limiti di zoom
   .on("zoom", function() {
     networkGroup.attr("transform", d3.event.transform); // Applica la trasformazione al gruppo
-  });
+});
 
 svg.call(zoom);
-
-// Funzioni zoom
-d3.select("#zoom-in").on("click", function() {
-  svg.transition().call(zoom.scaleBy, 1.2);
-});
-d3.select("#zoom-out").on("click", function() {
-  svg.transition().call(zoom.scaleBy, 0.8);
-});
-d3.select("#zoom-reset").on("click", function() {
-  svg.transition().call(zoom.transform, d3.zoomIdentity);
-});
 
 // svg objects
 var link, node;
 // the data - an object with nodes and links
 var graph;
 var types = [];
+var categories
 var bidirectionalLinks = []
 
 //const radiusScale = d3.scaleLinear().domain([1, 100]).range([13, 3]);
-
 const radiusScale = d3.scaleSqrt().domain([1, 100]).range([15, 5]);
 
-var colorScaleType  = d3.scaleOrdinal(d3.schemeCategory10);
+//var colorScaleType  = d3.scaleOrdinal(d3.schemeCategory10);
+//var customColors = ["blue", "green", "#FF6347", "yellow", "#FF69B4", "#FF8C00"]
+var customColors = ["#377eb8","#4daf4a","#f781bf","#ffff33","#ff7f00","#e41a1c","#8dd3c7","#b1b1b1"];
+var colorScaleType  = d3.scaleOrdinal()
 
 function setScale(data){
   types = data.nodes.flatMap(d => d.type);
   types = [...new Set(types)];  
-  colorScaleType.domain(types);
-  console.log(types);
+  colorScaleType.domain(types).range(customColors);
+  //colorScaleType.domain(types);
 }
-//const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-
-//var nodeColorMap = mapNodesToCliqueColors(cliques)
 
 // Crea la legenda
 var legend = d3.select("#color-legend");
 
 const tooltip = d3.select("body")
-    .append("div")
-    .attr("class", "tooltip")
-    .style("position", "absolute")
-    .style("padding", "8px")
-    .style("background", "rgba(0, 0, 0, 0.7)")
-    .style("color", "white")
-    .style("border-radius", "5px")
-    .style("pointer-events", "none")
-    .style("font-size", "12px")
-    .style("visibility", "hidden");
+  .append("div")
+  .attr("class", "tooltip")
+  .style("position", "absolute")
+  .style("padding", "8px")
+  .style("background", "rgba(0, 0, 0, 0.7)")
+  .style("color", "white")
+  .style("border-radius", "5px")
+  .style("pointer-events", "none")
+  .style("font-size", "12px")
+  .style("visibility", "hidden");
 
 // load the data
 d3.json("data/dataset_converted_cleaned_v2.json", function (error, _graph) {
   if (error) throw error;
   graph = _graph;
-  //console.log(graph)
-  bidirectionalLinks = filterBidirectionalLinks(graph.links)
+
+  bidirectionalLinks = filterBidirectionalLinks(graph.links);
   setScale(graph);
   initializeDisplay();
+  resetNetColors();
   initializeSimulation();
-  addLegend()
+  addLegend();
 });
 
 function addLegend() {
@@ -95,6 +81,7 @@ function addLegend() {
 
   allTypes.forEach(function(type) {
       var item = legend.append("button")
+          .attr("type", "button")
           .attr("class", "legend-item")
           .attr("data-type", type); // Set the data-type attribute here
       
@@ -108,10 +95,12 @@ function addLegend() {
 
   // Attach the click event to the legend items
   legend.selectAll(".legend-item").on("click", function() {
-    d3.select(this)
+    d3.selectAll(".legend-item").classed("active", false);
     const type = d3.select(this).attr("data-type");
-  
+    d3.select(this).classed("active", true);
+
     if (activeHull === type) {
+      d3.select(this).classed("active", false);
       svg.selectAll(".hull").remove();
       activeHull = null;
     } else {
@@ -226,6 +215,8 @@ function updateForces() {
 
 //////////// DISPLAY ////////////
 
+var arc = d3.arc()
+
 // generate the svg objects and force simulation
 function initializeDisplay() {
 
@@ -243,12 +234,12 @@ function initializeDisplay() {
     .on("mouseover", mouseEnterEdge) // Add mouseover event listener
     .on("mouseout", mouseLeaveEdge);   // Add mouseout event listener;
 
-  
+
   // set the data and properties of node circles
-  node = networkGroup
+  /*node = networkGroup
     .append("g")
     .attr("class", "nodes")
-    .selectAll("circle")
+    .selectAll("arc")
     .data(graph.nodes)
     .enter()
     .append("circle")
@@ -257,19 +248,66 @@ function initializeDisplay() {
     .attr("fill", d => colorScaleType(d.type[0])) 
     .on("mouseover", handleMouseOver) // Add mouseover event listener
     .on("mouseout", handleMouseOut)
-    .on("click", handleNodeClick);   
+    .on("click", handleNodeClick);  */
 
-    // visualize the graph
-    updateDisplay();
+  // Append a group for each node
+  node = networkGroup
+    .append("g")
+    .attr("class", "nodes")
+    .selectAll("g.node")
+    .data(graph.nodes)
+    .enter()
+    .append("g")
+    .attr("class", "node")
+    .on("mouseover", handleMouseOver) // Add mouseover event listener
+    .on("mouseout", handleMouseOut)
+    .on("click", handleNodeClick);
+  node.selectAll("circle, path")
+    .on("click", function(event, d) {
+      // Assicurati che il clic venga gestito correttamente su entrambi i tipi
+      handleNodeClick.call(this, event, d); // Usa il metodo di click
+    });
+
+  // visualize the graph
+  updateDisplay();
 }
 
 // update the display based on the forces (but not positions)
 function updateDisplay() {
-  node
+  /*node
     .attr("r", d => radiusScale(d.rank))
     .attr("fill", d => colorScaleType(d.type[0])) 
     .attr("stroke", "grey")
-    .attr("stroke-width", 1);
+    .attr("stroke-width", 1);*/
+  // For each node, append either a circle or two arcs based on the number of types
+  node.each(function(d) {
+
+    const nodeGroup = d3.select(this);
+
+    arc.innerRadius(0)
+      .outerRadius(radiusScale(d.rank))
+      .startAngle(0)
+      .endAngle(Math.PI); // Half-circle
+
+    if (d.type.length === 1) {
+        // If the node has one type, append a full circle
+        nodeGroup.append("circle")
+            .attr("class", "network-circle")
+            .attr("r", radiusScale(d.rank))
+            .attr("fill", colorScaleType(d.type[0]));
+    } else if (d.type.length === 2) {
+        // If the node has two types, append two half-circles (arcs)
+        nodeGroup.append("path")
+            .attr("d", arc)
+            .attr("fill", colorScaleType(d.type[0]))
+            .attr("transform", "rotate(0)"); // First half-circle
+
+        nodeGroup.append("path")
+            .attr("d", arc)
+            .attr("fill", colorScaleType(d.type[1]))
+            .attr("transform", "rotate(180)"); // Second half-circle, rotated 180 degrees
+    }
+  }); 
 
   link
     .attr("stroke-width", forceProperties.link.enabled ? 1 : 0.5)
@@ -281,7 +319,7 @@ function ticked() {
   //let hulls = computeHulls(graph.nodes, types);
   //adjustNodePositions(graph.nodes, hulls);
   //drawHulls(svg, hulls);
-  
+
   link
     .attr("x1", function (d) {
       return d.source.x;
@@ -303,6 +341,7 @@ function ticked() {
     .attr("cy", function (d) {
       return d.y;
     });
+  node.attr("transform", d => `translate(${d.x},${d.y})`);
 
   if (activeHull !== null) {
     const hull = computeSingleHull(graph.nodes, activeHull);
@@ -310,8 +349,6 @@ function ticked() {
   }
   d3.select("#alpha_value").style("flex-basis", simulation.alpha() * 100 + "%");
 }
-
-//////////// UI EVENTS ////////////
 
 // update size-related forces
 d3.select(window).on("resize", function () {
@@ -328,416 +365,244 @@ function updateAll() {
 
 /*
 function mapNodesToCliqueColors(cliques) {
-  //console.log(cliques)
-  const nodeColorMap = new Map();
+//console.log(cliques)
+const nodeColorMap = new Map();
 
-  cliques.forEach((clique, index) => {
-    const color = colorScale(index); // Assign a unique color to each clique
-    clique.forEach(nodeId => {
-      nodeColorMap.set(nodeId, color); // Map each node in the clique to its color
-    });
+cliques.forEach((clique, index) => {
+  const color = colorScale(index); // Assign a unique color to each clique
+  clique.forEach(nodeId => {
+    nodeColorMap.set(nodeId, color); // Map each node in the clique to its color
   });
+});
 
-  return nodeColorMap;
+return nodeColorMap;
 }
-  */
+*/
 
-// Function to handle mouseover node event
-function handleMouseOver(d) {
-  if(!infoPanelVisible){
-    // Highlight the hovered node
-    node.each(function(n) {
-      d3.select(this).attr("opacity", 0.4);
-    })
-    link.each(function (l) {
-      d3.select(this).attr("opacity", 0.4);
-    });
-    d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2).attr("opacity", 1);
+function createMinAgeChart(data) {
+  const svgWidth = 500, svgHeight = data.length * 20 + 100;
+  const margin = { top: 30, right: 10, bottom: 30, left: 180 };
 
-    // Highlight adjacent nodes
-    node.each(function (n) {
-      if (isAdjacent(d, n)) {
-        d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2).attr("stroke-opacity", 1).attr("opacity", 1);
-      }
-    });
-
-    // Highlight adjacent links
-    link.each(function (l) {
-      if (l.source === d || l.target === d) {
-        d3.select(this)
-          .attr("stroke", "DarkSlateGrey") 
-          .attr("stroke-width", 2)
-          .attr("stroke-opacity", 1)
-          .attr("opacity", 1); 
-      }
-    });
-  }
-  tooltip.html(`<strong>${d.rank}°: ${d.title} <br>Type: ${d.type}</strong><br>`)
-        .style("left", (event.pageX + 10) + "px")
-        .style("top", (event.pageY - 10) + "px")
-        .style("visibility", "visible");
-}
-
-function handleMouseOut(d) {
-  if(!infoPanelVisible){
-    // Unhighlight the hovered node
-    d3.select(this).attr("stroke", "grey").attr("stroke-width", 1);
-
-    // Unhighlight adjacent nodes
-    node.each(function (n) {
-      if (isAdjacent(d, n)) {
-        d3.select(this).attr("stroke", "grey").attr("stroke-width", 1);
-      }
-    });
-
-    // Unhighlight adjacent links
-    link.each(function (l) {
-      if (l.source === d || l.target === d) {
-        d3.select(this)
-          .attr("stroke", "#999") // Revert link color to original
-          .attr("stroke-width", 1); // Revert link thickness to original
-      }
-    });
-
-    resetNetColors()
-  }
-  tooltip.style("visibility", "hidden");
-}
-
-//handle mouseover edge
-function mouseEnterEdge(d) {
-  // Trova i nodi corrispondenti nel dataset
-  const sourceNode = graph.nodes.find(n => n.id === (d.source.id || d.source));
-  const targetNode = graph.nodes.find(n => n.id === (d.target.id || d.target));
-
-  // Verifica che entrambi i nodi esistano
-  if (!sourceNode || !targetNode) return;
-
-  // Trova le categorie in comune
-  const sourceCategories = new Set(sourceNode.categories?.map(c => c.name) || []);
-  const targetCategories = new Set(targetNode.categories?.map(c => c.name) || []);
-  const commonCategories = [...sourceCategories].filter(c => targetCategories.has(c));
-
-  if(!infoPanelVisible){
-    //highlight edge
-    d3.select(this)
-      .attr("stroke-color", "lime")
-      .attr("stroke", "lime")
-      .attr("stroke-width", 3);
-    //highlight source and target node if any
-    d3.selectAll(".network-circle")
-      .select(function (data) {
-        return data == d.source || data == d.target ? this : null;
-      })
-      .attr("stroke-width", "3")
-      .attr("stroke-color", "lime")
-      .attr("stroke", "lime")
-      .attr("stroke-width", 3);
-  }
-  tooltip.transition().duration(200).style("opacity", 0.9);
-
-  edgeData = d3.select(this).datum();
+  const ageSvg = d3.select("#chart-content")
+    .append("svg")
+    .attr("width", svgWidth)
+    .attr("height", svgHeight);
   
-  // Mostra la tooltip solo se ci sono categorie in comune
-  if (commonCategories.length > 0) {
-    if(isBidirectional(sourceNode.id, targetNode.id)){
-      tooltip.html(`<strong>${d.source.title} ↔ ${d.target.title}</strong><br>${commonCategories}`)
-      .style("left", (event.pageX + 10) + "px")
-      .style("top", (event.pageY - 10) + "px")
-      .style("visibility", "visible");
-    }else {
-      tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>${commonCategories}`)
-      .style("left", (event.pageX + 10) + "px")
-      .style("top", (event.pageY - 10) + "px")
-      .style("visibility", "visible");
-    }
-  }else{
-      tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>`)
-      .style("left", (event.pageX + 10) + "px")
-      .style("top", (event.pageY - 10) + "px")
-      .style("visibility", "visible");
-  }
+  ageSvg.append("text")
+    .attr("x", svgWidth / 2)
+    .attr("y", margin.top / 2)
+    .attr("text-anchor", "middle")
+    .text("Min age")
+    .style("font-weight", "bold");
+
+  const ageX = d3.scaleLinear()
+    //.domain([0, d3.max(data, n => n.minage)])
+    .domain([0, getMaxMinAge()])
+    .range([margin.left, svgWidth - margin.right]);
+
+  const ageY = d3.scaleBand()
+    .domain(data.map(n => getShortTitle(n.title)))
+    .range([margin.top, svgHeight - margin.bottom])
+    .padding(0.1);
+
+  ageSvg.selectAll("rect")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("x", ageX(0))
+    .attr("y", n => ageY(getShortTitle(n.title)))
+    .attr("width", n => ageX(n.minage) - ageX(0))
+    .attr("height", ageY.bandwidth())
+    .attr("fill", "steelblue");
+
+  ageSvg.append("g")
+    .attr("transform", `translate(0,${svgHeight - margin.bottom})`)
+    .call(d3.axisBottom(ageX));
+
+  ageSvg.append("g")
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(d3.axisLeft(ageY));
 }
 
-//handle mouseout edge
-function mouseLeaveEdge(d) {
-  if(!infoPanelVisible){
-    d3.select(this).attr("stroke-color", "grey")
-    .attr("stroke", "grey")
-    .attr("stroke-width", 1);
-  
-    d3.selectAll(".network-circle")
-      .select(function (data) {
-        return data == d.source || data == d.target ? this : null;
-      })
-      .attr("stroke-width", "3")
-      .attr("stroke-color", "grey")
-      .attr("stroke", "grey")
-      .attr("stroke-width", 1);
-  }
-  tooltip.style("visibility", "hidden");
+function createCategoriesChart(data) {
+  // Extract categories
+  let categories = data.flatMap(d => d.categories || []);
+
+  // Count occurrences
+  const counts = d3.nest()
+    .key(c => c.name)
+    .rollup(v => v.length)
+    .entries(categories)
+    .map(d => ({ name: d.key, count: d.value }));
+
+  counts.sort((a, b) => d3.descending(a.count, b.count));
+
+  // Define dimensions and margins
+  const margin = { top: 30, right: 20, bottom: 30, left: 180 };
+  const width = 500 - margin.left - margin.right; // Chart width (excluding margins)
+  const height = data.length * 20 + 100 - margin.top - margin.bottom; // Chart height (excluding margins)
+
+  // Create SVG container
+  const svg = d3.select("#chart-content")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right) // Total SVG width
+    .attr("height", height + margin.top + margin.bottom) // Total SVG height
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`); // Offset chart area by margins
+
+  // Add the title
+  svg.append("text")
+    .attr("x", width / 2) // Center the title horizontally
+    .attr("y", 0 - (margin.top / 2)) // Position the title above the chart
+    .attr("text-anchor", "middle")
+    .text("Categories frequency")
+    .style("font-weight", "bold");
+
+  // Define scales
+  const x = d3.scaleLinear()
+    .domain([0, d3.max(counts, d => d.count)]) // Domain based on counts
+    .range([0, width]); // Range within the chart area
+
+  const y = d3.scaleBand()
+    .domain(counts.map(d => d.name)) // Domain based on category names
+    .rangeRound([0, height]) // Range within the chart area
+    .padding(0.1);
+
+  // Add bars
+  svg.selectAll(".bar")
+    .data(counts)
+    .enter()
+    .append("rect")
+    .attr("class", "bar")
+    .attr("x", 0)
+    .attr("y", d => y(d.name))
+    .attr("width", d => x(d.count))
+    .attr("height", y.bandwidth())
+    .attr("fill", "steelblue");
+
+  // Add labels (counts) on the bars
+  svg.selectAll(".label")
+    .data(counts)
+    .enter()
+    .append("text")
+    .attr("class", "label")
+    .attr("x", d => x(d.count) + 5) // Position text at the end of the bar
+    .attr("y", d => y(d.name) + y.bandwidth() / 2 + 4) // Center text vertically
+    .text(d => d.count);
+
+  // Add x-axis
+  svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", `translate(0,${height})`) // Position x-axis at the bottom
+    .call(d3.axisBottom(x).ticks(2));
+
+  // Add y-axis
+  svg.append("g")
+    .attr("class", "y axis")
+    .call(d3.axisLeft(y))
+    .selectAll(".tick text")
+    .each(function(d) {
+      const self = d3.select(this);
+      const name = String(d);
+
+      if (name.length > 20) {
+        const lines = name.split("/");
+        self.text(null);
+        lines.forEach(function(line, i) {
+          self.append("tspan")
+            .text(line)
+            .attr("x", -7)
+            .attr("dy", i === 0 ? "0em" : "1.1em");
+        });
+      }
+    });
 }
 
-function handleNodeClick(d) {
+// Dumbbell chart reusable function
+function createDumbbellChart(data, minProp, maxProp, container, title, neighborsLenght) {
+  const svgWidth = 500, svgHeight = neighborsLenght * 20 + 100 //200;
+  const margin = { top: 30, right: 10, bottom: 30, left: 180 };
 
-  infoPanelVisible = true
-  d3.select("body").classed("panel-open", true);
-  resetNetColors()
-  networkGroup.selectAll("line").attr("opacity", 0.4);
-  networkGroup.selectAll("circle").attr("opacity", 0.4);
+  const svg = d3.select(container)
+    .append("svg")
+    .attr("width", svgWidth)
+    .attr("height", svgHeight);
 
-  //scrive le informazioni del gioco
-  d3.select("#game-title").text(d.title);
-  d3.select("#game-rank").html(`<strong>Rank:</strong> ${d.rank}`);
+  svg.append("text")
+    .attr("x", svgWidth / 2)
+    .attr("y", margin.top / 2)
+    .attr("text-anchor", "middle")
+    .text(title)
+    .style("font-weight", "bold");
 
-  d3.select("#node-header").select(".info-row:nth-child(3) .info-value").text(d.year);
+  const x = d3.scaleLinear()
+    .domain([0, d3.max(data, n => Math.max(n[minProp], n[maxProp]))])
+    .range([margin.left, svgWidth - margin.right]);
 
-  d3.select("#node-header").select(".info-row:nth-child(4) .info-value")
-    .text(d.categories.map(c => c.name).join(", "));
+  const y = d3.scaleBand()
+    .domain(data.map(n => getShortTitle(n.title)))
+    .range([margin.top, svgHeight - margin.bottom])
+    .padding(0.4);
 
-  d3.select("#node-header").select(".info-row:nth-child(5) .info-value")
-    .text(d.mechanics.map(m => m.name).join(", "));
+  const lines = svg.selectAll("line")
+    .data(data)
+    .enter()
+    .append("line")
+    .attr("x1", d => x(d[minProp]))
+    .attr("x2", d => x(d[maxProp]))
+    .attr("y1", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
+    .attr("y2", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
+    .attr("stroke", "gray")
+    .attr("stroke-width", "1px");
 
-  d3.select("#node-header").select(".info-row:nth-child(6) .info-value")
-    .text(d.type.map(t => t).join(", "));
+  svg.selectAll("circle.min")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("class", "dumbbell-circle")
+    .attr("cx", d => x(d[minProp]))
+    .attr("cy", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
+    .attr("r", 5)
+    .attr("fill", "#69b3a2");
 
-  d3.select("#node-header").select(".info-row:nth-child(7) .info-value")
-    .text(d.designer.map(des => des.name).join(", "));
+  svg.selectAll("circle.max")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("class", "dumbbell-circle")
+    .attr("cx", d => x(d[maxProp]))
+    .attr("cy", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
+    .attr("r", 5)
+    .attr("fill", "#4C4082");
 
-  //evidenzia i nodi adiacenti
-  node.each(function (n) {
-    if (isAdjacent(d, n)) {
-      d3.select(this).attr("stroke", "DarkSlateGrey").attr("stroke-width", 2).attr("stroke-opacity", 1).attr("opacity", 1);
-    }
-  });
+  // Axes
+  svg.append("g")
+    .attr("transform", `translate(0,${svgHeight - margin.bottom})`)
+    .call(d3.axisBottom(x));
 
-  // evidenzia i link adiacenti
-  link.each(function (l) {
-    if (l.source === d || l.target === d) {
-      d3.select(this)
-        .attr("stroke", "DarkSlateGrey") 
-        .attr("stroke-width", 2)
-        .attr("stroke-opacity", 1)
-        .attr("opacity", 1); 
-    }
-  });
+  svg.append("g")
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(d3.axisLeft(y));
+}
 
-  d3.select(this)
-  .attr("fill", "black")
-  .attr("opacity", 1);
-
-  d3.select("#info-panel").style("display", "block");
-
-  // Sposta la rete verso sinistra e ridimensiona il pannello SVG
-  if(svg.style("flex-basis") === "100%"){
-    svg.transition()
-      .duration(200)
-      .style("flex-basis", "70%") // Riduci la larghezza del pannello SVG
-      .on("end", function() {
-        width = +svg.node().getBoundingClientRect().width;
-        updateForces();
-      });
-  }
-
-  // Update the hull if it's visible
-  if (activeHull !== null) {
-    const hull = computeSingleHull(graph.nodes, activeHull);
-    drawSingleHull(svg, hull, activeHull);
-  }
-
-  d3.select("#node-details").html(""); // Pulisce il pannello
-
-  d3.select("#info-panel")
-  .style("position", "relative"); // Per posizionare il tasto in assoluto all'interno
-
-  d3.select("#close-info-panel").on("click", () => {
-    d3.select("#info-panel").style("display", "none");
+//chiude il pannello info al click su un area vuota
+svg.on("click", function() {
+  if (d3.event.target.tagName !== "circle" && infoPanelVisible) {
     infoPanelVisible = false
     d3.select("body").classed("panel-open", false);
+    d3.select("#info-panel").style("display", "none");
     const infoPanel = d3.select("#info-panel");
     infoPanel.style("display", "none");
     svg.style("flex-basis", "100%");
     width = +svg.node().getBoundingClientRect().width;
-    updateForces();
+    updateSize()
     resetNetColors()
     // Redraw the hull if it was visible
     if (activeHull !== null) {
       const hull = computeSingleHull(graph.nodes, activeHull);
       drawSingleHull(svg, hull, activeHull);
     }
-  });
-  
-  d3.select("#chart-content").html(""); // pulizia iniziale
-
-  const neighbors = graph.links
-    .filter(l => l.source.id === d.id)
-    .map(l => graph.nodes.find(n => n.id === l.target.id));
-
-  const data = [d, ...neighbors];
-
-  d3.select("#chart-selector button[data-chart='minage']").classed("active", true);
-  data.sort((a, b) => d3.descending(a.minage, b.minage));
-  createMinAgeChart(data);
-
-  d3.selectAll(".chart-btn").on("click", function() {
-    const chartType = d3.select(this).attr("data-chart");
-
-    // Rimuove la classe active da tutti i bottoni
-    d3.selectAll(".chart-btn").classed("active", false);
-
-    // Aggiunge la classe active solo al bottone cliccato
-    d3.select(this).classed("active", true);
-    
-    // Pulisce l'area dei grafici prima di inserire il nuovo grafico
-    d3.select("#chart-content").html("");
-  
-    if (chartType === "minage") {
-      // Ordina per minage decrescente
-      data.sort((a, b) => d3.descending(a.minage, b.minage));
-      createMinAgeChart(data);
-    } else if (chartType === "players") {
-      data.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
-      createDumbbellChart(data, "minplayers", "maxplayers", "#chart-content", "Players", neighbors.length);
-    } else if (chartType === "playtime") {
-      data.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
-      createDumbbellChart(data, "minplaytime", "maxplaytime", "#chart-content", "Playtime (min)", neighbors.length);
-    } else if (chartType === "custom") {
-      // Placeholder per un grafico custom
-      d3.select("#chart-content").append("p").text("Custom chart here!");
-    }
-  });
-
-  function createMinAgeChart(data) {
-    const svgWidth = 500, svgHeight = data.length * 20 + 100;
-    const margin = { top: 30, right: 10, bottom: 30, left: 180 };
-  
-    const ageSvg = d3.select("#chart-content")
-      .append("svg")
-      .attr("width", svgWidth)
-      .attr("height", svgHeight);
-    
-    ageSvg.append("text")
-      .attr("x", svgWidth / 2)
-      .attr("y", margin.top / 2)
-      .attr("text-anchor", "middle")
-      .text("Min age")
-      .style("font-weight", "bold");
-  
-    const ageX = d3.scaleLinear()
-      //.domain([0, d3.max(data, n => n.minage)])
-      .domain([0, getMaxMinAge()])
-      .range([margin.left, svgWidth - margin.right]);
-  
-    const ageY = d3.scaleBand()
-      .domain(data.map(n => getShortTitle(n.title)))
-      .range([margin.top, svgHeight - margin.bottom])
-      .padding(0.1);
-  
-    ageSvg.selectAll("rect")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", ageX(0))
-      .attr("y", n => ageY(getShortTitle(n.title)))
-      .attr("width", n => ageX(n.minage) - ageX(0))
-      .attr("height", ageY.bandwidth())
-      .attr("fill", "steelblue");
-  
-    ageSvg.append("g")
-      .attr("transform", `translate(0,${svgHeight - margin.bottom})`)
-      .call(d3.axisBottom(ageX));
-  
-    ageSvg.append("g")
-      .attr("transform", `translate(${margin.left},0)`)
-      .call(d3.axisLeft(ageY));
   }
-  }
-
-  // Dumbbell chart reusable function
-  function createDumbbellChart(data, minProp, maxProp, container, title, neighborsLenght) {
-    const svgWidth = 500, svgHeight = neighborsLenght * 20 + 100 //200;
-    const margin = { top: 30, right: 10, bottom: 30, left: 180 };
-
-    const svg = d3.select(container)
-      .append("svg")
-      .attr("width", svgWidth)
-      .attr("height", svgHeight);
-
-    svg.append("text")
-      .attr("x", svgWidth / 2)
-      .attr("y", margin.top / 2)
-      .attr("text-anchor", "middle")
-      .text(title)
-      .style("font-weight", "bold");
-
-    const x = d3.scaleLinear()
-      .domain([0, d3.max(data, n => Math.max(n[minProp], n[maxProp]))])
-      .range([margin.left, svgWidth - margin.right]);
-
-    const y = d3.scaleBand()
-      .domain(data.map(n => getShortTitle(n.title)))
-      .range([margin.top, svgHeight - margin.bottom])
-      .padding(0.4);
-
-    const lines = svg.selectAll("line")
-      .data(data)
-      .enter()
-      .append("line")
-      .attr("x1", d => x(d[minProp]))
-      .attr("x2", d => x(d[maxProp]))
-      .attr("y1", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
-      .attr("y2", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
-      .attr("stroke", "gray")
-      .attr("stroke-width", "1px");
-
-    svg.selectAll("circle.min")
-      .data(data)
-      .enter()
-      .append("circle")
-      .attr("class", "dumbbell-circle")
-      .attr("cx", d => x(d[minProp]))
-      .attr("cy", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
-      .attr("r", 5)
-      .attr("fill", "#69b3a2");
-
-    svg.selectAll("circle.max")
-      .data(data)
-      .enter()
-      .append("circle")
-      .attr("class", "dumbbell-circle")
-      .attr("cx", d => x(d[maxProp]))
-      .attr("cy", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
-      .attr("r", 5)
-      .attr("fill", "#4C4082");
-
-    // Axes
-    svg.append("g")
-      .attr("transform", `translate(0,${svgHeight - margin.bottom})`)
-      .call(d3.axisBottom(x));
-
-    svg.append("g")
-      .attr("transform", `translate(${margin.left},0)`)
-      .call(d3.axisLeft(y));
-  }
-
-  //chiude il pannello info al click su un area vuota
-  svg.on("click", function() {
-    if (d3.event.target.tagName !== "circle" && infoPanelVisible) {
-      infoPanelVisible = false
-      d3.select("body").classed("panel-open", false);
-      d3.select("#info-panel").style("display", "none");
-      const infoPanel = d3.select("#info-panel");
-      infoPanel.style("display", "none");
-      svg.style("flex-basis", "100%");
-      width = +svg.node().getBoundingClientRect().width;
-      updateForces();
-      resetNetColors()
-      // Redraw the hull if it was visible
-      if (activeHull !== null) {
-        const hull = computeSingleHull(graph.nodes, activeHull);
-        drawSingleHull(svg, hull, activeHull);
-      }
-    }
 });
 
 // Helper function to check if two nodes are adjacent
@@ -770,7 +635,7 @@ function drawSingleHull(svg, hull, type) {
       .attr("class", "hull")
       .attr("d", "M" + hull.join("L") + "Z")
       .style("fill", colorScaleType(type))
-      .style("opacity", 0.15)
+      .style("opacity", 0.35)
       .style("pointer-events", "none");
   }
 }
@@ -809,9 +674,10 @@ function computeHulls(nodes, types) {
 
   return hulls;
 }
+
 function drawHulls(svg, hulls) {
   svg.selectAll(".hull").remove(); // Rimuove eventuali hull esistenti
-  
+
   Object.keys(hulls).forEach(type => {
       if (hulls[type]) {
           networkGroup.select(".hulls-group")
@@ -862,17 +728,40 @@ function getShortTitle(title){
   }else return title
 }
 
-function resetNetColors(){
-  networkGroup.selectAll("line")
-  .attr("opacity", 1)
-  .attr("stroke", "grey") 
-  .attr("stroke-width", 1);
+function getShortCatName(catName){
+  if(String(catName).length > 12)
+    return String(catName).split("/").join("\n")
+  else return catName
+}
 
-  networkGroup.selectAll("circle")
-  .attr("opacity", 1)
-  .attr("fill", d => colorScaleType(d.type[0]))
-  .attr("stroke", "grey")
-  .attr("stroke-width", 1);
+function resetNetColors() {
+  // Reset link styles
+  networkGroup.selectAll("line")
+    .attr("opacity", 1)
+    .attr("stroke", "grey")
+    .attr("stroke-width", 1);
+
+  // Reset node styles
+  networkGroup.selectAll(".node")
+    .selectAll("circle, path") // Target both circle and path elements
+    .attr("opacity", 1)
+    .attr("stroke", "grey")
+    .attr("stroke-width", 1);
+
+  // Reset fill for circles and paths based on node type
+  networkGroup.selectAll(".node").each(function(d) {
+    const nodeGroup = d3.select(this);
+
+    if (d.type.length === 1) {
+      // For nodes with one type, set fill for the circle
+      nodeGroup.select("circle")
+        .attr("fill", colorScaleType(d.type[0]));
+    } else if (d.type.length === 2) {
+      // For nodes with two types, set fill for each path
+      nodeGroup.selectAll("path")
+        .attr("fill", (_, i) => colorScaleType(d.type[i]));
+    }
+  });
 }
 
 function getMaxMinAge(){

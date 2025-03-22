@@ -7,6 +7,7 @@ var dataset = {};
 var categByYear = [];
 var typeByYear = [];
 var years = [];
+var types = [];
 
 const cont3 = d3.select("#bar-chart-3");
 const cont2 = d3.select("#bar-chart-2");
@@ -18,10 +19,22 @@ var svg1Width = +cont1.node().getBoundingClientRect().width;
 var svg1Height = +cont1.node().getBoundingClientRect().height;
 svg1.attr("viewBox", `0 0 ${svg1Width} ${svg1Height}`);
 
+var xScale3;
+var xScaleSubgroups3;
+var yScale3;
+var colorScaleTypes;
+var axisX3;
+var axisY3;
+const legend3Height = 20;
+const chart3Margin = { top: 20 + legend3Height, right: 20, bottom: 50, left: 50 };
+var chart3Width;
+var chart3Height;
+
   var maxItemsToVis1 = 10;
   var maxItemsToVis2 = 10;
   var minYearToVis = 0;
   var maxYearToVis = 10;
+  var selectedTypes = [];
   const attrList1 = [
     {value: "categories", name: "Categories"}, 
     {value: "mechanics", name: "Mechanics"}, 
@@ -94,7 +107,7 @@ svg1.attr("viewBox", `0 0 ${svg1Width} ${svg1Height}`);
       yearSliderMax.property("value", maxYearToVis);
     }
     yearSliderMaxValue.text(years[maxYearToVis].toString());
-    createBarchart3(typeByYear);
+    updateChart3(typeByYear, selectedTypes);
   });
 
   yearSliderMin.on("change", () => {
@@ -105,7 +118,7 @@ svg1.attr("viewBox", `0 0 ${svg1Width} ${svg1Height}`);
       yearSliderMin.property("value", minYearToVis);
     }
     yearSliderMinValue.text(years[minYearToVis].toString());
-    createBarchart3(typeByYear);
+    updateChart3(typeByYear, selectedTypes);
   });
 
 loadDatasets();
@@ -387,7 +400,7 @@ function showAdditionalInfo(dataToVis, containerId) {
   var showTooltip = function(event,d){
     var designers = d.designer.map(des => des.name).join(", ");
     tooltip
-    .html(`<strong>(${d.rank}°) ${d.title} <br>Year: ${d.year} <br>Designers: ${designers}<br>Min age: ${d.minage} <br> User rating: ${d.rating} <br> Players:${d.minplayers} - ${d.maxplayers} Play Time: ${d.minplaytime} - ${d.maxplaytime}</strong><br>`)
+    .html(`<strong>(${d.rank}°) ${d.title} </strong><br><strong>Year:</strong> ${d.year} <br> <strong>Designers:</strong> ${designers}<br><strong>Min age: </strong>${d.minage} <br> <strong>User rating: </strong>${d.rating.toFixed(2)} <br> <strong>Players: </strong>${d.minplayers} - ${d.maxplayers} <br> <strong>Play Time: </strong>${d.minplaytime} - ${d.maxplaytime}<br>`)
     .style("visibility", "visible");
   }
   var mousemove = function(event,d) {
@@ -628,8 +641,33 @@ function createBarchart2(dataToVis, varY, varX){
   innerChart
     .append("g")
     .call(d3.axisLeft(yScale));
-    
+  
+    // aggiunta etichette degli assi
+  innerChart
+    .append("text")
+    .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + 30})`)
+    .style("text-anchor", "middle")
+    .text("Age of the games (years from release date to 2023)");
+
+  innerChart
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - 50 )
+    .attr("x", 0 - 200)
+    .style("text-anchor", "middle")
+    .text("Number of games");
+
+    svg2.on("click", (event) => {
+      if (event.target.tagName === "svg") {
+        d3.select("#additional-info-2 .gamelist" ).selectAll("*").remove();
+        d3.select("#additional-info-2 .gamelist-legend").selectAll("*").remove();
+        d3.selectAll("rect").attr("fill", d3.color("teal"));
+      }
+    });
+  
 };
+
+
 
 function createBarchart3(dataToVis){
   var svg3Width = +cont3.node().getBoundingClientRect().width;
@@ -637,131 +675,199 @@ function createBarchart3(dataToVis){
   svg3.attr("viewBox", `0 0 ${svg3Width} ${svg3Height}`);
 
   var data = dataToVis; 
-  var yearsToVis = years;
-  yearsToVis = years.sort((a, b) => d3.ascending(a, b));
+  var yearsToVis = years.sort((a, b) => d3.ascending(a, b));
   console.log(yearsToVis);
   yearsToVis = yearsToVis.slice(minYearToVis, maxYearToVis);
-  const types = [...new Set(data.map(d => d.type))]; 
+  types = [...new Set(data.map(d => d.type))]; 
+  selectedTypes = types;
   console.log(types);
-  
-  const legendHeight = 20;
-  const chartMargin = { top: 20 + legendHeight, right: 20, bottom: 50, left: 20 };
-  const chartWidth = svg3Width - (chartMargin.right + chartMargin.left);
-  const chartHeight = svg3Height - (chartMargin.top + chartMargin.bottom);
+
+  chart3Width = svg3Width - (chart3Margin.right + chart3Margin.left);
+  chart3Height = svg3Height - (chart3Margin.top + chart3Margin.bottom);
   const max_count = d3.max(data, (d) => d.games.length);
   
   //definizione scale per gli assi
-
-  const xScale = d3
+  xScale3 = d3
   .scaleBand()
   .domain(yearsToVis)
-  .range([0, chartWidth])
+  .range([0, chart3Width])
   .padding(0.2);
 
-  const xScaleSubgroups = d3
+  xScaleSubgroups3 = d3
   .scaleBand()
   .domain(types)
-  .range([0, xScale.bandwidth()])
+  .range([0, xScale3.bandwidth()])
   .padding(0.1);
 
-  const yScale = d3.scaleLinear()
+  yScale3 = d3.scaleLinear()
   .domain([0, max_count])
-  .range([chartHeight, 0]);
+  .range([chart3Height, 0]);
 
-  const color = d3.scaleOrdinal()
+  colorScaleTypes = d3.scaleOrdinal()
   .domain(types)
   .range(d3.schemeCategory10);
 
   svg3.selectAll("*").remove();
 
-  const legend = svg3
-    .append("g")
-    .attr("transform", `translate(${chartMargin.left}, 0)`)
-    .attr("width", chartWidth)
-    .attr("height", legendHeight);
+  const legend = svg3.append("g")
+  .attr("class", "legend")
+  .attr("transform", `translate(${chart3Margin.left}, 0)`)
+  .attr("width", chart3Width)
+  .attr("height", legend3Height);
 
   const innerChart = svg3
     .append("g")
-    .attr("width", chartWidth)
-    .attr("height", chartHeight)
-    .attr("transform", `translate(${chartMargin.left},${chartMargin.top})`)
-  
-    // Aggiungi rettangoli di sfondo alternati
+    .attr("class", "chart-group")
+    .attr("width", chart3Width)
+    .attr("height", chart3Height)
+    .attr("transform", `translate(${chart3Margin.left},${chart3Margin.top})`);
+
+  const chartContent = innerChart
+    .append("g")
+    .attr("class", "chart-content")
+    .attr("width", chart3Width)
+    .attr("height", chart3Height);
+    
+    //aggiunta assi
+  axisX3 = innerChart
+    .append("g")
+    .attr("class", "axis-x")
+    .attr("transform", `translate(0, ${chart3Height})`)
+
+  axisY3 = innerChart
+    .append("g")
+    .attr("class", "axis-y")
+    .call(d3.axisLeft(yScale3));
+
+      // aggiunta etichette degli assi
+  innerChart
+  .append("text")
+  .attr("transform", `translate(${chart3Width / 2}, ${chart3Height + 30})`)
+  .style("text-anchor", "middle")
+  .text("Release year");
+
+  innerChart
+  .append("text")
+  .attr("transform", "rotate(-90)")
+  .attr("y", 0 - 20 )
+  .attr("x", 0 - chart3Height/2)
+  .style("text-anchor", "middle")
+  .text("Number of games");
+
+  //creazione legenda e inizializzazione grafico
+  createLegend3(types);
+  updateChart3(dataToVis, types);
+
+};
+
+function updateChart3(dataToVis, selectedTypes) {
+  var yearsToVis = years.sort((a, b) => d3.ascending(a, b));
+  yearsToVis = yearsToVis.slice(minYearToVis, maxYearToVis);
+  //var data = dataToVis.filter(d => yearsToVis.includes(d.year)); 
+  var data = dataToVis.filter(d => selectedTypes.includes(d.type)); 
+  console.log(yearsToVis);
+  console.log(data);
+
+  const max_count = d3.max(data, (d) => d.games.length);
+
+  xScale3
+  .domain(yearsToVis);
+
+  xScaleSubgroups3
+  .domain(types)
+  .range([0, xScale3.bandwidth()])
+
+  yScale3
+  .domain([0, max_count]);
+
+  // Aggiungi rettangoli di sfondo alternati
+  const innerChart = svg3.select(".chart-content");
+  innerChart.selectAll("*").remove();
+
+  const backgroundRectWidth = xScale3.bandwidth();
+
   innerChart.selectAll(".background-rect")
-    .data(yearsToVis)
-    .join("rect")
-    .attr("class", "background-rect")
-    .attr("x", (d) => xScale(d))
-    .attr("y", 0)
-    .attr("width", xScale.bandwidth())
-    .attr("height", chartHeight)
-    .attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
+  .data(yearsToVis)
+  .join("rect")
+  .attr("class", "background-rect")
+  .attr("x", (d) => (xScale3(d)))
+  .attr("y", 0)
+  .attr("width", backgroundRectWidth)
+  .attr("height", chart3Height)
+  .attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
 
-    innerChart.append("g").call((g) => g
-      .attr('class', 'grid')
-      .selectAll('line')
-      .data(yScale.ticks())
-      .join('line')
-      .attr('x1', 0)
-      .attr('x2', chartWidth)
-      .attr('y1', d => yScale(d))
-      .attr('y2', d => yScale(d))
-    );
-
-  // gruppo rect per anno
-  const yearGroups = innerChart
-    .selectAll(".year-group")
+  innerChart.append("g").call((g) => g
+    .attr('class', 'grid')
+    .selectAll('line')
+    .data(yScale3.ticks())
+    .join('line')
+    .attr('x1', 0)
+    .attr('x2', chart3Width)
+    .attr('y1', d => yScale3(d))
+    .attr('y2', d => yScale3(d))
+  );
+  const yearGroups = innerChart.selectAll(".year-group")
     .data(yearsToVis)
     .join("g")
-    .attr("class", "year-group") 
-    .attr("transform", (year) => `translate(${xScale(year)}, 0)`);
+    .attr("class", "year-group")
+    .attr("transform", (year) => `translate(${xScale3(year)}, 0)`);
 
-  yearGroups
-    .selectAll("rect")
+  yearGroups.selectAll("rect")
     .data(year => {
-      return types.map(type => {
-          return data.find(d => d.year == year && d.type == type);
-      });
-    }) 
+      return selectedTypes.map(type => {
+        return data.find(d => d.year == year && d.type == type);
+      })
+    })
     .join("rect")
-    .attr("width", xScaleSubgroups.bandwidth())
-    .attr("height", (d) => chartHeight - yScale(d.games.length))
-    .attr("x", (d) => xScaleSubgroups(d.type))  
-    .attr("y", (d) => yScale(d.games.length))
-    .attr("fill", (d)=> color(d.type));
+    .attr("width", xScaleSubgroups3.bandwidth())
+    .attr("height", (d) => chart3Height - yScale3(d.games.length))
+    .attr("x", (d) => xScaleSubgroups3(d.type))
+    .attr("y", (d) => yScale3(d.games.length))
+    .attr("fill", (d) => colorScaleTypes(d.type));
 
+    axisX3.transition()
+      .call(d3.axisBottom(xScale3))
+      .selectAll("text")
+      .style("text-anchor", "center");
+    axisY3.transition()    
+      .call(d3.axisLeft(yScale3));
+}
 
-    //aggiunta assi
-  innerChart
-    .append("g")
-    .attr("transform", `translate(0, ${chartHeight})`)
-    .call(d3.axisBottom(xScale))
-    .selectAll("text")
-    .style("text-anchor", "center");
+function createLegend3(types){
 
-  innerChart
-    .append("g")
-    .call(d3.axisLeft(yScale));
+  const legend = svg3.select(".legend");
+  legend.selectAll("*").remove();
+  // aggiunta legenda
+  let legendX = 0;
+  types.forEach((type, i) => {
+    const legendItem = legend.append("g")
+      .attr("transform", `translate(${legendX}, 10)`)
+      .attr("class", "legend-item")
+      .style("cursor", "pointer")
+      .on("click", function() {
+        if (selectedTypes.includes(type)) {
+          selectedTypes = selectedTypes.filter(t => t !== type);
+        } else {
+          selectedTypes.push(type);
+        }
+        updateChart3(typeByYear, selectedTypes);
+        d3.select(this).select("rect").attr("fill", selectedTypes.includes(type) ? colorScaleTypes(type) : "#ccc");
+      });
 
-    let legendX = 0;
-    types.forEach((type, i) => {
-      const legendItem = legend.append("g")
-          .attr("transform", `translate(${legendX}, 0)`);
+    legendItem.append("rect")
+      .attr("width", 15)
+      .attr("height", 15)
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("fill", colorScaleTypes(type));
 
-      legendItem.append("rect")
-        .attr("width", 15)
-        .attr("height", 15)
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("fill", color(type));
+    legendItem.append("text")
+      .attr("x", 20)
+      .attr("y", 12)
+      .attr("font-size", "12px")
+      .attr("text-anchor", "start")
+      .text(type);
 
-      legendItem.append("text")
-        .attr("x", 20)
-        .attr("y", 12)
-        .attr("font-size", "12px")
-        .attr("text-anchor", "start")
-        .text(type);
-
-      legendX += legendItem.node().getBBox().width + 10;
-    });
-};
+    legendX += legendItem.node().getBBox().width + 10;
+  });
+}

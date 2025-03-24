@@ -39,6 +39,7 @@ const radiusScale = d3.scaleSqrt().domain([1, 100]).range([15, 5]);
 //var colorScaleType  = d3.scaleOrdinal(d3.schemeCategory10);
 //var customColors = ["blue", "green", "#FF6347", "yellow", "#FF69B4", "#FF8C00"]
 var customColors = ["#377eb8","#4daf4a","#f781bf","#ffff33","#ff7f00","#e41a1c","#8dd3c7","#b1b1b1"];
+var custColDesaturated = ["#a5bdd3", "#b3d0b3", "#f5cfdc", "#ffffd9", "#ffd6ad", "#e5aaaa", "#cfe5e1", "#e0e0e0"]//["#6d9ec4", "#77b377", "#f1b7cf", "#ffff99", "#ffb380", "#d76666", "#b8d8d3", "#c9c9c9"]
 var colorScaleType  = d3.scaleOrdinal()
 
 function setScale(data){
@@ -259,13 +260,12 @@ function initializeDisplay() {
     .enter()
     .append("g")
     .attr("class", "node")
-    .on("mouseover", handleMouseOver) // Add mouseover event listener
+    .on("mouseover", handleMouseOver) 
     .on("mouseout", handleMouseOut)
     .on("click", handleNodeClick);
   node.selectAll("circle, path")
     .on("click", function(event, d) {
-      // Assicurati che il clic venga gestito correttamente su entrambi i tipi
-      handleNodeClick.call(this, event, d); // Usa il metodo di click
+      handleNodeClick.call(this, event, d); 
     });
 
   // visualize the graph
@@ -440,7 +440,7 @@ function createCategoriesChart(data) {
   // Define dimensions and margins
   const margin = { top: 30, right: 20, bottom: 30, left: 180 };
   const width = 500 - margin.left - margin.right; // Chart width (excluding margins)
-  const height = data.length * 20 + 100 - margin.top - margin.bottom; // Chart height (excluding margins)
+  const height = categories.length * 10 + 100 - margin.top - margin.bottom; // Chart height (excluding margins)
 
   // Create SVG container
   const svg = d3.select("#chart-content")
@@ -587,7 +587,7 @@ function createDumbbellChart(data, minProp, maxProp, container, title, neighbors
 
 //chiude il pannello info al click su un area vuota
 svg.on("click", function() {
-  if (d3.event.target.tagName !== "circle" && infoPanelVisible) {
+  if (d3.event.target.tagName !== "circle" && d3.event.target.tagName !== "path" && infoPanelVisible) {
     infoPanelVisible = false
     d3.select("body").classed("panel-open", false);
     d3.select("#info-panel").style("display", "none");

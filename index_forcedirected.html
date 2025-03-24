@@ -3,277 +3,66 @@
     <head> 
       <title>Boardgames Project</title>
       <link rel="icon" sizes="18x18" href="icons/dado.png" />
-        <style>
-            /* HTML styles */
-            html {
-              width: 100%;
-            }
-            body {
-              height: 100vh;
-              width: 100%;
-              margin: 0;
-              padding: 0;
-              display: flex;
-              font-family: sans-serif;
-              font-size: 75%;
-              overflow: hidden;
-              flex-direction: row;
-            }
-      
-            /* SVG styles */
-            svg {
-              flex-basis: 100%;
-            }
-            #graph-svg {
-              flex-grow: 1;
-              transition: flex-basis 0.3s ease;
-              width: auto;
-              height: 100vh;
-            }
-            body.panel-open #graph-svg {
-              flex-basis: 65%;
-            }
-            .nodes circle {
-              pointer-events: all;
-            }
-            #info-panel {
-              position: absolute;
-              right: 0;
-              top: 0;
-              width: 35%;
-              height: 100vh;      
-              padding: 10px;
-              box-shadow: -2px 0 5px rgba(0,0,0,0.1);
-              overflow-y: auto;
-              display: none;
-              background-color:#F5F5F5;
-              border-radius: 6px 0 0 6px;
-              flex-shrink: 0;
-            }
-            body.panel-open #info-panel {
-              display: block !important;
-            }
-            .close-btn {
-              position: absolute;
-              top: 10px;
-              right: 10px;
-              width: 20px;
-              height: 20px;
-              font-size: 12px;
-              background: #dc3545;
-              color: #fff;
-              border: none;
-              border-radius: 8px;
-              cursor: pointer;
-              transition: all 0.3s ease;
-              text-align: center;
-            }
-            .close-btn:hover {
-              background: #a71d2a;
-            }
-            #controls-wrapper {
-              position: absolute;
-              bottom: 20px;
-              left: 20px;
-              display: flex;
-              flex-direction: row;
-              align-items: stretch; /* per farli allineare in altezza */
-              gap: 16px;
-              z-index: 1000;
-            }
-
-            /* Zoom controls */
-            #zoom-controls {
-              display: flex;
-              flex-direction: row;
-              gap: 8px;
-              background: rgba(255, 255, 255, 0.9);
-              border: 1px solid #ccc;
-              padding: 10px 12px;
-              border-radius: 12px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-            }
-
-            .zoom-btn {
-              width: 40px;
-              height: 40px;
-              font-size: 20px;
-              background: #007bff;
-              color: #fff;
-              border: none;
-              border-radius: 8px;
-              cursor: pointer;
-              transition: all 0.3s ease;
-            }
-
-            .zoom-btn:hover {
-              background: #0056b3;
-            }
-
-            /* Legenda */
-            #color-legend {
-              display: grid;
-              grid-template-columns: repeat(3, 1fr); /* 3 elementi per riga */
-              gap: 8px;
-              background: rgba(255, 255, 255, 0.9);
-              border: 1px solid #ccc;
-              padding: 10px 12px;
-              border-radius: 12px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-              min-width: 200px;
-              align-content: center; /* allinea le righe */
-            }
-
-            .legend-item {
-              display: flex;
-              align-items: center;
-              gap: 5px;
-              font-size: 0.85em;
-              background: rgba(255, 255, 255, 0.9);
-              border-color: silver;
-              border-radius: 5px;
-              box-shadow: none;
-              border: none;
-            }
-            .legend-item.active {
-              background: rgba(0, 0, 0, 0.15);
-            }
-            .legend-item:hover {
-              background: rgba(0, 0, 0, 0.15);
-            }
-
-            .legend-color {
-              width: 14px;
-              height: 14px;
-              border-radius: 3px;
-              border: 1px solid #999;
-            }
-
-            #node-header {
-              margin-bottom: 15px;
-              padding-bottom: 10px;
-              border-bottom: 1px solid #ccc;
-              padding: 15px;
-            }
-
-            #node-header h2 {
-              margin: 0 0 5px 0;
-              font-size: 1.7em;
-              color: #333;
-            }
-
-            #node-header p {
-              margin: 0 0 15px 0;
-              font-weight: bold;
-              color: #555;
-              font-size: 1.3em;
-            }
-
-            .info-row {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 8px;
-              font-size: 1.1em;
-            }
-
-            .info-label {
-              font-weight: 600;
-              color: #444;
-            }
-
-            .info-value {
-              color: #666;
-              max-width: 60%;
-              text-align: right;
-            }
-            #chart-selector {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 15px;
-              background: #ffffff;
-              padding: 8px;
-              border: 1px solid #ddd;
-              border-radius: 6px;
-              gap: 8px;
-              flex-wrap: wrap;
-            }
-            #chart-content {
-              margin-top: 10px;
-            }
-            .chart-btn {
-              flex: 1 1 20%;
-              min-width: 80px;
-              margin: 0 5px;
-              padding: 8px 12px;
-              font-size: 0.85rem;
-              background: #007bff;
-              color: #fff;
-              border: none;
-              border-radius: 6px;
-              cursor: pointer;
-              transition: all 0.3s ease;
-              text-align: center;
-            }
-            .chart-btn:hover {
-              background: #0056b3;
-            }
-            .chart-btn.active {
-                background: #0056b3;
-                font-weight: bold;
-                box-shadow: 0 0 5px rgba(0,0,0,0.3);
-              }
-          </style>
+      <link rel="stylesheet" type="text/css" href="docStyle.css" />
     </head>
     <body>
+      <header>
+        <h1>Top 100 Boardgames Network</h1>
+      </header>
+      <div id="graph-container">
         <svg id="graph-svg"></svg>
-        <div id="controls-wrapper">
-          <div id="zoom-controls">
-            <button type="button" id="zoom-out" class="zoom-btn">−</button>
-            <button type="button" id="zoom-reset" class="zoom-btn">⟳</button>
-            <button type="button" id="zoom-in" class="zoom-btn">+</button>
-          </div>
-          <div id="color-legend"></div>
+      </div>
+      <div id="controls-wrapper">
+        <div id="zoom-controls">
+          <button type="button" id="zoom-out" class="zoom-btn">−</button>
+          <button type="button" id="zoom-reset" class="zoom-btn">⟳</button>
+          <button type="button" id="zoom-in" class="zoom-btn">+</button>
         </div>
-        <div id="info-panel">
-          <button id="close-info-panel" class="close-btn">✕</button>
-          <div id="node-header">
-            <h2 id="game-title"></h2>
-            <p id="game-rank"></p>
-            
-            <div class="info-row">
-              <span class="info-label">Year:</span>
-              <span class="info-value"></span>
-            </div>
-
-            <div class="info-row">
-              <span class="info-label">Categories:</span>
-              <span class="info-value"></span>
-            </div>
-
-            <div class="info-row">
-              <span class="info-label">Mechanics:</span>
-              <span class="info-value"></span>
-            </div>
-
-            <div class="info-row">
-              <span class="info-label">Type:</span>
-              <span class="info-value"></span>
-            </div>
-
-            <div class="info-row">
-              <span class="info-label">Designer:</span>
-              <span class="info-value"></span>
-            </div>
+        <div id="color-legend"></div>
+        <!--<div id="filter"></div>-->
+      </div>
+      <div id="info-panel">
+        <button id="close-info-panel" class="close-btn">✕</button>
+        <div id="node-header">
+          <h2 id="game-title"></h2>
+          <p id="game-rank"></p>           
+          <div class="info-row">
+            <span class="info-label">Year:</span>
+            <span class="info-value"></span>
           </div>
-          <div id="chart-selector">
-            <button class="chart-btn" data-chart="minage">Min Age</button>
-            <button class="chart-btn" data-chart="players">Number of Players</button>
-            <button class="chart-btn" data-chart="playtime">Playtime</button>
-            <button class="chart-btn" data-chart="categories">Categories distribution</button>
+          <div class="info-row">
+            <span class="info-label">Categories:</span>
+            <span class="info-value"></span>
           </div>
-          <div id="chart-content"></div>
-          <div id="node-details"></div>
+          <div class="info-row">
+            <span class="info-label">Mechanics:</span>
+            <span class="info-value"></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Type:</span>
+            <span class="info-value"></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Designer:</span>
+            <span class="info-value"></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Fans also liked: </span>
+            <span class="info-value"></span>
+          </div>
         </div>
+        <div class="info-row">
+          <span class="chart-info">Click on the following buttons to compare the game's features with those of games that fans have enjoyed</span>
+        </div>
+        <div id="chart-selector">
+          <button class="chart-btn" data-chart="minage">Min Age</button>
+          <button class="chart-btn" data-chart="players">Number of Players</button>
+          <button class="chart-btn" data-chart="playtime">Playtime</button>
+          <button class="chart-btn" data-chart="categories">Categories distribution</button>
+        </div>
+        <div id="chart-content"></div>
+        <div id="node-details"></div>
+      </div>
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <script type="text/javascript" src="code/forcedirected_listeners.js"></script>
         <script type="text/javascript" src="code/forcedirected.js"></script>

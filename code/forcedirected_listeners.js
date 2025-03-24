@@ -163,20 +163,13 @@ function mouseLeaveEdge(d) {
   }
 
 function handleNodeClick(d) {
-
-    if(d.type.length === 2){
-       setTimeout(function() {
-        //d3.select("body").classed("panel-open", false);
-        d3.select("body").classed("panel-open", true);
-        d3.select("#info-panel").style("display", "block");
-      }, 50) 
-    }else {
-        d3.select("body").classed("panel-open", true);
-        d3.select("#info-panel").style("display", "block");
-    }
     
     infoPanelVisible = true;
+    
+    d3.select("body").classed("panel-open", true);
+    d3.select("#info-panel").style("display", "block");
 
+    infoPanelVisible = true;
     resetNetColors();
     networkGroup.selectAll("line").attr("opacity", 0.4);
     networkGroup.selectAll("circle, path").attr("opacity", 0.4);
@@ -224,6 +217,11 @@ function handleNodeClick(d) {
     }
   
     // Write game information
+    var fans_liked = graph.links
+    .filter(l => l.source.id === d.id)
+    .map(l => graph.nodes.find(n => n.id === l.target.id).title);
+    var colorScale = d3.scaleOrdinal().domain(types).range(custColDesaturated);
+    d3.select("#node-header").style("background", colorScale(d.type[0]))
     d3.select("#game-title").text(d.title);
     d3.select("#game-rank").html(`<strong>Rank:</strong> ${d.rank}`);
     d3.select("#node-header").select(".info-row:nth-child(3) .info-value").text(d.year);
@@ -235,6 +233,8 @@ function handleNodeClick(d) {
       .text(d.type.map(t => t).join(", "));
     d3.select("#node-header").select(".info-row:nth-child(7) .info-value")
       .text(d.designer.map(des => des.name).join(", "));
+    d3.select("#node-header").select(".info-row:nth-child(8) .info-value")
+      .text(fans_liked.join(", "));
   
     // Adjust SVG size and redraw hull if necessary
     svg.transition()
@@ -275,7 +275,7 @@ function handleNodeClick(d) {
       .map(l => graph.nodes.find(n => n.id === l.target.id));
     const data = [d, ...neighbors];
     data.sort((a, b) => d3.descending(a.minage, b.minage));
-    createMinAgeChart(data);
+    d3.selectAll(".chart-btn").classed("active", false);
   
     d3.selectAll(".chart-btn").on("click", function() {
       const chartType = d3.select(this).attr("data-chart");

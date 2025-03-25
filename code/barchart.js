@@ -8,6 +8,10 @@ var categByYear = [];
 var typeByYear = [];
 var years = [];
 var types = [];
+//colors definitions
+const colorsBarchart1 = {categories:"#4682B4", mechanics:"#FF8C00", designers:"#FF6347"};
+const colorBarchart2 = "#2F4F4F";
+const colorScaleTypes = d3.scaleOrdinal().range(d3.schemeCategory10);
 
 const cont3 = d3.select("#bar-chart-3");
 const cont2 = d3.select("#bar-chart-2");
@@ -19,10 +23,12 @@ var svg1Width = +cont1.node().getBoundingClientRect().width;
 var svg1Height = +cont1.node().getBoundingClientRect().height;
 svg1.attr("viewBox", `0 0 ${svg1Width} ${svg1Height}`);
 
+const chart1Margin = { top: 40, right: 20, bottom: 20, left: 170 };
+const chart2Margin = { top: 20, right: 20, bottom: 100, left: 100 };
+
 var xScale3;
 var xScaleSubgroups3;
 var yScale3;
-var colorScaleTypes;
 var axisX3;
 var axisY3;
 const legend3Height = 20;
@@ -198,9 +204,10 @@ async function loadDatasets(){
       .property("selected", (d) => d.value == "categories");
 
     maxItemsToVis1 = 20;
-    rangeSlider1.attr("max", categories.length)
-    rangeSlider1.attr("value", maxItemsToVis1)
-    rangeValue1.text(maxItemsToVis1.toString())
+    rangeSlider1.attr("max", categories.length);
+    rangeSlider1.attr("value", maxItemsToVis1);
+    rangeValue1.text(maxItemsToVis1.toString());
+    maxValue1.text(categories.length.toString());
 
     maxItemsToVis2 = ages.length;
     rangeSlider2.attr("max", maxItemsToVis2);
@@ -231,10 +238,11 @@ function createBarchart1(dataToVis, varY, varX){
   } else {
     svgHeight = svg1Height;
   }
+  const attrSelected = attrSelector1.select("option:checked");
+  const barsColor = colorsBarchart1[attrSelected.property("value")];
 
-  const chartMargin = { top: 40, right: 20, bottom: 20, left: 150 };
-  const chartWidth = svgWidth - (chartMargin.right + chartMargin.left);
-  const chartHeight = svgHeight - (chartMargin.top + chartMargin.bottom);
+  const chartWidth = svgWidth - (chart1Margin.right + chart1Margin.left);
+  const chartHeight = svgHeight - (chart1Margin.top + chart1Margin.bottom);
   const max_count = d3.max(data, (d) => d[varX]);
   
   //definizione scale per gli assi
@@ -251,7 +259,7 @@ function createBarchart1(dataToVis, varY, varX){
     .append("g")
     .attr("width", chartWidth)
     .attr("height", chartHeight)
-    .attr("transform", `translate(${chartMargin.left},${chartMargin.top})`)
+    .attr("transform", `translate(${chart1Margin.left},${chart1Margin.top})`)
 
     innerChart.append("g").call((g) => g
     .attr('class', 'grid')
@@ -278,10 +286,10 @@ function createBarchart1(dataToVis, varY, varX){
     .attr("height", yScale.bandwidth())
     .attr("x", 0)
     .attr("y", 0)
-    .attr("fill", d3.color("teal"))
+    .attr("fill", d3.color(barsColor))
     .on("click", (event,d) => {
-      d3.selectAll("rect").attr("fill", d3.color("teal"));
-      d3.select(event.currentTarget).attr("fill", d3.color("teal").darker());
+      d3.selectAll("rect").attr("fill", d3.color(barsColor));
+      d3.select(event.currentTarget).attr("fill", d3.color(barsColor).darker());
       var games = d.games;
       var dataToVis = [];
       games.forEach(game => {
@@ -298,7 +306,6 @@ function createBarchart1(dataToVis, varY, varX){
     .text((d) => d.count)
     .attr("x", (d) => xScale(d[varX]) + 3)
     .attr("y", yScale.bandwidth() / 2)
-    .style("font-family", "sans-serif")
     .style("font-size", "9px");
 
     //aggiunta assi
@@ -307,7 +314,8 @@ function createBarchart1(dataToVis, varY, varX){
     .call(d3.axisLeft(yScale))
     .selectAll("text")
     .attr("transform", "translate(-10,0)")
-    .style("text-anchor", "end");
+    .style("text-anchor", "end")
+    .style("font-size", "11px");
 
   innerChart
     .append("g")
@@ -323,17 +331,17 @@ function createBarchart1(dataToVis, varY, varX){
     innerChart
       .append("text")
       .attr("transform", "rotate(-90)")
-      .attr("y", 0 - chartMargin.left )
+      .attr("y", 0 - chart1Margin.left )
       .attr("x", 0 - 200)
       .attr("dy", "1em")
       .style("text-anchor", "middle")
-      .text(attrSelector1.select("option:checked").text());
+      .text(attrSelected.text());
 
     svg1.on("click", (event) => {
       if (event.target.tagName === "svg") {
         d3.select("#additional-info-1 .gamelist" ).selectAll("*").remove();
         d3.select("#additional-info-1 .gamelist-legend").selectAll("*").remove();
-        d3.selectAll("rect").attr("fill", d3.color("teal"));
+        d3.selectAll("rect").attr("fill", d3.color(barsColor));
       }
     });
 };
@@ -562,9 +570,8 @@ function createBarchart2(dataToVis, varY, varX){
 
   var data = dataToVis.slice(0, maxItemsToVis2);
 
-  const chartMargin = { top: 20, right: 20, bottom: 100, left: 100 };
-  const chartWidth = svg2Width - (chartMargin.right + chartMargin.left);
-  const chartHeight = svg2Height - (chartMargin.top + chartMargin.bottom);
+  const chartWidth = svg2Width - (chart2Margin.right + chart2Margin.left);
+  const chartHeight = svg2Height - (chart2Margin.top + chart2Margin.bottom);
   const max_count = d3.max(data, (d) => d[varY]);
   
   //definizione scale per gli assi
@@ -581,7 +588,7 @@ function createBarchart2(dataToVis, varY, varX){
     .append("g")
     .attr("width", chartWidth)
     .attr("height", chartHeight)
-    .attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);
+    .attr("transform", `translate(${chart2Margin.left},${chart2Margin.top})`);
 
     innerChart.append("g").call((g) => g
       .attr('class', 'grid')
@@ -608,10 +615,10 @@ function createBarchart2(dataToVis, varY, varX){
     .attr("height", (d) => chartHeight - yScale(d[varY]))
     .attr("x", 0)
     .attr("y", (d) => yScale(d[varY]))
-    .attr("fill", "teal")
+    .attr("fill", d3.color(colorBarchart2))
     .on("click", (event,d) => {
-      d3.selectAll("rect").attr("fill", d3.color("teal"));
-      d3.select(event.currentTarget).attr("fill", d3.color("teal").darker());
+      d3.selectAll("rect").attr("fill", d3.color(colorBarchart2));
+      d3.select(event.currentTarget).attr("fill", d3.color(colorBarchart2).darker());
       var games = d.games;
       var dataToVis = [];
       games.forEach(game => {
@@ -661,7 +668,7 @@ function createBarchart2(dataToVis, varY, varX){
       if (event.target.tagName === "svg") {
         d3.select("#additional-info-2 .gamelist" ).selectAll("*").remove();
         d3.select("#additional-info-2 .gamelist-legend").selectAll("*").remove();
-        d3.selectAll("rect").attr("fill", d3.color("teal"));
+        d3.selectAll("rect").attr("fill", d3.color(colorBarchart2));
       }
     });
   
@@ -703,9 +710,8 @@ function createBarchart3(dataToVis){
   .domain([0, max_count])
   .range([chart3Height, 0]);
 
-  colorScaleTypes = d3.scaleOrdinal()
-  .domain(types)
-  .range(d3.schemeCategory10);
+  colorScaleTypes
+  .domain(types);
 
   svg3.selectAll("*").remove();
 

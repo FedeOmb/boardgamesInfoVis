@@ -12,9 +12,6 @@ function updateSize() {
   simulation.alpha(0).restart();
 }
 
-// Aggiungi un event listener per il resize
-window.addEventListener("resize", updateSize);
-
 var networkGroup = svg.append("g").attr("class", "network-group");
 
 var zoom = d3.zoom()
@@ -37,9 +34,8 @@ var bidirectionalLinks = []
 const radiusScale = d3.scaleSqrt().domain([1, 100]).range([15, 5]);
 
 //var colorScaleType  = d3.scaleOrdinal(d3.schemeCategory10);
-//var customColors = ["blue", "green", "#FF6347", "yellow", "#FF69B4", "#FF8C00"]
 var customColors = ["#377eb8","#4daf4a","#f781bf","#ffff33","#ff7f00","#e41a1c","#8dd3c7","#b1b1b1"];
-var custColDesaturated = ["#a5bdd3", "#b3d0b3", "#f5cfdc", "#ffffd9", "#ffd6ad", "#e5aaaa", "#cfe5e1", "#e0e0e0"]//["#6d9ec4", "#77b377", "#f1b7cf", "#ffff99", "#ffb380", "#d76666", "#b8d8d3", "#c9c9c9"]
+var custColDesaturated = ["#a5bdd3", "#b3d0b3", "#f5cfdc", "#ffffd9", "#ffd6ad", "#e5aaaa", "#cfe5e1", "#e0e0e0"]
 var colorScaleType  = d3.scaleOrdinal()
 
 function setScale(data){
@@ -110,6 +106,19 @@ function addLegend() {
       activeHull = type;
     }
   });
+  legend.selectAll(".legend-item")
+    .on("mouseover", function() {
+      if(!infoPanelVisible){
+        const type = d3.select(this).attr("data-type");
+        node.selectAll("circle, path")
+        .attr("opacity", d => d.type.includes(type) ? 1 : 0.4)
+        .attr("stroke-width", d => d.type.includes(type) ? 2 : 1)
+        .attr("stroke", d => d.type.includes(type) ? "DarkSlateGrey" : "grey");
+      } 
+    })
+    .on("mouseout", () => {
+      if(!infoPanelVisible) resetNetColors()
+    });
 }
 
 //////////// FORCE SIMULATION ////////////
@@ -235,22 +244,6 @@ function initializeDisplay() {
     .on("mouseover", mouseEnterEdge) // Add mouseover event listener
     .on("mouseout", mouseLeaveEdge);   // Add mouseout event listener;
 
-
-  // set the data and properties of node circles
-  /*node = networkGroup
-    .append("g")
-    .attr("class", "nodes")
-    .selectAll("arc")
-    .data(graph.nodes)
-    .enter()
-    .append("circle")
-    .attr("class", "network-circle")
-    .attr("r", (d) => radiusScale(d.rank))
-    .attr("fill", d => colorScaleType(d.type[0])) 
-    .on("mouseover", handleMouseOver) // Add mouseover event listener
-    .on("mouseout", handleMouseOut)
-    .on("click", handleNodeClick);  */
-
   // Append a group for each node
   node = networkGroup
     .append("g")
@@ -274,12 +267,7 @@ function initializeDisplay() {
 
 // update the display based on the forces (but not positions)
 function updateDisplay() {
-  /*node
-    .attr("r", d => radiusScale(d.rank))
-    .attr("fill", d => colorScaleType(d.type[0])) 
-    .attr("stroke", "grey")
-    .attr("stroke-width", 1);*/
-  // For each node, append either a circle or two arcs based on the number of types
+
   node.each(function(d) {
 
     const nodeGroup = d3.select(this);
@@ -316,9 +304,6 @@ function updateDisplay() {
 
 // update the display positions after each simulation tick
 function ticked() {
-  //let hulls = computeHulls(graph.nodes, types);
-  //adjustNodePositions(graph.nodes, hulls);
-  //drawHulls(svg, hulls);
 
   link
     .attr("x1", function (d) {
@@ -351,9 +336,10 @@ function ticked() {
 }
 
 // update size-related forces
-d3.select(window).on("resize", function () {
+window.addEventListener("resize", () => {
   width = +svg.node().getBoundingClientRect().width;
   height = +svg.node().getBoundingClientRect().height;
+  updateSize();
   updateForces();
 });
 
@@ -362,22 +348,6 @@ function updateAll() {
   updateForces();
   updateDisplay();
 }
-
-/*
-function mapNodesToCliqueColors(cliques) {
-//console.log(cliques)
-const nodeColorMap = new Map();
-
-cliques.forEach((clique, index) => {
-  const color = colorScale(index); // Assign a unique color to each clique
-  clique.forEach(nodeId => {
-    nodeColorMap.set(nodeId, color); // Map each node in the clique to its color
-  });
-});
-
-return nodeColorMap;
-}
-*/
 
 function createMinAgeChart(data) {
   const svgWidth = 500, svgHeight = data.length * 20 + 100;
@@ -679,15 +649,15 @@ function drawHulls(svg, hulls) {
   svg.selectAll(".hull").remove(); // Rimuove eventuali hull esistenti
 
   Object.keys(hulls).forEach(type => {
-      if (hulls[type]) {
-          networkGroup.select(".hulls-group")
-              .append("path")
-              .attr("class", "hull")
-              .attr("d", "M" + hulls[type].join("L") + "Z") // Genera il path della hull
-              .style("fill", colorScaleType(type)) // Colore in base al type
-              .style("opacity", 0.15)
-              .style("pointer-events", "none");
-      }
+    if (hulls[type]) {
+      networkGroup.select(".hulls-group")
+        .append("path")
+        .attr("class", "hull")
+        .attr("d", "M" + hulls[type].join("L") + "Z") // Genera il path della hull
+        .style("fill", colorScaleType(type)) // Colore in base al type
+        .style("opacity", 0.15)
+        .style("pointer-events", "none");
+    }
   });
 }
 

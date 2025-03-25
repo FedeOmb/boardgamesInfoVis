@@ -1,90 +1,92 @@
 <!DOCTYPE html>
 <html lang="it">
     <head> 
-      <title>Boardgames Project</title>
-      <link rel="icon" sizes="16x16" href="icons/dado.png" />
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Boardgames Project</title>
+        <link rel="icon" sizes="16x16" href="icons/dado.png" />
         <style>
-            /* HTML styles */
-            html {
-              width: 100%;
-            }
             body {
-              width: 100%;
-              margin: 0;
-              padding: 0;
-              display: flex;
-              font-family: sans-serif;
-              font-size: 75%;
+                font-family: Arial, sans-serif;
+                text-align: center;
+                background-color: #f9f9f9;
+                margin: 0;
+                padding: 50px;
             }
-            .controls {
-              flex-basis: 200px;
-              padding: 0 5px;
+            h1 {
+                font-size: 3em;
+                margin-bottom: 10px;
             }
-            .controls .force {
-              background-color: #eee;
-              border-radius: 3px;
-              padding: 5px;
-              margin: 5px 0;
+            p.description {
+                font-size: 1.2em;
+                color: #555;
+                margin-bottom: 40px;
             }
-            .controls .force p label {
-              margin-right: 0.5em;
-              font-size: 120%;
-              font-weight: bold;
+            .button-container {
+                display: flex;
+                justify-content: center;
+                gap: 50px;
             }
-            .controls .force p {
-              margin-top: 0;
+            .custom-button {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 30px;
+                text-decoration: none;
+                background: #ffffff;
+                border: 3px solid #ccc;
+                border-radius: 15px;
+                width: 240px;
+                transition: all 0.3s ease;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+                cursor: pointer;
             }
-            .controls .force label {
-              display: inline-block;
+            .custom-button:hover {
+                border-color: #007bff;
+                box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+                transform: translateY(-5px);
             }
-            .controls input[type="checkbox"] {
-              transform: scale(1.2, 1.2);
+            .image-container {
+                width: 200px;
+                height: 130px;
+                background-color: #eee;
+                border-radius: 20px;
+                overflow: hidden;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: 15px;
+                box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
             }
-            .controls input[type="range"] {
-              margin: 0 5% 0.5em 5%;
-              width: 90%;
+            .custom-button img {
+                width: 200px;
+                height: 130px;
+                object-fit: cover;
             }
-            /* alpha viewer */
-            .controls .alpha p {
-              margin-bottom: 0.25em;
+            .custom-button span {
+                font-size: 1.3em;
+                color: #333;
+                font-weight: bold;
             }
-            .controls .alpha .alpha_bar {
-              height: 0.5em;
-              border: 1px #777 solid;
-              border-radius: 2px;
-              padding: 1px;
-              display: flex;
-            }
-            .controls .alpha .alpha_bar #alpha_value {
-              background-color: #555;
-              border-radius: 1px;
-              flex-basis: 100%;
-            }
-            .controls .alpha .alpha_bar:hover {
-              border-width: 2px;
-              margin: -1px;
-            }
-            .controls .alpha .alpha_bar:active #alpha_value {
-              background-color: #222;
-            }
-      
-            /* SVG styles */
-            svg {
-              flex-basis: 100%;
-              min-width: 200px;
-            }
-            .links line {
-              stroke: #aaa;
-            }
-            .nodes circle {
-              pointer-events: all;
-            }
-          </style>
+        </style>
     </head>
     <body>
-        <svg width="800" height="600"></svg>
-        <script src="https://d3js.org/d3.v4.min.js"></script>
-        <!--<script type="text/javascript" src="code/prova.js"></script>
-        <script type="text/javascript" src="code/data_modeling.js"></script>-->
+        <h1>Boardgames Project</h1>
+        <p class="description">Explore the 2023 top 100 boardgames with two interactive visualizations: a force-directed graph and an informational barchart.</p>
+        
+        <div class="button-container">
+            <a href="index_forcedirected.html" class="custom-button">
+                <div class="image-container">
+                    <img src="icons/graph.png" alt="Graph Icon">
+                </div>
+                <span>View Graph</span>
+            </a>
+            <a href="index_barchart.html" class="custom-button">
+                <div class="image-container">
+                    <img src="icons/barchart.png" alt="Barchart Icon">
+                </div>
+                <span>View Barchart</span>
+            </a>
+        </div>
     </body>
 </html>

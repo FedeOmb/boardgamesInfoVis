@@ -133,7 +133,13 @@
               justify-content: flex-start;
             }
             /*additional charts css*/
-
+            .additional-info h2{
+              text-align: center;
+            }
+            .info-default-text, .info-selected-text {
+              text-align: center;
+              font-size: 1rem;
+            }
             span.chart-info {
               text-align: center;
               font-weight: bold;
@@ -211,7 +217,9 @@
 
           <div class="col col-3">
             <div class="additional-info" id="additional-info-1">
-              <h3>Additional info</h3>
+              <h2>Additional Info</h2>
+              <div class="info-default-text"><strong>Click on a bar </strong>to show here more informations and statistics about the <strong>games</strong> belonging to a specific <strong>category</strong>, <strong>mechanic</strong> or <strong>designer</strong></div>
+              <div class="info-selected-text"></div>
               <div class="chart-selector">
                 <button class="chart-btn" data-chart="rating">Rating</button>
                 <button class="chart-btn" data-chart="minage">Min Age</button>

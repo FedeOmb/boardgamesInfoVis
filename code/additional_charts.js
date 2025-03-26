@@ -1,43 +1,51 @@
-function showAdditionalCharts(data, containerId){
+function showAdditionalCharts(data, attrMainChart, containerId) {
 
-const chartSelector = d3.select(containerId + " .chart-selector");
-const chartContent = d3.select(containerId + " .chart-content");
-chartSelector.style("display", "flex");
-chartContent.style("display", "flex");
-chartContent.html("");
-const buttons = chartSelector.selectAll(".chart-btn");
-buttons.classed("active", false);
+  const chartSelector = d3.select(containerId + " .chart-selector");
+  const chartContent = d3.select(containerId + " .chart-content");
 
-buttons.on("click", function() {
-  const chartType = d3.select(this).attr("data-chart");
+  chartSelector.style("display", "flex");
+  chartContent.style("display", "flex");
+  chartContent.html("");
+  const buttons = chartSelector.selectAll(".chart-btn");
   buttons.classed("active", false);
-  d3.select(this).classed("active", true);
-chartContent.html("");
-  if (chartType === "minage") {
-    data.sort((a, b) => d3.descending(a.minage, b.minage));
-    createAdditionalBarchart(data, chartContent,"minage", "Minimum player age");
-  } else if (chartType === "players") {
-    data.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
-    createDumbbellChart(data, "minplayers", "maxplayers", chartContent, "Players");
-  } else if (chartType === "playtime") {
-    data.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
-    createDumbbellChart(data, "minplaytime", "maxplaytime", chartContent, "Playtime (min)");
-  } else if (chartType === "rating") {
-    createAdditionalBarchart(data, chartContent, "rating", "User rating");
-  }
-});
+
+  // Set the "rating" button as active by default
+  const defaultButton = buttons.filter('[data-chart="rating"]');
+  defaultButton.classed("active", true);
+  data.sort((a, b) => d3.ascending(a.rank, b.rank));
+  createAdditionalBarchart(data, chartContent, "rating", "User rating", attrMainChart, (value) => value.toFixed(2));
+
+  buttons.on("click", function() {
+    const chartType = d3.select(this).attr("data-chart");
+    buttons.classed("active", false);
+    d3.select(this).classed("active", true);
+    chartContent.html("");
+    if (chartType === "minage") {
+      //data.sort((a, b) => d3.descending(a.minage, b.minage));
+      data.sort((a, b) => d3.ascending(a.rank, b.rank));
+      createAdditionalBarchart(data, chartContent, "minage", "Minimum player age", attrMainChart, (value) => value);
+    } else if (chartType === "players") {
+      //data.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
+      data.sort((a, b) => d3.ascending(a.rank, b.rank));
+      createDumbbellChart(data, "minplayers", "maxplayers", chartContent, "Players");
+    } else if (chartType === "playtime") {
+      //data.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
+      data.sort((a, b) => d3.ascending(a.rank, b.rank));
+      createDumbbellChart(data, "minplaytime", "maxplaytime", chartContent, "Playtime (min)");
+    } else if (chartType === "rating") {
+      data.sort((a, b) => d3.ascending(a.rank, b.rank));
+      createAdditionalBarchart(data, chartContent, "rating", "User rating", attrMainChart, (value) => value.toFixed(2));
+    }
+  });
 }
 
 
-function createAdditionalBarchart(dataToVis, chartContainer, attr, title){
+function createAdditionalBarchart(data, chartContainer, attr, title, attrMainChart, formatLabel = (value) => value){
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
   
-    var data = dataToVis;
-    data = data.sort((a, b) => d3.descending(a[attr], b[attr]));
-  
-    const chartMargin = { top: 30, right: 20, bottom: 0, left: 150 };
-    svgHeight = data.length * 20 + chartMargin.top + chartMargin.bottom;
+    const chartMargin = { top: 30, right: 20, bottom: 0, left: 170 };
+    svgHeight = data.length * 25 + chartMargin.top + chartMargin.bottom;
   
     chartContainer.selectAll("*").remove();
     var svg = chartContainer.append("svg").attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
@@ -52,7 +60,22 @@ function createAdditionalBarchart(dataToVis, chartContainer, attr, title){
     .scaleBand()
     .domain(data.map((d) => d.title))
     .range([0, chartHeight])
-    .padding(0.2);
+    .padding(0.3);
+
+    const barsColor = colorsBarchart1[attrMainChart];
+    console.log(attrMainChart)
+
+    const tooltip = chartContainer.append("div")
+    .attr("class", "tooltip")
+    .style("position", "fixed")
+    .style("padding", "8px")
+    .style("background", "rgba(255, 255, 255, 1)")
+    .style("color", "black")
+    .style("border-radius", "5px")
+    .style("pointer-events", "none")
+    .style("font-size", "12px")
+    .style("visibility", "hidden");
+
 
     svg.append("text")
     .attr("x", svgWidth / 2)
@@ -60,6 +83,19 @@ function createAdditionalBarchart(dataToVis, chartContainer, attr, title){
     .attr("text-anchor", "middle")
     .text(title)
     .style("font-weight", "bold");
+  
+    var showTooltip = function(event,d){
+      var designers = d.designer.map(des => des.name).join(", ");
+      tooltip
+      .html(`<strong>(${d.rank}°) ${d.title} </strong><br><strong>Year:</strong> ${d.year} <br> <strong>Designers:</strong> ${designers}<br><strong>Min age: </strong>${d.minage} <br> <strong>User rating: </strong>${d.rating.toFixed(2)} <br> <strong>Players: </strong>${d.minplayers} - ${d.maxplayers} <br> <strong>Play Time: </strong>${d.minplaytime} - ${d.maxplaytime}<br>`)
+      .style("visibility", "visible");
+    }
+
+    var mousemove = function(event,d) {
+      tooltip
+      .style("left", (event.pageX) + "px")
+      .style("top", (event.pageY) + "px")
+    }
   
     const innerChart = svg
       .append("g")
@@ -81,17 +117,24 @@ function createAdditionalBarchart(dataToVis, chartContainer, attr, title){
       .attr("height", yScale.bandwidth())
       .attr("x", 0)
       .attr("y", 0)
-      .attr("fill", "teal");
+      .attr("fill", d3.color(barsColor).darker())
+      .on("mouseover", showTooltip)
+      .on("mousemove", mousemove)
+      .on("mouseout", () => {
+      tooltip.style("visibility", "hidden");
+      });
   
     barAndLabel
       .append("text")
-      .text((d) => d[attr])
+      .text((d) => formatLabel(d[attr]))
       .attr("x", (d) => xScale(d[attr]) - 10)
       .attr("y", (yScale.bandwidth() / 2) + 2)
       .style("text-anchor", "end")
       .style("font-family", "sans-serif")
-      .style("font-size", "9px")
-      .style("fill", "white");  
+      .style("font-size", "11px")
+      .style("fill", "white")
+      .style("font-weight", "bold");
+
   
       //aggiunta assi
     innerChart
@@ -100,6 +143,7 @@ function createAdditionalBarchart(dataToVis, chartContainer, attr, title){
       .selectAll("text")
       .attr("transform", "translate(-5,0)")
       .style("text-anchor", "end")
+      .style("font-size", "11px")
       .each( function(d) {
         wrapText(this,d);
       });
@@ -115,8 +159,8 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
     
-    const margin = { top: 40, right: 10, bottom: 0, left: 150 };
-    svgHeight = data.length * 20 + margin.top + margin.bottom;
+    const margin = { top: 40, right: 10, bottom: 0, left: 170 };
+    svgHeight = data.length * 25 + margin.top + margin.bottom;
   
     chartContainer.selectAll("*").remove();
     const svg = chartContainer.append("svg").attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
@@ -182,9 +226,11 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
       .selectAll("text")
       .attr("transform", "translate(-5,0)")
       .style("text-anchor", "end")
+      .style("font-size", "11px")
       .each( function(d) {
         wrapText(this,d);
-      });
+      })
+
   }
 
   function wrapText(element, d){

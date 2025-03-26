@@ -188,7 +188,7 @@
 
         <div class="tabs">
           <button class="tab-button active" onclick="openTab(event, 'tab-1')">View the diffusion of an attribute among all games</button>
-          <button class="tab-button" onclick="openTab(event, 'tab-2')">View longevity of all games in top 100</button>
+          <!--<button class="tab-button" onclick="openTab(event, 'tab-2')">View longevity of all games in top 100</button>-->
           <button class="tab-button" onclick="openTab(event, 'tab-3')">View game types by year of release</button>
         </div>
 
@@ -230,7 +230,7 @@
             </div>
           </div>
         </div>
-
+        <!--
         <div class="tab-content" id="tab-2">
 
           <div class="col col-9">
@@ -268,7 +268,7 @@
               <div class="chart-content"></div>
             </div>
           </div>
-        </div>
+        </div>-->
 
         <div class="tab-content" id="tab-3">
 
@@ -288,13 +288,21 @@
                 <datalist id="year-values">
                 </datalist>
               </div>
+              <div class="radio-container">
+                <input type="radio" name="chart-type" value="types" checked>
+                <label for="chart-type">View distribution of game types per year</label>      
+                <br>
+                <input type="radio" name="chart-type" value="total" >
+                <label for="chart-type">View total number of games per year</label>
+
+              </div>
             </div>
             <div class="svg-container" id="bar-chart-3">
             </div>
           </div>
 
           <div class="col col-3">
-            <div class="additional-info" id="additional-info-1">
+            <div class="additional-info" id="additional-info-3">
               <h3>Additional info</h3>
               <div class="chart-selector">
                 <button class="chart-btn" data-chart="minage">Min Age</button>

@@ -55,9 +55,7 @@ var chart3Height;
   const rangeValue1 = d3.select("#range-value-1");
   const maxValue1 = d3.select("#max-value-1");  
 
-  const orderSelection2 = d3.selectAll("input[name='order-type']");
-  const rangeSlider2 = d3.select("#max-items-2");
-  const rangeValue2 = d3.select("#range-value-2");
+  const chartType3 = d3.selectAll("input[name='chart-type']");
 
   const yearSliderMax = d3.select("#max-year");
   const yearSliderMaxValue = d3.select("#max-year-value");
@@ -95,25 +93,19 @@ var chart3Height;
 
   //--- listener controlli tab2 ---
 
-  rangeSlider2.on("change", () => {
-    maxItemsToVis2 = rangeSlider2.property("value");
-    rangeValue2.text(maxItemsToVis2.toString())
-    createBarchart2(ages, "count", "age");
+  chartType3.on("change", () => {
+    var value = d3.selectAll("input[name='chart-type']:checked").property("value");
+    if(value == "total"){
+      createBarchart2(ages, "count", "age");
+    }
+    if(value == "types"){
+      createBarchart3(typeByYear);
+    }
   })
 
-  orderSelection2.on("change", () => {
-    var orderValue = d3.select("input[name='order-type']:checked").property("value");
-    console.log(orderValue)
-    if(orderValue == "count"){
-      ages = d3.sort(ages, (a, b) => d3.descending(a.count, b.count));
-    }
-    if(orderValue == "age"){
-      ages = d3.sort(ages, (a, b) => d3.ascending(a.age, b.age));
-    }
-    createBarchart2(ages, "count", "age");
-  })
   //--- listener controlli tab3 ---
   yearSliderMax.on("change", () => {
+    var value = chartType3.property("value");
     maxYearToVis = parseInt(yearSliderMax.property("value"));
     minYearToVis = parseInt(yearSliderMin.property("value"));
     if (maxYearToVis <= minYearToVis) {
@@ -216,11 +208,6 @@ async function loadDatasets(){
     rangeSlider1.attr("value", maxItemsToVis1);
     rangeValue1.text(maxItemsToVis1.toString());
     maxValue1.text(categories.length.toString());
-
-    maxItemsToVis2 = ages.length;
-    rangeSlider2.attr("max", maxItemsToVis2);
-    rangeSlider2.attr("value", maxItemsToVis2);
-    rangeValue2.text(maxItemsToVis2.toString());
 
     maxYearToVis = years.length-1;
     minYearToVis = 0;
@@ -401,17 +388,16 @@ function createBarchart1(attr, varY, varX){
 };
 
 
-
-
 function createBarchart2(dataToVis, varY, varX){
-  var svg2Width = +cont2.node().getBoundingClientRect().width;
-  var svg2Height = +cont2.node().getBoundingClientRect().height;
-  svg2.attr("viewBox", `0 0 ${svg2Width} ${svg2Height}`);
+  var svg3Width = +cont3.node().getBoundingClientRect().width;
+  var svg3Height = +cont3.node().getBoundingClientRect().height;
+  svg3.attr("viewBox", `0 0 ${svg3Width} ${svg3Height}`);
 
-  var data = dataToVis.slice(0, maxItemsToVis2);
+  var data = d3.sort(dataToVis, (a, b) => d3.descending(a.age, b.age))
+  console.log(data)
 
-  const chartWidth = svg2Width - (chart2Margin.right + chart2Margin.left);
-  const chartHeight = svg2Height - (chart2Margin.top + chart2Margin.bottom);
+  const chartWidth = svg3Width - (chart3Margin.right + chart3Margin.left);
+  const chartHeight = svg3Height - (chart3Margin.top + chart3Margin.bottom);
   const max_count = d3.max(data, (d) => d[varY]);
   
   //definizione scale per gli assi
@@ -422,13 +408,13 @@ function createBarchart2(dataToVis, varY, varX){
   .range([0, chartWidth])
   .padding(0.2);
 
-  svg2.selectAll("*").remove();
+  svg3.selectAll("*").remove();
 
-  const innerChart = svg2
+  const innerChart = svg3
     .append("g")
     .attr("width", chartWidth)
     .attr("height", chartHeight)
-    .attr("transform", `translate(${chart2Margin.left},${chart2Margin.top})`);
+    .attr("transform", `translate(${chart3Margin.left},${chart3Margin.top})`);
 
     innerChart.append("g").call((g) => g
       .attr('class', 'grid')
@@ -466,7 +452,7 @@ function createBarchart2(dataToVis, varY, varX){
         dataToVis.push(gameData);
       });
       console.log(dataToVis);
-      showAdditionalInfo(dataToVis, "additional-info-2");
+      showAdditionalCharts(dataToVis, "#additional-info-3");
     });
 
   barAndLabel
@@ -506,8 +492,8 @@ function createBarchart2(dataToVis, varY, varX){
 
     svg2.on("click", (event) => {
       if (event.target.tagName === "svg") {
-        d3.select("#additional-info-2 .gamelist" ).selectAll("*").remove();
-        d3.select("#additional-info-2 .gamelist-legend").selectAll("*").remove();
+        d3.select("#additional-info-3 .gamelist" ).selectAll("*").remove();
+        d3.select("#additional-info-3 .gamelist-legend").selectAll("*").remove();
         d3.selectAll("rect").attr("fill", d3.color(colorBarchart2));
       }
     });

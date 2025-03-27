@@ -15,7 +15,7 @@ html {
     justify-content: center;  
     align-items: center;  
     margin-bottom: 50px;
-    padding-bottom: 10px;
+    padding-bottom: 1%;
     background-color: white;
     border-radius: 6px;
   }
@@ -246,6 +246,7 @@ html {
   }
   #chart-content {
     margin-top: 10px;
+    width: 100%;
   }
   .chart-btn {
     flex: 1 1 20%;

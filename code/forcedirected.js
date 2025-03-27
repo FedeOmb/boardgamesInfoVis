@@ -1,6 +1,20 @@
 var svg = d3.select("svg"),
 width = +svg.node().getBoundingClientRect().width,
 height = +svg.node().getBoundingClientRect().height;
+svg.append("defs").selectAll("marker")
+  .data(["end", "start"])
+  .enter().append("marker")
+  .attr("id", d => `arrow-${d}`)
+  .attr("viewBox", "0 -5 10 10")
+  .attr("refX", d => d === "start" ? -10 : 15)  
+  .attr("refY", 0)
+  .attr("markerWidth", 6)
+  .attr("markerHeight", 6)
+  .attr("orient", "auto")
+  .append("path")
+  .attr("d", "M0,-3L6,0L0,3")
+  .attr("fill", "grey")
+  .attr("transform", d => d === "start" ? "rotate(180, 5, 0)" : null); 
 
 var infoPanelVisible = false;
 
@@ -28,7 +42,7 @@ var link, node;
 var graph;
 var types = [];
 var categories
-var bidirectionalLinks = []
+var bidirectionalLinks
 
 //const radiusScale = d3.scaleLinear().domain([1, 100]).range([13, 3]);
 const radiusScale = d3.scaleSqrt().domain([1, 100]).range([15, 5]);
@@ -66,6 +80,8 @@ d3.json("data/dataset_converted_cleaned_v2.json", function (error, _graph) {
   graph = _graph;
 
   bidirectionalLinks = filterBidirectionalLinks(graph.links);
+  const uniqueLinks = getUniqueLinks(graph.links)
+  graph.links = uniqueLinks
   setScale(graph);
   initializeDisplay();
   resetNetColors();
@@ -149,21 +165,21 @@ forceProperties = {
     enabled: true,
     strength: 0.7,
     iterations: 1,
-    radius: 13,
+    radius: 14,
   },
   forceX: {
     enabled: false,
-    strength: 0.1,
+    strength: 0.4,
     x: 0.5,
   },
   forceY: {
     enabled: false,
-    strength: 0.1,
+    strength: 0.4,
     y: 0.5,
   },
   link: {
     enabled: true,
-    distance: 50,
+    distance: 60,
     iterations: 1,
   },
 };
@@ -239,10 +255,12 @@ function initializeDisplay() {
     .data(graph.links)
     .enter()
     .append("line")
-    .attr("stroke", "grey") 
+    .attr("stroke", "grey")
     .attr("stroke-width", 1)
-    .on("mouseover", mouseEnterEdge) // Add mouseover event listener
-    .on("mouseout", mouseLeaveEdge);   // Add mouseout event listener;
+    .attr("marker-end", "url(#arrow-end)")
+    .attr("marker-start", d => d.bidirectional ? "url(#arrow-start)" : null)
+    .on("mouseover", mouseEnterEdge)
+    .on("mouseout", mouseLeaveEdge);
 
   // Append a group for each node
   node = networkGroup
@@ -299,13 +317,15 @@ function updateDisplay() {
 
   link
     .attr("stroke-width", forceProperties.link.enabled ? 1 : 0.5)
-    .attr("opacity", forceProperties.link.enabled ? 1 : 0);
+    .attr("opacity", forceProperties.link.enabled ? 1 : 0)
+    .attr("marker-end", "url(#arrow-end)")
+    .attr("marker-start", d => d.bidirectional ? "url(#arrow-start)" : null);
 }
 
 // update the display positions after each simulation tick
 function ticked() {
 
-  link
+  /*link
     .attr("x1", function (d) {
       return d.source.x;
     })
@@ -317,7 +337,13 @@ function ticked() {
     })
     .attr("y2", function (d) {
       return d.target.y;
-    });
+    });*/
+    link
+      .attr("x1", d => adjustLinkStart(d.source, d.target, radiusScale(d.source.rank)).x)
+      .attr("y1", d => adjustLinkStart(d.source, d.target, radiusScale(d.source.rank)).y)
+      .attr("x2", d => adjustLinkEnd(d.source, d.target, radiusScale(d.target.rank)).x)
+      .attr("y2", d => adjustLinkEnd(d.source, d.target, radiusScale(d.target.rank)).y)
+      .attr("marker-start", d => d.bidirectional ? "url(#arrow-start)" : null); 
 
   node
     .attr("cx", function (d) {
@@ -333,6 +359,42 @@ function ticked() {
     drawSingleHull(svg, hull, activeHull);
   }
   d3.select("#alpha_value").style("flex-basis", simulation.alpha() * 100 + "%");
+}
+
+function adjustLinkStart(source, target, radius) {
+  const dx = target.x - source.x;
+  const dy = target.y - source.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  if (distance === 0) return { x: source.x, y: source.y };
+
+  const offsetX = (dx * radius) / distance;
+  const offsetY = (dy * radius) / distance;
+
+  return { x: source.x + offsetX, y: source.y + offsetY };
+}
+
+function adjustLinkEnd(source, target, radius) {
+  const dx = target.x - source.x;
+  const dy = target.y - source.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  if (distance === 0) return { x: target.x, y: target.y };
+
+  const offsetX = (dx * radius) / distance;
+  const offsetY = (dy * radius) / distance;
+
+  return { x: target.x - offsetX, y: target.y - offsetY };
+}
+
+function adjustLinkMid(source, target, radius) {
+  const dx = target.x - source.x;
+  const dy = target.y - source.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  if (distance === 0) return { x: (source.x + target.x) / 2, y: (source.y + target.y) / 2 };
+
+  const offsetX = (dx * radius) / distance;
+  const offsetY = (dy * radius) / distance;
+
+  return { x: (source.x + target.x) / 2 - offsetX, y: (source.y + target.y) / 2 - offsetY };
 }
 
 // update size-related forces
@@ -578,8 +640,8 @@ svg.on("click", function() {
 // Helper function to check if two nodes are adjacent
 function isAdjacent(source, target) {
   return graph.links.some(link => 
-    (link.source === source && link.target === target) || 
-    (link.source === target && link.target === source)
+    (link.source === source && link.target === target) /*|| 
+    (link.source === target && link.target === source)*/
   );
 }
 
@@ -662,30 +724,27 @@ function drawHulls(svg, hulls) {
 }
 
 function filterBidirectionalLinks(links) {
+  const bidirectionalSet = new Set();
   const bidirectionalLinks = [];
-  const addedPairs = new Set(); // Per tracciare le coppie già aggiunte
-
-  // Creiamo un set per la ricerca rapida dei link
-  const linkSet = new Set(links.map(link => `${link.source}-${link.target}`));
 
   links.forEach(link => {
-      const reverseLink = `${link.target}-${link.source}`;
-      const pairKey = link.source < link.target ? `${link.source}-${link.target}` : `${link.target}-${link.source}`;
+    const sourceID = link.source.id !== undefined ? link.source.id : link.source;
+    const targetID = link.target.id !== undefined ? link.target.id : link.target;
 
-      if (linkSet.has(reverseLink) && !addedPairs.has(pairKey)) {
-          bidirectionalLinks.push(link);
-          addedPairs.add(pairKey);
-      }
+    const key = `${sourceID}-${targetID}`;
+    const reverseKey = `${targetID}-${sourceID}`;
+
+    if (bidirectionalSet.has(reverseKey)) {
+      bidirectionalLinks.push({ source: sourceID, target: targetID });
+    }
+    bidirectionalSet.add(key);
   });
 
-  return bidirectionalLinks;
+  return new Set(bidirectionalLinks.map(l => `${l.source}-${l.target}`));
 }
 
-function isBidirectional(sourceid, targetid){
-  return bidirectionalLinks.some(link => 
-    (link.source.id === sourceid && link.target.id === targetid) || 
-    (link.source.id === targetid && link.target.id === sourceid)
-  );
+function isBidirectional(sourceid, targetid) {
+  return bidirectionalLinks.has(`${sourceid}-${targetid}`) || bidirectionalLinks.has(`${targetid}-${sourceid}`);
 }
 
 function getShortTitle(title){
@@ -709,7 +768,9 @@ function resetNetColors() {
   networkGroup.selectAll("line")
     .attr("opacity", 1)
     .attr("stroke", "grey")
-    .attr("stroke-width", 1);
+    .attr("stroke-width", 1)
+    .attr("marker-end", "url(#arrow-end)")
+    .attr("marker-start", d => isBidirectional(d.source.id, d.target.id) ? "url(#arrow-start)" : null);
 
   // Reset node styles
   networkGroup.selectAll(".node")
@@ -736,4 +797,37 @@ function resetNetColors() {
 
 function getMaxMinAge(){
   return Math.max(...graph.nodes.map(item => item.minage));
+}
+
+function getUniqueLinks(links) {
+  const uniqueLinks = [];
+  const processedPairs = new Set();
+
+  links.forEach(link => {
+    const sourceId = link.source.id !== undefined ? link.source.id : link.source;
+    const targetId = link.target.id !== undefined ? link.target.id : link.target;
+    const pairKey = `${sourceId}-${targetId}`;
+    const reversePairKey = `${targetId}-${sourceId}`;
+
+    if (processedPairs.has(pairKey) || processedPairs.has(reversePairKey)) {
+      return;
+    }
+
+    // Controlliamo se esiste un link inverso
+    const isBidirectional = links.some(l => 
+      (l.source.id !== undefined ? l.source.id : l.source) === targetId && 
+      (l.target.id !== undefined ? l.target.id : l.target) === sourceId
+    );
+
+    if (isBidirectional) {
+      uniqueLinks.push({ ...link, bidirectional: true });
+      processedPairs.add(pairKey);
+      processedPairs.add(reversePairKey);
+    } else {
+      uniqueLinks.push({ ...link, bidirectional: false });
+      processedPairs.add(pairKey);
+    }
+  });
+
+  return uniqueLinks;
 }

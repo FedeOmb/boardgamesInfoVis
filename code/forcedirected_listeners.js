@@ -11,87 +11,66 @@ d3.select("#zoom-in").on("click", function() {
 
 // Function to handle mouseover node event
 function handleMouseOver(d) {
-    if (!infoPanelVisible) {
-      // Highlight the hovered node
-      node.each(function(n) {
-        d3.select(this).selectAll("circle, path").attr("opacity", 0.4);
-      });
   
-      link.each(function(l) {
-        d3.select(this).attr("opacity", 0.4);
-      });
-  
-      // Highlight the hovered node's circle or paths
-      d3.select(this)
-        .selectAll("circle, path")
-        .attr("stroke", "DarkSlateGrey")
-        .attr("stroke-width", 2)
-        .attr("opacity", 1);
-  
-      // Highlight adjacent nodes
-      node.each(function(n) {
-        if (isAdjacent(d, n)) {
-          d3.select(this)
-            .selectAll("circle, path")
-            .attr("stroke", "DarkSlateGrey")
-            .attr("stroke-width", 2)
-            .attr("stroke-opacity", 1)
-            .attr("opacity", 1);
-        }
-      });
-  
-      // Highlight adjacent links
-      link.each(function(l) {
-        if (l.source === d || l.target === d) {
-          d3.select(this)
-            .attr("stroke", "DarkSlateGrey")
-            .attr("stroke-width", 2)
-            .attr("stroke-opacity", 1)
-            .attr("opacity", 1);
-        }
-      });
-    }
-  
-    // Show tooltip
-    tooltip.html(`<strong>${d.rank}°: ${d.title} <br>Type: ${d.type}</strong><br>`)
-      .style("left", (event.pageX + 10) + "px")
-      .style("top", (event.pageY - 10) + "px")
-      .style("visibility", "visible");
+  if (!infoPanelVisible) {
+    // Abbassiamo l'opacità di tutti i nodi e link
+    node.selectAll("circle, path").attr("opacity", 0.5);
+    link.attr("opacity", 0.3);
+
+    // Evidenziamo il nodo corrente
+    d3.select(this)
+      .selectAll("circle, path")
+      .attr("stroke", "DarkSlateGrey")
+      .attr("stroke-width", 2)
+      .attr("opacity", 1);
+
+    // Evidenziamo solo i link in uscita
+    link.each(function (l) {
+      if (isBidirectional(l.source.id, l.target.id) && (l.source === d || l.target === d)) {
+        d3.select(this)
+          .attr("stroke", "DarkSlateGrey")
+          .attr("stroke-width", 2)
+          .attr("opacity", 1)
+          .attr("marker-end", "url(#arrow-end)")
+          .attr("marker-start", "url(#arrow-start)"); // Keep marker-start for bidirectional
+      } else if (l.source === d) {
+        d3.select(this)
+          .attr("stroke", "DarkSlateGrey")
+          .attr("stroke-width", 2)
+          .attr("opacity", 1)
+          .attr("marker-end", "url(#arrow-end)")
+          .attr("marker-start", null);
+      }
+    });
+
+    // Evidenziamo solo i nodi di destinazione
+    node.each(function (n) {
+      if (isAdjacent(d, n) || isBidirectional(d.id, n.id)) {
+        d3.select(this)
+          .selectAll("circle, path")
+          .attr("stroke", "DarkSlateGrey")
+          .attr("stroke-width", 2)
+          .attr("opacity", 1);
+      }
+    });
+  }
+
+  // Mostra tooltip
+  tooltip.html(`<strong>${d.rank}°: ${d.title} <br>Type: ${d.type}</strong><br>`)
+    .style("left", (event.pageX + 10) + "px")
+    .style("top", (event.pageY - 10) + "px")
+    .style("visibility", "visible");
 }
 
 function handleMouseOut(d) {
-    if (!infoPanelVisible) {
-      // Unhighlight the hovered node
-      d3.select(this)
-        .selectAll("circle, path")
-        .attr("stroke", "grey")
-        .attr("stroke-width", 1);
-  
-      // Unhighlight adjacent nodes
-      node.each(function(n) {
-        if (isAdjacent(d, n)) {
-          d3.select(this)
-            .selectAll("circle, path")
-            .attr("stroke", "grey")
-            .attr("stroke-width", 1);
-        }
-      });
-  
-      // Unhighlight adjacent links
-      link.each(function(l) {
-        if (l.source === d || l.target === d) {
-          d3.select(this)
-            .attr("stroke", "#999")
-            .attr("stroke-width", 1);
-        }
-      });
-  
+  if (!infoPanelVisible) {
       resetNetColors();
-    }
-  
-    // Hide tooltip
-    tooltip.style("visibility", "hidden");
+      link.attr("marker-end", "url(#arrow-end)")
+          .attr("marker-start", d => d.bidirectional ? "url(#arrow-start)" : null);
   }
+
+  tooltip.style("visibility", "hidden");
+}
 
 function mouseEnterEdge(d) {
     const sourceNode = graph.nodes.find(n => n.id === (d.source.id || d.source));
@@ -102,21 +81,28 @@ function mouseEnterEdge(d) {
     const sourceCategories = new Set(sourceNode.categories?.map(c => c.name) || []);
     const targetCategories = new Set(targetNode.categories?.map(c => c.name) || []);
     const commonCategories = [...sourceCategories].filter(c => targetCategories.has(c));
-  
+
     if (!infoPanelVisible) {
-      // Highlight edge
       d3.select(this)
         .attr("stroke", "lime")
-        .attr("stroke-width", 3);
-  
-      // Highlight source and target nodes
-      node.select(function(n) {
-        return n === d.source || n === d.target ? this : null;
-      })
-        .selectAll("circle, path")
-        .attr("stroke", "lime")
-        .attr("stroke-width", 3);
+        .attr("stroke-width", 3)
+        .attr("opacity", 1)
+        .attr("marker-end", "url(#arrow-end)")
+        .attr("marker-start", isBidirectional(d.source.id, d.target.id) ? "url(#arrow-start)" : null);
+      // Evidenziamo anche i nodi collegati
+      node.each(function (n) {
+        if (n === d.source || n === d.target) {
+          d3.select(this)
+            .selectAll("circle, path")
+            .attr("stroke", "lime")
+            .attr("stroke-width", 3);
+        }
+      });
     }
+  
+    // Mostra tooltip
+    tooltip.style("visibility", "visible");
+  
   
     // Show tooltip
     tooltip.transition().duration(200).style("opacity", 0.9);
@@ -134,10 +120,17 @@ function mouseEnterEdge(d) {
           .style("visibility", "visible");
       }
     } else {
-      tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>`)
-        .style("left", (event.pageX + 10) + "px")
-        .style("top", (event.pageY - 10) + "px")
-        .style("visibility", "visible");
+      if (isBidirectional(sourceNode.id, targetNode.id)) {
+        tooltip.html(`<strong>${d.source.title} ↔ ${d.target.title}</strong><br>`)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 10) + "px")
+          .style("visibility", "visible");
+      }else {
+        tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>`)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 10) + "px")
+          .style("visibility", "visible");
+      }
     }
   }
 
@@ -165,45 +158,52 @@ function mouseLeaveEdge(d) {
 function handleNodeClick(d) {
     
     infoPanelVisible = true;
-    
     d3.select("body").classed("panel-open", true);
     d3.select("#info-panel").style("display", "block");
 
-    infoPanelVisible = true;
+    // Resettiamo la visualizzazione
     resetNetColors();
-    networkGroup.selectAll("line").attr("opacity", 0.4);
-    networkGroup.selectAll("circle, path").attr("opacity", 0.4);
+    networkGroup.selectAll("line").attr("opacity", 0.3);
+    networkGroup.selectAll("circle, path").attr("opacity", 0.5);
 
-    // Highlight adjacent nodes
-    node.each(function(n) {
-        if (isAdjacent(d, n)) {
+    // Evidenziamo il nodo cliccato
+    d3.select(this)
+      .selectAll("circle, path")
+      .attr("stroke", "DarkSlateGrey")
+      .attr("stroke-width", 2)
+      .attr("opacity", 1);
+
+    // Evidenziamo i link in uscita e bidirezionali
+    link.each(function (l) {
+      if (l.source === d || (l.source === d || l.target === d && isBidirectional(l.source.id, l.target.id)) ) {
+        console.log("true")
         d3.select(this)
-            .selectAll("circle, path")
-            .attr("stroke", "DarkSlateGrey")
-            .attr("stroke-width", 2)
-            .attr("stroke-opacity", 1)
-            .attr("opacity", 1);
-        }
+          .attr("stroke", "DarkSlateGrey")
+          .attr("stroke-width", 2)
+          .attr("opacity", 1)
+          .attr("marker-end", "url(#arrow-end)")
+          .attr("marker-start", isBidirectional(l.source, l.target) ? "url(#arrow-start)" : null);
+      }
     });
 
-    // Highlight adjacent links
-    link.each(function(l) {
-        if (l.source === d || l.target === d) {
+    // Evidenziamo i nodi collegati
+    node.each(function (n) {
+      if (isAdjacent(d, n) || isBidirectional(d.id, n.id)) {
         d3.select(this)
-            .attr("stroke", "DarkSlateGrey")
-            .attr("stroke-width", 2)
-            .attr("stroke-opacity", 1)
-            .attr("opacity", 1);
-        }
+          .selectAll("circle, path")
+          .attr("stroke", "DarkSlateGrey")
+          .attr("stroke-width", 2)
+          .attr("opacity", 1);
+      }
     });
 
     // Highlight the clicked node
     const clickedNode = d3.select(this);
     clickedNode.selectAll("circle, path")
-        .attr("stroke", "DarkSlateGrey")
-        .attr("stroke-width", 2)
-        .attr("stroke-opacity", 1)
-        .attr("opacity", 1);
+      .attr("stroke", "DarkSlateGrey")
+      .attr("stroke-width", 2)
+      .attr("stroke-opacity", 1)
+      .attr("opacity", 1);
 
     // Set fill to black for the clicked node
     if (d.type.length === 1) {

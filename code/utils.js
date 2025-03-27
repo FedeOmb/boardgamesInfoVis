@@ -1,4 +1,4 @@
-function calcAges(data) {
+/*function calcAges(data) {
     console.log(data);
     var ages = [];
     data.nodes.forEach(d => {
@@ -25,17 +25,40 @@ function calcAges(data) {
     ages = d3.sort(ages, (a, b) => d3.descending(a.count, b.count));
     return ages;
   }
+*/
+  function calcGamesByYear(data) {
+    console.log(data);
+    var years = [];
+  
+    data.nodes.forEach(game => {
+        const year = game.year;
+  
+        let yearEntry = years.find(d => d.year == year)
+        if (!yearEntry) {
+          yearEntry = { 
+            year: year,
+            games: []
+          };
+            years.push(yearEntry);
+        }
+        yearEntry.games.push(game.id);
+      });
+  
+    years.forEach(game => {
+      game.count = game.games.length;
+    })
+    years = d3.sort(years, (a, b) => d3.ascending(a.count, b.count));
+    return years;
+  }
 
 
 function calcTypeByYears2(data){
 
     var types = data.nodes.flatMap(d => d.type);
     types = [...new Set(types)];  
-    years = data.nodes.flatMap(d => d.year);
+    var years = data.nodes.flatMap(d => d.year);
     years = [...new Set(years)];
     years = years.sort((a, b) => d3.ascending(a, b));
-    console.log(types);
-    console.log(years);
   
     const yearsType = [];
   
@@ -95,7 +118,7 @@ function calcTypeByYears2(data){
       }
       
       
-      /*function calcTypeByYears(data){
+    function calcTypeByYears(data){
       
         const yearsType = [];
       
@@ -125,4 +148,3 @@ function calcTypeByYears2(data){
         console.log(yearsType)
         typeByYear = yearsType;
       }
-      */

@@ -15,6 +15,9 @@
               font-family: Arial, Helvetica, sans-serif;
               font-size: 75%;
             }
+            h1 {
+              margin: 2px;
+            }
             .container {
               margin-right: auto;
               margin-left: auto;
@@ -147,12 +150,12 @@
             .chart-selector {
               display: none;
               justify-content: space-between;
-              margin-bottom: 15px;
+              margin-bottom: 10px;
               background: #ffffff;
               padding: 8px;
               border: 1px solid #ddd;
               border-radius: 6px;
-              gap: 8px;
+              gap: 3px;
               flex-wrap: wrap;
             }
             .chart-content {
@@ -160,9 +163,9 @@
             }
             .chart-btn {
               flex: 1 1 20%;
-              min-width: 80px;
+              min-width: 50px;
               margin: 0 5px;
-              padding: 8px 12px;
+              padding: 5px 10px;
               font-size: 0.85rem;
               background: #007bff;
               color: #fff;
@@ -184,11 +187,10 @@
     </head>
     <body>
       <div class="container">
-        <!--- <h1>Board Games Visualization</h1>--->
+        <h1>Top 100 Board Games Visualization</h1>
 
         <div class="tabs">
           <button class="tab-button active" onclick="openTab(event, 'tab-1')">View the diffusion of an attribute among all games</button>
-          <!--<button class="tab-button" onclick="openTab(event, 'tab-2')">View longevity of all games in top 100</button>-->
           <button class="tab-button" onclick="openTab(event, 'tab-3')">View game types by year of release</button>
         </div>
 
@@ -230,45 +232,6 @@
             </div>
           </div>
         </div>
-        <!--
-        <div class="tab-content" id="tab-2">
-
-          <div class="col col-9">
-            <h3>Games are shown on the bar chart according to their age, calculated as the number of years from their release to 2023</h3>
-            <div class="controls-container" id="controls-2">
-
-              <div class="range-container">
-                <label for="max-items-2">Select max number of items to show</label>
-                <br>
-                <input type="range" name="max-items-2" id="max-items-2" min="10" max="10" value="1">
-                <span id="range-value-2">0</span>
-              </div>
-              <br>
-              <div class="radio-container">
-                <input type="radio" name="order-type" value="count" checked>
-                <label for="order-type">Order by number of games</label>
-                <br>
-                <input type="radio" name="order-type" value="age" >
-                <label for="order-type">Order by age</label>                
-              </div>
-            </div>
-            <div class="svg-container" id="bar-chart-2">
-            </div>
-          </div>
-
-          <div class="col col-3">
-            <div class="additional-info" id="additional-info-2">
-              <h3>Additional info</h3>
-              <div class="chart-selector">
-                <button class="chart-btn" data-chart="minage">Min Age</button>
-                <button class="chart-btn" data-chart="players">Number of Players</button>
-                <button class="chart-btn" data-chart="playtime">Playtime</button>
-                <button class="chart-btn" data-chart="categories">Categories distribution</button>
-              </div>
-              <div class="chart-content"></div>
-            </div>
-          </div>
-        </div>-->
 
         <div class="tab-content" id="tab-3">
 
@@ -303,12 +266,14 @@
 
           <div class="col col-3">
             <div class="additional-info" id="additional-info-3">
-              <h3>Additional info</h3>
+              <h2>Additional Info</h2>
+              <div class="info-default-text"><strong>Click on a bar </strong>to show here more informations and statistics about the <strong>games</strong> belonging to a specific <strong>category</strong>, <strong>mechanic</strong> or <strong>designer</strong></div>
+              <div class="info-selected-text"></div>
               <div class="chart-selector">
+                <button class="chart-btn" data-chart="rating">Rating</button>
                 <button class="chart-btn" data-chart="minage">Min Age</button>
                 <button class="chart-btn" data-chart="players">Number of Players</button>
                 <button class="chart-btn" data-chart="playtime">Playtime</button>
-                <button class="chart-btn" data-chart="categories">Categories distribution</button>
               </div>
               <div class="chart-content"></div>
           </div>

@@ -62,7 +62,13 @@ function createAdditionalBarchart(data, chartContainer, attr, title, attrMainCha
     .range([0, chartHeight])
     .padding(0.3);
 
-    const barsColor = colorsBarchart1[attrMainChart];
+    var barsColor;
+    if(attrMainChart=="year"){
+      barsColor = "teal";
+    }else{
+      barsColor = colorsBarchart1[attrMainChart];
+    }
+
     console.log(attrMainChart)
 
     const tooltip = chartContainer.append("div")

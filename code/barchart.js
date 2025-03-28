@@ -92,16 +92,16 @@ var chart3Height;
   chartType3.on("change", () => {
     var value = d3.selectAll("input[name='chart-type']:checked").property("value");
     if(value == "total"){
-      createBarchart2(gamesByYear, "count", "year");
+      createBarchart3(chartType = "total");
     }
     if(value == "types"){
-      createBarchart3(typeByYear);
+      createBarchart3(chartType = "types");
     }
   })
 
   //--- listener controlli tab3 ---
   yearSliderMax.on("change", () => {
-    var value = chartType3.property("value");
+    var value = d3.selectAll("input[name='chart-type']:checked").property("value");
     maxYearToVis = parseInt(yearSliderMax.property("value"));
     minYearToVis = parseInt(yearSliderMin.property("value"));
     if (maxYearToVis <= minYearToVis) {
@@ -109,10 +109,15 @@ var chart3Height;
       yearSliderMax.property("value", maxYearToVis);
     }
     yearSliderMaxValue.text(years[maxYearToVis].toString());
-    updateChart3(typeByYear, selectedTypes);
+    if(value == "types"){
+      updateChart3("types");
+    }else if(value == "total"){
+      updateChart3("total");
+    }
   });
 
   yearSliderMin.on("change", () => {
+    var value = d3.selectAll("input[name='chart-type']:checked").property("value");
     maxYearToVis = parseInt(yearSliderMax.property("value"));
     minYearToVis = parseInt(yearSliderMin.property("value"));
     if (minYearToVis >= maxYearToVis) {
@@ -120,7 +125,11 @@ var chart3Height;
       yearSliderMin.property("value", minYearToVis);
     }
     yearSliderMinValue.text(years[minYearToVis].toString());
-    updateChart3(typeByYear, selectedTypes);
+      if(value == "types"){
+        updateChart3("types");
+      }else if(value == "total"){
+        updateChart3("total");
+      }
   });
 
 loadDatasets();
@@ -147,7 +156,7 @@ function openTab(event, tabName) {
     createBarchart1(attr, "name", "count");
   }
   if(tabName == "tab-3"){
-    createBarchart3(typeByYear);
+    createBarchart3("types");
   }
 }
 
@@ -207,6 +216,7 @@ async function loadDatasets(){
     years = data.nodes.flatMap(d => d.year);
     years = [...new Set(years)];
     years = years.sort((a, b) => d3.ascending(a, b));
+    types = [...new Set(typeByYear.map(d => d.type))]; 
 
     maxYearToVis = years.length-1;
     minYearToVis = 0;
@@ -387,7 +397,7 @@ function createBarchart1(attr, varY, varX){
 };
 
 
-function createBarchart2(dataToVis, varY, varX){
+/*function createBarchart2(dataToVis, varY, varX){
   var svg3Width = +cont3.node().getBoundingClientRect().width;
   var svg3Height = +cont3.node().getBoundingClientRect().height;
   svg3.attr("viewBox", `0 0 ${svg3Width} ${svg3Height}`);
@@ -498,26 +508,32 @@ function createBarchart2(dataToVis, varY, varX){
     });
   
 };
+*/
 
 
-function createBarchart3(dataToVis){
+function createBarchart3(chartType){
   var svg3Width = +cont3.node().getBoundingClientRect().width;
   var svg3Height = +cont3.node().getBoundingClientRect().height;
   svg3.attr("viewBox", `0 0 ${svg3Width} ${svg3Height}`);
 
-  var data = dataToVis; 
   var yearsToVis = years.sort((a, b) => d3.ascending(a, b));
   console.log(yearsToVis);
   console.log(minYearToVis)
   console.log(maxYearToVis)
   yearsToVis = yearsToVis.slice(minYearToVis, maxYearToVis+1);
   console.log(yearsToVis);
-  types = [...new Set(data.map(d => d.type))]; 
   selectedTypes = types;
   console.log(types);
 
   chart3Width = svg3Width - (chart3Margin.right + chart3Margin.left);
   chart3Height = svg3Height - (chart3Margin.top + chart3Margin.bottom);
+  var data;
+  if(chartType == "types"){
+    data = typeByYear;
+  }
+  else if(chartType == "total"){
+    data = gamesByYear;
+  }
   const max_count = d3.max(data, (d) => d.games.length);
   
   //definizione scale per gli assi
@@ -589,14 +605,20 @@ function createBarchart3(dataToVis){
 
   //creazione legenda e inizializzazione grafico
   createLegend3(types);
-  updateChart3(dataToVis, types);
+  updateChart3(chartType);
 };
 
-function updateChart3(dataToVis, selectedTypes) {
+function updateChart3(chartType) {
+  console.log(chartType)
   var yearsToVis = years.sort((a, b) => d3.ascending(a, b));
   yearsToVis = yearsToVis.slice(minYearToVis, maxYearToVis+1);
-  //var data = dataToVis.filter(d => yearsToVis.includes(d.year)); 
-  var data = dataToVis.filter(d => selectedTypes.includes(d.type)); 
+  var data;
+  if(chartType == "types"){
+    data = typeByYear.filter(d => selectedTypes.includes(d.type)); 
+  }
+  else if(chartType == "total"){
+    data = gamesByYear.filter(d => yearsToVis.includes(d.year));
+  }
   console.log(yearsToVis);
   console.log(data);
 
@@ -605,9 +627,11 @@ function updateChart3(dataToVis, selectedTypes) {
   xScale3
   .domain(yearsToVis);
 
+  if(chartType == "types"){
   xScaleSubgroups3
   .domain(types)
   .range([0, xScale3.bandwidth()])
+  }
 
   yScale3
   .domain([0, max_count]);
@@ -638,6 +662,11 @@ function updateChart3(dataToVis, selectedTypes) {
     .attr('y1', d => yScale3(d))
     .attr('y2', d => yScale3(d))
   );
+
+  if(chartType == "types"){
+
+    svg3.select(".legend").style("visibility", "visible");
+
   const yearGroups = innerChart.selectAll(".year-group")
     .data(yearsToVis)
     .join("g")
@@ -657,17 +686,73 @@ function updateChart3(dataToVis, selectedTypes) {
     .attr("y", (d) => yScale3(d.games.length))
     .attr("fill", (d) => colorScaleTypes(d.type));
 
+  } 
+  else if(chartType == "total"){
+    svg3.select(".legend").style("visibility", "hidden");
+
+      // gruppo rect + label interna
+        const barAndLabel = innerChart
+        .selectAll(".bar-group")
+        .data(data)
+        .join("g")
+        .attr("class", "bar-group")
+        .attr("transform", (d) => `translate(${xScale3(d.year)}, 0)`);
+
+      barAndLabel
+        .append("rect")
+        .attr("width", xScale3.bandwidth())
+        .attr("height", (d) => chart3Height - yScale3(d.games.length))
+        .attr("x", 0)
+        .attr("y", (d) => yScale3(d.count))
+        .attr("fill", d3.color(colorBarchart2))
+        .on("click", (event,d) => {
+          d3.selectAll(".bar-group rect").attr("fill", d3.color(colorBarchart2));
+          d3.select(event.currentTarget).attr("fill", d3.color(colorBarchart2).darker());
+          var games = d.games;
+          var additionalData = [];
+          games.forEach(game => {
+            var gameData = dataset.nodes.find(d => d.id == game);
+            additionalData.push(gameData);
+          });
+          console.log(additionalData);
+          showAdditionalCharts(additionalData, attrMainChart="year",containerId="#additional-info-3");
+        });
+
+      barAndLabel
+        .append("text")
+        .text((d) => d.count)
+        .attr("x", xScale3.bandwidth() / 2)
+        .attr("y", (d) => yScale3(d.year) - 3)
+        .style("font-family", "sans-serif")
+        .style("font-size", "9px");
+  }
+
     axisX3.transition()
       .call(d3.axisBottom(xScale3))
       .selectAll("text")
       .style("text-anchor", "center");
+    
     axisY3.transition()    
       .call(d3.axisLeft(yScale3));
+    
+      if(chartType == "total"){
+      svg3.on("click", (event) => {
+        if (event.target.tagName === "svg") {
+          d3.select("#additional-info-3 .chart-selector" ).style("display","none");
+          d3.select("#additional-info-3 .chart-content").style("display","none");
+          barAndLabel.selectAll("rect").attr("fill", d3.color(colorBarchart2));
+        }
+      });
+    }
+    
 }
 
 function createLegend3(types){
 
   const legend = svg3.select(".legend");
+  
+  legend.style("visibility", "visible");
+
   legend.selectAll("*").remove();
   // aggiunta legenda
   let legendX = 0;
@@ -682,7 +767,7 @@ function createLegend3(types){
         } else {
           selectedTypes.push(type);
         }
-        updateChart3(typeByYear, selectedTypes);
+        updateChart3(chartType = "types");
         d3.select(this).select("rect").attr("fill", selectedTypes.includes(type) ? colorScaleTypes(type) : "#ccc");
       });
 

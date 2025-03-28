@@ -738,13 +738,8 @@ function updateChart3(chartType) {
       if(chartType == "total"){
       svg3.on("click", (event) => {
         if (event.target.tagName === "svg") {
-<<<<<<< HEAD
           d3.select("#additional-info-3 .chart-selector" ).style("display","none");
           d3.select("#additional-info-3 .chart-content").style("display","none");
-=======
-          d3.select("#additional-info-3 .chart-selector" ).selectAll("*").remove();
-          d3.select("#additional-info-3 .chart-content").selectAll("*").remove();
->>>>>>> df299dbd296a5d0183ffbcc94ebd66cad0deb5e7
           barAndLabel.selectAll("rect").attr("fill", d3.color(colorBarchart2));
         }
       });

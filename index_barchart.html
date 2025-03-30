@@ -89,6 +89,7 @@
               width: 100%;
               height: 100%;
               font-family: Arial, Helvetica, sans-serif;
+
             }
             .controls-container {
               display:flex;
@@ -165,7 +166,7 @@
               flex: 1 1 20%;
               min-width: 50px;
               margin: 0 5px;
-              padding: 5px 10px;
+              padding: 8px 12px;
               font-size: 0.85rem;
               background: #007bff;
               color: #fff;
@@ -182,7 +183,10 @@
               background: #0056b3;
               font-weight: bold;
               box-shadow: 0 0 5px rgba(0,0,0,0.3);
-          }
+            }
+            .show-all-selector{
+              display: none;
+            }
           </style>
     </head>
     <body>
@@ -228,6 +232,12 @@
                 <button class="chart-btn" data-chart="players">Number of Players</button>
                 <button class="chart-btn" data-chart="playtime">Playtime</button>
               </div>
+              <div class="show-all-selector">
+                <input type="radio" name="show-all-1" value="top10" checked>
+                <label for="show-all">View only first 10 games</label>      
+                <input type="radio" name="show-all-1" value="all" >
+                <label for="show-all">View all games</label>
+              </div>
               <div class="chart-content"></div>
             </div>
           </div>
@@ -257,7 +267,6 @@
                 <br>
                 <input type="radio" name="chart-type" value="total" >
                 <label for="chart-type">View total number of games per year</label>
-
               </div>
             </div>
             <div class="svg-container" id="bar-chart-3">
@@ -267,13 +276,19 @@
           <div class="col col-3">
             <div class="additional-info" id="additional-info-3">
               <h2>Additional Info</h2>
-              <div class="info-default-text"><strong>Click on a bar </strong>to show here more informations and statistics about the <strong>games</strong> belonging to a specific <strong>category</strong>, <strong>mechanic</strong> or <strong>designer</strong></div>
+              <div class="info-default-text"><strong>Click on a bar </strong>to show here more informations and statistics about the <strong>games</strong> released in specific <strong>year</strong></div>
               <div class="info-selected-text"></div>
               <div class="chart-selector">
                 <button class="chart-btn" data-chart="rating">Rating</button>
                 <button class="chart-btn" data-chart="minage">Min Age</button>
                 <button class="chart-btn" data-chart="players">Number of Players</button>
                 <button class="chart-btn" data-chart="playtime">Playtime</button>
+              </div>
+              <div class="show-all-selector">
+                <input type="radio" name="show-all-3" value="top10" checked>
+                <label for="show-all">View only first 10 games</label>      
+                <input type="radio" name="show-all-3" value="all" >
+                <label for="show-all">View all games</label>
               </div>
               <div class="chart-content"></div>
           </div>

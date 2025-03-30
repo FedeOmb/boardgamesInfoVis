@@ -148,3 +148,47 @@ function calcTypeByYears2(data){
         console.log(yearsType)
         typeByYear = yearsType;
       }
+
+      function wrapText(element, d){
+        const self = d3.select(element);
+        let title = String(d).trim();
+    
+        // Abbreviazioni comuni
+        const abbreviations = {
+            'edition': 'ed.',
+            'second': '2nd',
+            'third': '3rd',
+            'fourth': '4th',
+            'first': '1st',
+            'fifth': '5th'
+        };
+    
+        // Applica le abbreviazioni
+        for (let [word, abbrev] of Object.entries(abbreviations)) {
+            const regex = new RegExp(`\\b${word}\\b`, 'gi');
+            title = title.replace(regex, abbrev);
+        }
+        
+        if (title.length > 25) {
+          let firstLine = title.substring(0, 25);
+          let secondLine = title.substring(25);
+          
+          const lastSpace = firstLine.lastIndexOf(' ');
+          if (lastSpace > 15) {
+            firstLine = title.substring(0, lastSpace);
+            secondLine = title.substring(lastSpace + 1);
+          }
+          self.text('');
+          self.append('tspan')
+            .text(firstLine)
+            .attr('x', -10)
+            .attr('dy', '-0.3em');
+          self.append('tspan')
+            .text(secondLine)
+            .attr('x', -10)
+            .attr('dy', '1.1em');
+        }
+        else{
+            self.text(title);
+        }
+    }

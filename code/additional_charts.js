@@ -2,9 +2,11 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
 
   const chartSelector = d3.select(containerId + " .chart-selector");
   const chartContent = d3.select(containerId + " .chart-content");
-
+  const showAllSelector = d3.select(containerId + " .show-all-selector");
+  showAllSelector.style("display", "none");
   chartSelector.style("display", "flex");
   chartContent.style("display", "flex");
+
   chartContent.html("");
   const buttons = chartSelector.selectAll(".chart-btn");
   buttons.classed("active", false);
@@ -12,30 +14,51 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
   // Set the "rating" button as active by default
   const defaultButton = buttons.filter('[data-chart="rating"]');
   defaultButton.classed("active", true);
-  data.sort((a, b) => d3.ascending(a.rank, b.rank));
-  createAdditionalBarchart(data, chartContent, "rating", "User rating", attrMainChart, (value) => value.toFixed(2));
 
-  buttons.on("click", function() {
+  let filteredData = data;
+  filteredData.sort((a, b) => d3.ascending(a.rank, b.rank));
+  if(data.length > 10){
+    showAllSelector.style("display", "flex");
+    const showValue = showAllSelector.select("input[type='radio']:checked").property("value");
+    if(showValue =="top10"){
+      filteredData = data.slice(0,10);
+    }
+  }
+
+  createAdditionalBarchart(filteredData, chartContent, "rating", "User rating", attrMainChart, (value) => value.toFixed(2));
+
+  //function to show graphs based on current selections
+  function showGraphs(chartType) {
+    const showValue = showAllSelector.select("input[type='radio']:checked").property("value");
+    let filteredData = data;
+    filteredData.sort((a, b) => d3.ascending(a.rank, b.rank));
+    if(showValue =="top10"){
+      filteredData = filteredData.slice(0,10);
+    }
+    console.log(filteredData)
+    chartContent.html("");
+    if (chartType === "minage") {
+      createAdditionalBarchart(filteredData, chartContent, "minage", "Minimum player age", attrMainChart, (value) => value);
+    } else if (chartType === "players") {
+      createDumbbellChart(filteredData, "minplayers", "maxplayers", chartContent, "Players");
+    } else if (chartType === "playtime") {
+      createDumbbellChart(filteredData, "minplaytime", "maxplaytime", chartContent, "Playtime (min)");
+    } else if (chartType === "rating") {
+      createAdditionalBarchart(filteredData, chartContent, "rating", "User rating", attrMainChart, (value) => value.toFixed(2));
+    }
+  }
+
+  //listener for show all selector
+  showAllSelector.selectAll("input[type='radio']").on("change", function(){
+    const chartType = chartSelector.select(".chart-btn.active").attr("data-chart");
+    showGraphs(chartType);
+  });
+  //listener for chart type buttons
+  buttons.on("click", function(){
     const chartType = d3.select(this).attr("data-chart");
     buttons.classed("active", false);
     d3.select(this).classed("active", true);
-    chartContent.html("");
-    if (chartType === "minage") {
-      //data.sort((a, b) => d3.descending(a.minage, b.minage));
-      data.sort((a, b) => d3.ascending(a.rank, b.rank));
-      createAdditionalBarchart(data, chartContent, "minage", "Minimum player age", attrMainChart, (value) => value);
-    } else if (chartType === "players") {
-      //data.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
-      data.sort((a, b) => d3.ascending(a.rank, b.rank));
-      createDumbbellChart(data, "minplayers", "maxplayers", chartContent, "Players");
-    } else if (chartType === "playtime") {
-      //data.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
-      data.sort((a, b) => d3.ascending(a.rank, b.rank));
-      createDumbbellChart(data, "minplaytime", "maxplaytime", chartContent, "Playtime (min)");
-    } else if (chartType === "rating") {
-      data.sort((a, b) => d3.ascending(a.rank, b.rank));
-      createAdditionalBarchart(data, chartContent, "rating", "User rating", attrMainChart, (value) => value.toFixed(2));
-    }
+    showGraphs(chartType)
   });
 }
 
@@ -73,7 +96,7 @@ function createAdditionalBarchart(data, chartContainer, attr, title, attrMainCha
 
     const tooltip = chartContainer.append("div")
     .attr("class", "tooltip")
-    .style("position", "fixed")
+    .style("position", "absolute")
     .style("padding", "8px")
     .style("background", "rgba(255, 255, 255, 1)")
     .style("color", "black")
@@ -99,8 +122,8 @@ function createAdditionalBarchart(data, chartContainer, attr, title, attrMainCha
 
     var mousemove = function(event,d) {
       tooltip
-      .style("left", (event.pageX) + "px")
-      .style("top", (event.pageY) + "px")
+      .style("left", (event.offsetX) + "px")
+      .style("top", (event.offsetY + 50) + "px");
     }
   
     const innerChart = svg
@@ -173,6 +196,8 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
   
     //const chartWidth = svgWidth - (margin.right + margin.left);
     //const chartHeight = svgHeight - (margin.top + margin.bottom);
+
+    const max_count = d3.max(data, n => Math.max(n[minProp], n[maxProp]));
   
     svg.append("text")
       .attr("x", svgWidth / 2)
@@ -182,7 +207,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
       .style("font-weight", "bold");
   
     const x = d3.scaleLinear()
-      .domain([0, d3.max(data, n => Math.max(n[minProp], n[maxProp]))])
+      .domain([0, max_count])
       .range([margin.left, svgWidth - margin.right]);
   
     const y = d3.scaleBand()
@@ -224,7 +249,9 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
     // Axes
     svg.append("g")
       .attr("transform", `translate(0,${margin.top})`)
-      .call(d3.axisTop(x));
+      .call(d3.axisTop(x)
+        .ticks(max_count > 10 ? x.ticks().length : max_count)
+        .tickFormat(d => Number.isInteger(d) ? d : ""));
   
     svg.append("g")
       .attr("transform", `translate(${margin.left},0)`)
@@ -238,50 +265,6 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
       })
 
   }
-
-  function wrapText(element, d){
-    const self = d3.select(element);
-    let title = String(d).trim();
-
-    // Abbreviazioni comuni
-    const abbreviations = {
-        'edition': 'ed.',
-        'second': '2nd',
-        'third': '3rd',
-        'fourth': '4th',
-        'first': '1st',
-        'fifth': '5th'
-    };
-
-    // Applica le abbreviazioni
-    for (let [word, abbrev] of Object.entries(abbreviations)) {
-        const regex = new RegExp(`\\b${word}\\b`, 'gi');
-        title = title.replace(regex, abbrev);
-    }
-    
-    if (title.length > 25) {
-      let firstLine = title.substring(0, 25);
-      let secondLine = title.substring(25);
-      
-      const lastSpace = firstLine.lastIndexOf(' ');
-      if (lastSpace > 15) {
-        firstLine = title.substring(0, lastSpace);
-        secondLine = title.substring(lastSpace + 1);
-      }
-      self.text('');
-      self.append('tspan')
-        .text(firstLine)
-        .attr('x', -10)
-        .attr('dy', '-0.3em');
-      self.append('tspan')
-        .text(secondLine)
-        .attr('x', -10)
-        .attr('dy', '1.1em');
-    }
-    else{
-        self.text(title);
-    }
-}
 
   /*
   function createCategoriesChart(data, chartContainer) {

@@ -31,7 +31,7 @@ var xScaleSubgroups3;
 var yScale3;
 var axisX3;
 var axisY3;
-const legend3Height = 20;
+const legend3Height = 40;
 const chart3Margin = { top: 20 + legend3Height, right: 20, bottom: 50, left: 50 };
 var chart3Width;
 var chart3Height;
@@ -156,7 +156,12 @@ function openTab(event, tabName) {
     createBarchart1(attr, "name", "count");
   }
   if(tabName == "tab-3"){
-    createBarchart3("types");
+    var value = d3.selectAll("input[name='chart-type']:checked").property("value");
+    if(value == "types"){
+      createBarchart3("types");
+    }else if(value == "total"){
+      createBarchart3("total");
+    }
   }
 }
 
@@ -265,16 +270,18 @@ function createBarchart1(attr, varY, varX){
 
   var barSelected = false;
   
-  const tooltip = cont1.append("div")
-  .attr("class", "tooltip")
-  .style("position", "fixed")
-  .style("padding", "8px")
-  .style("background", "rgba(255, 255, 255, 1)")
-  .style("color", "black")
-  .style("border-radius", "5px")
-  .style("pointer-events", "none")
-  .style("font-size", "12px")
-  .style("visibility", "hidden");
+  var tooltip = d3.select(".tooltip");
+  if (tooltip.empty()) 
+    tooltip = cont1.append("div")
+      .attr("class", "tooltip")
+      .style("position", "absolute")
+      .style("padding", "8px")
+      .style("background", "rgba(255, 255, 255, 1)")
+      .style("color", "black")
+      .style("border-radius", "5px")
+      .style("pointer-events", "none")
+      .style("font-size", "12px")
+      .style("visibility", "hidden");
 
   function showTooltip(d){
     tooltip
@@ -284,8 +291,8 @@ function createBarchart1(attr, varY, varX){
 
   var mousemove = function(event,d) {
     tooltip
-    .style("left", (event.pageX) + "px")
-    .style("top", (event.pageY) + "px")
+    .style("left", (event.offsetX) + "px")
+    .style("top", (event.offsetY + 50) + "px");
   }
   const innerChart = svg1
     .append("g")
@@ -296,7 +303,7 @@ function createBarchart1(attr, varY, varX){
     innerChart.append("g").call((g) => g
     .attr('class', 'grid')
     .selectAll('line')
-    .data(xScale.ticks())
+    .data(xScale.ticks().filter(d => Number.isInteger(d)))
     .join('line')
     .attr('x1', d => xScale(d))
     .attr('x2', d => xScale(d))
@@ -362,11 +369,16 @@ function createBarchart1(attr, varY, varX){
     .selectAll("text")
     .attr("transform", "translate(-10,0)")
     .style("text-anchor", "end")
-    .style("font-size", "11px");
+    .style("font-size", "11px")
+    .each( function(d) {
+      wrapText(this,d);
+    })
 
   innerChart
     .append("g")
-    .call(d3.axisTop(xScale));
+    .call(d3.axisTop(xScale)
+    .ticks(max_count > 10 ? xScale.ticks().length : max_count)
+      .tickFormat(d => Number.isInteger(d) ? d : ""));
 
       // aggiunta etichette degli assi
       innerChart
@@ -390,126 +402,12 @@ function createBarchart1(attr, varY, varX){
         infoDefaultText.style("display", "block");
         d3.select("#additional-info-1 .chart-selector").style("display","none");
         d3.select("#additional-info-1 .chart-content").style("display","none");
+        d3.select("#additional-info-1 .show-all-selector").style("display","none");
         d3.selectAll("rect").attr("fill", d3.color(barsColor));
         barSelected = false;
       }
     });
 };
-
-
-/*function createBarchart2(dataToVis, varY, varX){
-  var svg3Width = +cont3.node().getBoundingClientRect().width;
-  var svg3Height = +cont3.node().getBoundingClientRect().height;
-  svg3.attr("viewBox", `0 0 ${svg3Width} ${svg3Height}`);
-
-  var data = d3.sort(dataToVis, (a, b) => d3.ascending(a.year, b.year))
-  console.log(data)
-
-  const chartWidth = svg3Width - (chart3Margin.right + chart3Margin.left);
-  const chartHeight = svg3Height - (chart3Margin.top + chart3Margin.bottom);
-  const max_count = d3.max(data, (d) => d[varY]);
-  
-  //definizione scale per gli assi
-  const yScale = d3.scaleLinear().domain([0, max_count]).range([chartHeight, 0]);
-  const xScale = d3
-  .scaleBand()
-  .domain(data.map((d) => d[varX]))
-  .range([0, chartWidth])
-  .padding(0.2);
-
-  svg3.selectAll("*").remove();
-
-  const innerChart = svg3
-    .append("g")
-    .attr("width", chartWidth)
-    .attr("height", chartHeight)
-    .attr("transform", `translate(${chart3Margin.left},${chart3Margin.top})`);
-
-    innerChart.append("g").call((g) => g
-      .attr('class', 'grid')
-      .selectAll('line')
-      .data(yScale.ticks())
-      .join('line')
-      .attr('x1', 0)
-      .attr('x2', chartWidth)
-      .attr('y1', d => yScale(d))
-      .attr('y2', d => yScale(d))
-    );
-
-  // gruppo rect + label interna
-  const barAndLabel = innerChart
-    .selectAll(".bar-group")
-    .data(data)
-    .join("g")
-    .attr("class", "bar-group")
-    .attr("transform", (d) => `translate(${xScale(d[varX])}, 0)`);
-
-  barAndLabel
-    .append("rect")
-    .attr("width", xScale.bandwidth())
-    .attr("height", (d) => chartHeight - yScale(d[varY]))
-    .attr("x", 0)
-    .attr("y", (d) => yScale(d[varY]))
-    .attr("fill", d3.color(colorBarchart2))
-    .on("click", (event,d) => {
-      d3.selectAll("rect").attr("fill", d3.color(colorBarchart2));
-      d3.select(event.currentTarget).attr("fill", d3.color(colorBarchart2).darker());
-      var games = d.games;
-      var dataToVis = [];
-      games.forEach(game => {
-        var gameData = dataset.nodes.find(d => d.id == game);
-        dataToVis.push(gameData);
-      });
-      console.log(dataToVis);
-      showAdditionalCharts(dataToVis, "#additional-info-3");
-    });
-
-  barAndLabel
-    .append("text")
-    .text((d) => d.count)
-    .attr("x", xScale.bandwidth() / 2)
-    .attr("y", (d) => yScale(d[varY]) - 3)
-    .style("font-family", "sans-serif")
-    .style("font-size", "9px");
-
-    //aggiunta assi
-  innerChart
-    .append("g")
-    .attr("transform", `translate(0, ${chartHeight})`)
-    .call(d3.axisBottom(xScale))
-    .selectAll("text")
-    .style("text-anchor", "center");
-
-  innerChart
-    .append("g")
-    .call(d3.axisLeft(yScale));
-  
-    // aggiunta etichette degli assi
-  innerChart
-    .append("text")
-    .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + 30})`)
-    .style("text-anchor", "middle")
-    .text("Release year");
-
-  innerChart
-    .append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("y", 0 - 50 )
-    .attr("x", 0 - 200)
-    .style("text-anchor", "middle")
-    .text("Number of games");
-
-    svg2.on("click", (event) => {
-      if (event.target.tagName === "svg") {
-        d3.select("#additional-info-3 .gamelist" ).selectAll("*").remove();
-        d3.select("#additional-info-3 .gamelist-legend").selectAll("*").remove();
-        d3.selectAll("rect").attr("fill", d3.color(colorBarchart2));
-      }
-    });
-  
-};
-*/
-
 
 function createBarchart3(chartType){
   var svg3Width = +cont3.node().getBoundingClientRect().width;
@@ -557,6 +455,17 @@ function createBarchart3(chartType){
   .domain(types);
 
   svg3.selectAll("*").remove();
+
+  const tooltip = cont3.append("div")
+  .attr("class", "tooltip")
+  .style("position", "absolute")
+  .style("padding", "8px")
+  .style("background", "rgba(255, 255, 255, 1)")
+  .style("color", "black")
+  .style("border-radius", "5px")
+  .style("pointer-events", "none")
+  .style("font-size", "12px")
+  .style("visibility", "hidden");
 
   const legend = svg3.append("g")
   .attr("class", "legend")
@@ -636,17 +545,28 @@ function updateChart3(chartType) {
   yScale3
   .domain([0, max_count]);
 
+  const tooltip = cont3.select(".tooltip");
+
+  var mousemove = function(event,d) {
+    tooltip
+    .style("left", (event.offsetX) + "px")
+    .style("top", (event.offsetY) + "px");
+  }
+
   // Aggiungi rettangoli di sfondo alternati
   const innerChart = svg3.select(".chart-content");
   innerChart.selectAll("*").remove();
 
-  const backgroundRectWidth = xScale3.bandwidth();
+  const infoText = d3.select("#additional-info-3 .info-selected-text");
+  const infoDefaultText = d3.select("#additional-info-3 .info-default-text");
+
+  const backgroundRectWidth = xScale3.step();
 
   innerChart.selectAll(".background-rect")
   .data(yearsToVis)
   .join("rect")
   .attr("class", "background-rect")
-  .attr("x", (d) => (xScale3(d)))
+  .attr("x", (d) => (xScale3(d) - (xScale3.step()-xScale3.bandwidth())/2))
   .attr("y", 0)
   .attr("width", backgroundRectWidth)
   .attr("height", chart3Height)
@@ -655,7 +575,7 @@ function updateChart3(chartType) {
   innerChart.append("g").call((g) => g
     .attr('class', 'grid')
     .selectAll('line')
-    .data(yScale3.ticks())
+    .data(yScale3.ticks().filter(d => Number.isInteger(d)))
     .join('line')
     .attr('x1', 0)
     .attr('x2', chart3Width)
@@ -684,7 +604,16 @@ function updateChart3(chartType) {
     .attr("height", (d) => chart3Height - yScale3(d.games.length))
     .attr("x", (d) => xScaleSubgroups3(d.type))
     .attr("y", (d) => yScale3(d.games.length))
-    .attr("fill", (d) => colorScaleTypes(d.type));
+    .attr("fill", (d) => colorScaleTypes(d.type))
+    .on("mouseover", function(event,d){
+      tooltip
+      .html(`<strong>Year: ${d.year} <br> Type: ${d.type} <br> Number of games: ${d.games.length}</strong>`)
+      .style("visibility", "visible");
+    })
+    .on("mousemove", mousemove)
+    .on("mouseout", function(event,d){
+      tooltip.style("visibility", "hidden");
+    })
 
   } 
   else if(chartType == "total"){
@@ -700,11 +629,20 @@ function updateChart3(chartType) {
 
       barAndLabel
         .append("rect")
-        .attr("width", xScale3.bandwidth())
+        .attr("width", xScale3.bandwidth()-0.2)
         .attr("height", (d) => chart3Height - yScale3(d.games.length))
         .attr("x", 0)
         .attr("y", (d) => yScale3(d.count))
         .attr("fill", d3.color(colorBarchart2))
+        .on("mouseover", function(event,d){
+          tooltip
+          .html(`<strong>Year ${d.year} : ${d.count} games </strong>`)
+          .style("visibility", "visible");
+        })
+        .on("mousemove", mousemove)
+        .on("mouseout", function(event,d){
+          tooltip.style("visibility", "hidden");
+        })
         .on("click", (event,d) => {
           d3.selectAll(".bar-group rect").attr("fill", d3.color(colorBarchart2));
           d3.select(event.currentTarget).attr("fill", d3.color(colorBarchart2).darker());
@@ -715,6 +653,8 @@ function updateChart3(chartType) {
             additionalData.push(gameData);
           });
           console.log(additionalData);
+          infoDefaultText.style("display", "none");
+          infoText.style("display","block").html(`Showing statistics about games released in year <strong>${d.year} </strong>`);
           showAdditionalCharts(additionalData, attrMainChart="year",containerId="#additional-info-3");
         });
 
@@ -733,14 +673,19 @@ function updateChart3(chartType) {
       .style("text-anchor", "center");
     
     axisY3.transition()    
-      .call(d3.axisLeft(yScale3));
+      .call(d3.axisLeft(yScale3)
+        .ticks(max_count)
+        .tickFormat(d => Number.isInteger(d) ? d : ""));
     
       if(chartType == "total"){
       svg3.on("click", (event) => {
-        if (event.target.tagName === "svg") {
+        if (event.target.tagName === "svg" || event.target.classList.contains("background-rect")) {
+          infoText.style("display", "none");
+          infoDefaultText.style("display", "block");
           d3.select("#additional-info-3 .chart-selector" ).style("display","none");
           d3.select("#additional-info-3 .chart-content").style("display","none");
-          barAndLabel.selectAll("rect").attr("fill", d3.color(colorBarchart2));
+          d3.select("#additional-info-3 .show-all-selector").style("display","none");
+          d3.selectAll(".bar-group rect").attr("fill", d3.color(colorBarchart2));
         }
       });
     }
@@ -754,11 +699,19 @@ function createLegend3(types){
   legend.style("visibility", "visible");
 
   legend.selectAll("*").remove();
+
+  legend.append("text")
+  .attr("x", 0)
+  .attr("y", 20)
+  .attr("font-size", "15")
+  .attr("text-anchor", "start")
+  .text("Click on the legend to show/hide specific types");
+
   // aggiunta legenda
   let legendX = 0;
   types.forEach((type, i) => {
     const legendItem = legend.append("g")
-      .attr("transform", `translate(${legendX}, 10)`)
+      .attr("transform", `translate(${legendX}, 30)`)
       .attr("class", "legend-item")
       .style("cursor", "pointer")
       .on("click", function() {

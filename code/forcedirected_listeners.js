@@ -56,7 +56,7 @@ function handleMouseOver(d) {
   }
 
   // Mostra tooltip
-  tooltip.html(`<strong>${d.rank}°: ${d.title} <br>Type: ${d.type}</strong><br>`)
+  tooltip.html(`<strong>${d.rank}°: ${d.title}<br>`)
     .style("left", (event.pageX + 10) + "px")
     .style("top", (event.pageY - 10) + "px")
     .style("visibility", "visible");
@@ -176,7 +176,6 @@ function handleNodeClick(d) {
     // Evidenziamo i link in uscita e bidirezionali
     link.each(function (l) {
       if (l.source === d || (l.source === d || l.target === d && isBidirectional(l.source.id, l.target.id)) ) {
-        console.log("true")
         d3.select(this)
           .attr("stroke", "DarkSlateGrey")
           .attr("stroke-width", 2)
@@ -218,8 +217,11 @@ function handleNodeClick(d) {
   
     // Write game information
     var fans_liked = graph.links
-    .filter(l => l.source.id === d.id)
-    .map(l => graph.nodes.find(n => n.id === l.target.id).title);
+    .filter(l => l.source.id === d.id || (l.target.id === d.id && isBidirectional(l.source.id, l.target.id)))
+    .map(l => {
+        let otherId = l.source.id === d.id ? l.target.id : l.source.id;
+        return graph.nodes.find(n => n.id === otherId).title;
+    });
     var colorScale = d3.scaleOrdinal().domain(types).range(custColDesaturated);
     d3.select("#node-header").style("background", colorScale(d.type[0]))
     d3.select("#game-title").text(d.title);
@@ -271,8 +273,11 @@ function handleNodeClick(d) {
   
     d3.select("#chart-content").html("");
     const neighbors = graph.links
-      .filter(l => l.source.id === d.id)
-      .map(l => graph.nodes.find(n => n.id === l.target.id));
+      .filter(l => l.source.id === d.id || (l.target.id === d.id && isBidirectional(l.source.id, l.target.id)))
+      .map(l => {
+          let otherId = l.source.id === d.id ? l.target.id : l.source.id;
+          return graph.nodes.find(n => n.id === otherId);
+      });
     const data = [d, ...neighbors];
     data.sort((a, b) => d3.descending(a.minage, b.minage));
     d3.selectAll(".chart-btn").classed("active", false);
@@ -282,7 +287,10 @@ function handleNodeClick(d) {
       d3.selectAll(".chart-btn").classed("active", false);
       d3.select(this).classed("active", true);
       d3.select("#chart-content").html("");
-      if (chartType === "minage") {
+      if(chartType === "rating"){
+        data.sort((a, b) => d3.descending(a.rating, b.rating));
+        createRatingChart(data);
+      }else if (chartType === "minage") {
         data.sort((a, b) => d3.descending(a.minage, b.minage));
         createMinAgeChart(data);
       } else if (chartType === "players") {

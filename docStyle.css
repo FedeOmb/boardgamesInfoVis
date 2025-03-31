@@ -11,24 +11,40 @@ html {
     left: 0;  
     right: 0;  
     height: 60px;  
-    display: block;
-    justify-content: center;  
+    display: flex;
     align-items: center;  
-    margin-bottom: 50px;
     padding-bottom: 1%;
     background-color: white;
     border-radius: 6px;
   }
+
   header h1 {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #333;
-      margin: 0;
-      max-width: 1200px;  
-      width: 100%;
-      text-align: left;
-      margin-left: 20px;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+    text-align: left;
+    margin-left: 20px;
+    flex-grow: 1;
   }
+
+  .custom-button {
+    font-size: 16px;
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    position: absolute;
+    right: 20px; 
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .custom-button:hover {
+    background-color: #0056b3;
+  }
+
   body {
     height: 100vh;
     width: 100%;
@@ -47,7 +63,7 @@ html {
     align-items: center; 
     height: calc(100vh - 60px); 
     justify-content: center;
-    margin-top: 35px;
+    margin-top: 65px;
   }
   svg {
     flex-basis: 100%;
@@ -106,7 +122,7 @@ html {
     left: 20px;
     display: flex;
     flex-direction: row;
-    align-items: stretch; /* per farli allineare in altezza */
+    align-items: stretch; 
     gap: 16px;
     z-index: 1000;
   }
@@ -249,7 +265,7 @@ html {
     width: 100%;
   }
   .chart-btn {
-    flex: 1 1 20%;
+    flex: 1 1 30%;
     min-width: 80px;
     margin: 0 5px;
     padding: 8px 12px;
@@ -284,4 +300,9 @@ html {
   #graph-container {
       height: 80vh; /* Più spazio per il grafico su schermi piccoli */
   }
+  #chart-selector {
+    display: grid;
+    flex-wrap: wrap;
+    grid-template-columns: repeat(3, 1fr); 
+}
 }

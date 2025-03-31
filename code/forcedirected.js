@@ -38,7 +38,6 @@ svg.call(zoom);
 
 // svg objects
 var link, node;
-// the data - an object with nodes and links
 var graph;
 var types = [];
 var categories
@@ -144,6 +143,8 @@ var simulation = d3.forceSimulation();
 
 // set up the simulation and event to update locations after each tick
 function initializeSimulation() {
+  simulation.alphaDecay(0.02); 
+  simulation.alphaMin(0.3);
   simulation.nodes(graph.nodes);
   initializeForces();
   simulation.on("tick", ticked);
@@ -412,7 +413,8 @@ function updateAll() {
 }
 
 function createMinAgeChart(data) {
-  const svgWidth = 500, svgHeight = data.length * 20 + 100;
+  const svgWidth = d3.select("#chart-content").node().getBoundingClientRect().width - 10
+  const svgHeight = data.length * 20 + 100;
   const margin = { top: 30, right: 10, bottom: 30, left: 180 };
 
   const ageSvg = d3.select("#chart-content")
@@ -429,7 +431,7 @@ function createMinAgeChart(data) {
 
   const ageX = d3.scaleLinear()
     //.domain([0, d3.max(data, n => n.minage)])
-    .domain([0, getMaxMinAge()])
+    .domain([0, getMaxMinAge() * 1.1])
     .range([margin.left, svgWidth - margin.right]);
 
   const ageY = d3.scaleBand()
@@ -447,9 +449,21 @@ function createMinAgeChart(data) {
     .attr("height", ageY.bandwidth())
     .attr("fill", "steelblue");
 
+    ageSvg.selectAll(".label")
+    .data(data)
+    .enter()
+    .append("text")
+    .attr("class", "label")
+    .attr("x", d => ageX(d.minage) - 5) // Sposta leggermente a sinistra
+    .attr("y", d => ageY(getShortTitle(d.title)) + ageY.bandwidth() / 2 + 4) // Centra verticalmente
+    .attr("fill", "white")
+    .attr("text-anchor", "end") // Allinea a destra
+    .attr("font-weight", "bold")
+    .text(d => d.minage);
+
   ageSvg.append("g")
     .attr("transform", `translate(0,${svgHeight - margin.bottom})`)
-    .call(d3.axisBottom(ageX));
+    .call(d3.axisBottom(ageX).ticks(5).tickFormat(d3.format(".0f")));
 
   ageSvg.append("g")
     .attr("transform", `translate(${margin.left},0)`)
@@ -470,90 +484,190 @@ function createCategoriesChart(data) {
   counts.sort((a, b) => d3.descending(a.count, b.count));
 
   // Define dimensions and margins
-  const margin = { top: 30, right: 20, bottom: 30, left: 180 };
-  const width = 500 - margin.left - margin.right; // Chart width (excluding margins)
-  const height = categories.length * 10 + 100 - margin.top - margin.bottom; // Chart height (excluding margins)
+  const width = d3.select("#chart-content").node().getBoundingClientRect().width - 15;
+  const height = counts.length * 20 + 100; 
+  const margin = { top: 30, right: 10, bottom: 30, left: 180 };
 
-  // Create SVG container
   const svg = d3.select("#chart-content")
     .append("svg")
-    .attr("width", width + margin.left + margin.right) // Total SVG width
-    .attr("height", height + margin.top + margin.bottom) // Total SVG height
-    .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`); // Offset chart area by margins
+    .attr("width", width)
+    .attr("height", height);
 
-  // Add the title
   svg.append("text")
-    .attr("x", width / 2) // Center the title horizontally
-    .attr("y", 0 - (margin.top / 2)) // Position the title above the chart
+    .attr("x", width / 2)
+    .attr("y", margin.top / 2)
     .attr("text-anchor", "middle")
     .text("Categories frequency")
     .style("font-weight", "bold");
 
   // Define scales
   const x = d3.scaleLinear()
-    .domain([0, d3.max(counts, d => d.count)]) // Domain based on counts
-    .range([0, width]); // Range within the chart area
+    .domain([0, d3.max(counts, d => d.count) * 1.1]) 
+    .range([margin.left, width - margin.right]); 
 
   const y = d3.scaleBand()
-    .domain(counts.map(d => d.name)) // Domain based on category names
-    .rangeRound([0, height]) // Range within the chart area
+    .domain(counts.map(d => d.name)) 
+    .range([margin.top, height - margin.bottom])
     .padding(0.1);
 
-  // Add bars
-  svg.selectAll(".bar")
+  svg.selectAll("rect")
     .data(counts)
     .enter()
     .append("rect")
-    .attr("class", "bar")
-    .attr("x", 0)
+    .attr("x", margin.left) // Deve partire da margin.left
     .attr("y", d => y(d.name))
-    .attr("width", d => x(d.count))
+    .attr("width", d => x(d.count) - margin.left) // Modificato per partire dal margine sinistro
     .attr("height", y.bandwidth())
-    .attr("fill", "steelblue");
+    .attr("fill", "steelblue")
+    .on("mouseover", function(event, n) {
+      var games = data
+      .filter(d =>  d.categories.some(cat => cat.name === counts[n]["name"]))
+      .map(d => d.title);
+      tooltip
+        .html(`${games}`)
+        .style("visibility", "visible");
+    })
+    .on("mousemove", function(event) {
+      updateTooltipPosition();
+    })
+    .on("mouseout", function() {
+      tooltip.style("visibility", "hidden");
+    });
 
-  // Add labels (counts) on the bars
   svg.selectAll(".label")
     .data(counts)
     .enter()
     .append("text")
     .attr("class", "label")
-    .attr("x", d => x(d.count) + 5) // Position text at the end of the bar
-    .attr("y", d => y(d.name) + y.bandwidth() / 2 + 4) // Center text vertically
+    .attr("x", d => x(d.count) - 5) 
+    .attr("y", d => y(d.name) + y.bandwidth() / 2 + 4) 
+    .attr("fill", "white")
+    .attr("text-anchor", "end") 
+    .attr("font-weight", "bold")
     .text(d => d.count);
 
   // Add x-axis
   svg.append("g")
     .attr("class", "x axis")
-    .attr("transform", `translate(0,${height})`) // Position x-axis at the bottom
-    .call(d3.axisBottom(x).ticks(2));
+    .attr("transform", `translate(0,${height - margin.bottom})`) 
+    .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0f")));
 
   // Add y-axis
   svg.append("g")
     .attr("class", "y axis")
+    .attr("transform", `translate(${margin.left}, 0)`) 
     .call(d3.axisLeft(y))
     .selectAll(".tick text")
-    .each(function(d) {
-      const self = d3.select(this);
-      const name = String(d);
+    .style("font-size", "12px") 
+    .call(wrapText, margin.left - 10); 
 
-      if (name.length > 20) {
-        const lines = name.split("/");
-        self.text(null);
-        lines.forEach(function(line, i) {
-          self.append("tspan")
-            .text(line)
-            .attr("x", -7)
-            .attr("dy", i === 0 ? "0em" : "1.1em");
-        });
+  // Funzione per gestire testo lungo
+  function wrapText(selection, width) {
+    selection.each(function() {
+      const text = d3.select(this);
+      let words = text.text().split(/\s+/);
+      let line = [];
+      let lineNumber = 0;
+      let lineHeight = 1.1; 
+      let y = text.attr("y");
+      let x = text.attr("x");
+      let dy = parseFloat(text.attr("dy")) || 0;
+
+      let tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
+
+      for (let word of words) {
+        line.push(word);
+        tspan.text(line.join(" "));
+        if (tspan.node().getComputedTextLength() > width) {
+          line.pop();
+          tspan.text(line.join(" "));
+          line = [word];
+          tspan = text.append("tspan")
+            .attr("x", x)
+            .attr("y", y)
+            .attr("dy", ++lineNumber * lineHeight + dy + "em")
+            .text(word);
+        }
       }
     });
+  }
+}
+
+function createRatingChart(data){
+  const svgWidth = d3.select("#chart-content").node().getBoundingClientRect().width - 10
+  const svgHeight = data.length * 20 + 100;
+  const margin = { top: 30, right: 10, bottom: 30, left: 180 };
+
+  const gameSvg = d3.select("#chart-content")
+    .append("svg")
+    .attr("width", svgWidth)
+    .attr("height", svgHeight);
+  
+  gameSvg.append("text")
+    .attr("x", svgWidth / 2)
+    .attr("y", margin.top / 2)
+    .attr("text-anchor", "middle")
+    .text("Rating")
+    .style("font-weight", "bold");
+
+  const ratingX = d3.scaleLinear()
+    .domain([0, d3.max(data, n => n.rating) * 1.1])
+    .range([margin.left, svgWidth - margin.right]);
+
+  const ratingY = d3.scaleBand()
+    .domain(data.map(n => getShortTitle(n.title)))
+    .range([margin.top, svgHeight - margin.bottom])
+    .padding(0.1);
+
+  gameSvg.selectAll("rect")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("x", ratingX(0))
+    .attr("y", n => ratingY(getShortTitle(n.title)))
+    .attr("width", n => ratingX(n.rating) - ratingX(0))
+    .attr("height", ratingY.bandwidth())
+    .attr("fill", "steelblue")
+    .on("mouseover", function(event, n) {
+      tooltip
+        .html(`Votes: ${data[n]["num_of_reviews"]}`)
+        .style("visibility", "visible");
+    })
+    .on("mousemove", function(event) {
+      updateTooltipPosition();
+    })
+    .on("mouseout", function() {
+      tooltip.style("visibility", "hidden");
+    });
+
+    gameSvg.selectAll(".label")
+    .data(data)
+    .enter()
+    .append("text")
+    .attr("class", "label")
+    .attr("x", d => ratingX(d.rating) - 5) 
+    .attr("y", d => ratingY(getShortTitle(d.title)) + ratingY.bandwidth() / 2 + 4) 
+    .attr("fill", "white")
+    .attr("text-anchor", "end") 
+    .attr("font-weight", "bold")
+    .text(d => d.rating.toFixed(1));
+
+  gameSvg.append("g")
+    .attr("transform", `translate(0,${svgHeight - margin.bottom})`)
+    .call(d3.axisBottom(ratingX).ticks(5).tickFormat(d3.format(".0f")));
+
+  gameSvg.append("g")
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(d3.axisLeft(ratingY));
 }
 
 // Dumbbell chart reusable function
 function createDumbbellChart(data, minProp, maxProp, container, title, neighborsLenght) {
-  const svgWidth = 500, svgHeight = neighborsLenght * 20 + 100 //200;
+  const svgWidth = d3.select("#chart-content").node().getBoundingClientRect().width - 10
+  const svgHeight = neighborsLenght * 20 + 100 //200;
   const margin = { top: 30, right: 10, bottom: 30, left: 180 };
+  const containerEl = d3.select(container).node();
+  containerEl.style.position = "relative";
 
   const svg = d3.select(container)
     .append("svg")
@@ -568,7 +682,7 @@ function createDumbbellChart(data, minProp, maxProp, container, title, neighbors
     .style("font-weight", "bold");
 
   const x = d3.scaleLinear()
-    .domain([0, d3.max(data, n => Math.max(n[minProp], n[maxProp]))])
+    .domain([0, d3.max(data, n => Math.max(n[minProp], n[maxProp] * 1.1))])
     .range([margin.left, svgWidth - margin.right]);
 
   const y = d3.scaleBand()
@@ -576,7 +690,7 @@ function createDumbbellChart(data, minProp, maxProp, container, title, neighbors
     .range([margin.top, svgHeight - margin.bottom])
     .padding(0.4);
 
-  const lines = svg.selectAll("line")
+  svg.selectAll("line")
     .data(data)
     .enter()
     .append("line")
@@ -585,7 +699,18 @@ function createDumbbellChart(data, minProp, maxProp, container, title, neighbors
     .attr("y1", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
     .attr("y2", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
     .attr("stroke", "gray")
-    .attr("stroke-width", "1px");
+    .attr("stroke-width", "2px")
+    .on("mouseover", function(event, n) {
+      tooltip
+        .html(`${minProp}: ${data[n][minProp]} - ${maxProp}: ${data[n][maxProp]}`)
+        .style("visibility", "visible");
+    })
+    .on("mousemove", function(event) {
+      updateTooltipPosition();
+    })
+    .on("mouseout", function() {
+      tooltip.style("visibility", "hidden");
+    });
 
   svg.selectAll("circle.min")
     .data(data)
@@ -595,7 +720,18 @@ function createDumbbellChart(data, minProp, maxProp, container, title, neighbors
     .attr("cx", d => x(d[minProp]))
     .attr("cy", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
     .attr("r", 5)
-    .attr("fill", "#69b3a2");
+    .attr("fill", "#69b3a2")
+    .on("mouseover", function(event, n) {
+      tooltip
+        .html(`${minProp}: ${data[n][minProp]}`)
+        .style("visibility", "visible");
+    })
+    .on("mousemove", function(event) {
+      updateTooltipPosition();
+    })
+    .on("mouseout", function() {
+      tooltip.style("visibility", "hidden");
+    });
 
   svg.selectAll("circle.max")
     .data(data)
@@ -605,17 +741,34 @@ function createDumbbellChart(data, minProp, maxProp, container, title, neighbors
     .attr("cx", d => x(d[maxProp]))
     .attr("cy", d => y(getShortTitle(d.title)) + y.bandwidth() / 2)
     .attr("r", 5)
-    .attr("fill", "#4C4082");
+    .attr("fill", "#4C4082")
+    .on("mouseover", function(event, n) {
+      tooltip
+        .html(`${maxProp}: ${data[n][maxProp]}`)
+        .style("visibility", "visible");
+    })
+    .on("mousemove", function(event) {
+      updateTooltipPosition();
+    })
+    .on("mouseout", function() {
+      tooltip.style("visibility", "hidden");
+    });
 
   // Axes
   svg.append("g")
     .attr("transform", `translate(0,${svgHeight - margin.bottom})`)
-    .call(d3.axisBottom(x));
+    .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0f")));
 
   svg.append("g")
     .attr("transform", `translate(${margin.left},0)`)
     .call(d3.axisLeft(y));
 }
+
+function updateTooltipPosition() {
+  tooltip
+    .style("left", (event.pageX - 40) + "px")
+    .style("top", (event.pageY + 10) + "px");
+};
 
 //chiude il pannello info al click su un area vuota
 svg.on("click", function() {

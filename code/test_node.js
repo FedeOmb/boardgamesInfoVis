@@ -2,7 +2,7 @@ const axios = require('axios');
 const { parseStringPromise } = require('xml2js');
 var fs = require('fs');
 var filename = '../data/dataset_converted_cleaned.json'
-var targetfile = '../data/dataset_converted_cleaned_prova.json'
+var targetfile = '../data/dataset_converted_cleaned_v2.json'
 var dataset 
 
 fs.readFile(filename, 'utf-8', (err, data) => {

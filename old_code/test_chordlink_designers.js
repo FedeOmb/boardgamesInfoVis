@@ -1,15 +1,13 @@
-var data = {}
-d3.json("./data/categories.json", function (error, _graph) { 
+var data = {};
+d3.json("./data/designers.json", function (error, _graph) { 
     if (error) throw error;
-    data = _graph
-
+    
     const designers = _graph;
 
-    // First pass: find all designers with collaborations
-    const collaboratingDesigners = new Set();
-
-    // Create a map of game IDs to designer IDs
+    // 1. First find all designers with collaborations
     const gameToDesigners = {};
+    const collaboratingDesigners = new Set();
+    
     designers.forEach(designer => {
         designer.games.forEach(gameId => {
             if (!gameToDesigners[gameId]) {
@@ -19,7 +17,6 @@ d3.json("./data/categories.json", function (error, _graph) {
         });
     });
 
-    // Find all designers with collaborations
     for (const gameId in gameToDesigners) {
         const designerIds = gameToDesigners[gameId];
         if (designerIds.length > 1) {
@@ -27,26 +24,16 @@ d3.json("./data/categories.json", function (error, _graph) {
         }
     }
 
-    // Create nodes array only for collaborating designers
-    var nodes = designers
+    // 2. Get collaborating designers and sort by number of games
+    const collaboratingDesignersList = designers
         .filter(designer => collaboratingDesigners.has(designer.id))
-        .map(designer => ({
-            id: designer.id,
-            name: designer.name,
-            games: designer.games
-        }));
+        .sort((a, b) => b.games.length - a.games.length);
+        //.slice(0, 20);  // Take top 10
 
-    // After loading the data but before processing collaborations:
+    // 3. Create Set of these top collaborating designer IDs
+    const topDesignerIds = new Set(collaboratingDesignersList.map(d => d.id));
 
-    // 1. Sort designers by number of games (descending) and take top 10
-    const topDesigners = designers
-        .sort((a, b) => b.games.length - a.games.length)
-        .slice(0, 10);
-
-    // 2. Create a Set for quick lookup of top designer IDs
-    const topDesignerIds = new Set(topDesigners.map(d => d.id));
-
-    // 3. Filter gameToDesigners to only include games where at least 2 top designers collaborated
+    // 4. Filter collaborations to only include these top designers
     const filteredGameToDesigners = {};
     for (const gameId in gameToDesigners) {
         const designerIds = gameToDesigners[gameId].filter(id => topDesignerIds.has(id));
@@ -55,21 +42,14 @@ d3.json("./data/categories.json", function (error, _graph) {
         }
     }
 
-    // 4. Now use these filtered designers and games for the rest of your processing
-    for (const gameId in filteredGameToDesigners) {
-    filteredGameToDesigners[gameId].forEach(id => collaboratingDesigners.add(id));
-    }
+    // 5. Create final nodes array
+    const nodes = collaboratingDesignersList.map(designer => ({
+        id: designer.id,
+        name: designer.name,
+        games: designer.games
+    }));
 
-    // Create nodes array only for these top designers
-    var nodes = topDesigners
-        .filter(designer => collaboratingDesigners.has(designer.id))
-        .map(designer => ({
-            id: designer.id,
-            name: designer.name,
-            games: designer.games
-        }));
-
-    // Create links with weights (only between top designers)
+    // 6. Create links between these designers
     const linkMap = new Map();
     for (const gameId in filteredGameToDesigners) {
         const designerIds = filteredGameToDesigners[gameId];
@@ -94,28 +74,23 @@ d3.json("./data/categories.json", function (error, _graph) {
         }
     }
 
-    // Convert the Map values to an array
     const links = Array.from(linkMap.values());
+    data = { nodes, links };
 
-    // Create the final graph object
-    const graph = {
-        nodes: nodes,
-        links: links
-    };
-
-    data = graph;
-
-    // Calculate node strengths
+    // Calculate node strengths for sorting
     const nodeStrength = new Map();
     nodes.forEach(node => nodeStrength.set(node.id, 0));
-    data.links.forEach(link => {
+    links.forEach(link => {
         nodeStrength.set(link.source, nodeStrength.get(link.source) + link.weight);
         nodeStrength.set(link.target, nodeStrength.get(link.target) + link.weight);
     });
 
-    // Sort nodes by strength
-    //nodes.sort((a, b) => nodeStrength.get(b.id) - nodeStrength.get(a.id));
-    nodes.sort((a, b) => d3.descending(a.name, b.name));
+    // Sort nodes by collaboration strength (descending)
+    nodes.sort((a, b) => nodeStrength.get(b.id) - nodeStrength.get(a.id));
+
+    // Rest of your chord diagram code...
+    console.log("Top 10 collaborating designers by game count:", 
+        nodes.map(d => `${d.name} (${d.games.length} games, ${nodeStrength.get(d.id)} collaborations)`));
 
     // Prepare data for the chord diagram
     const nodeMap = new Map(nodes.map((node, i) => [node.id, i]));
@@ -125,7 +100,7 @@ d3.json("./data/categories.json", function (error, _graph) {
         Array.from({ length: nodes.length }, () => 0)
     );
 
-    data.links.forEach(link => {
+    links.forEach(link => {
         const sourceIndex = nodeMap.get(link.source);
         const targetIndex = nodeMap.get(link.target);
         if (sourceIndex !== undefined && targetIndex !== undefined) {
@@ -135,9 +110,9 @@ d3.json("./data/categories.json", function (error, _graph) {
     });
 
     // Set up the chord diagram
-    const width = 800;  // Increased for better label space
+    const width = 800;
     const height = 800;
-    const outerRadius = Math.min(width, height) * 0.5 - 100; // More space for labels
+    const outerRadius = Math.min(width, height) * 0.5 - 100;
     const innerRadius = outerRadius - 30;
 
     const svg = d3.select("svg")
@@ -162,9 +137,6 @@ d3.json("./data/categories.json", function (error, _graph) {
 
     // Color scale
     const color = d3.scaleOrdinal(d3.schemeCategory10);
-    /*const color = d3.scaleOrdinal()
-        .domain(nodes.map((_, i) => i))
-        .range(d3.quantize(t => d3.interpolateRainbow(t * 0.8), nodes.length));*/
 
     // Draw chords
     svg.append("g")
@@ -213,4 +185,4 @@ d3.json("./data/categories.json", function (error, _graph) {
         .text(d => d.name)
         .style("font-size", "10px")
         .style("font-family", "sans-serif");
-})
+});

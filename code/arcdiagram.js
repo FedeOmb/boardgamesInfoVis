@@ -154,7 +154,7 @@ function createArcDiagram(dataset) {
     var contWidth = +cont.node().getBoundingClientRect().width;
     var contHeight = +cont.node().getBoundingClientRect().height;
 
-    const margin = {top: 20, right: 20, bottom: 20, left: 20};
+    const margin = {top: 40, right: 20, bottom: 20, left: 20};
     const svgWidth = Math.min(contWidth, 1000) 
     const svgHeight = Math.min(contHeight, 560) 
     const width = svgWidth - margin.left - margin.right;

@@ -150,6 +150,8 @@ function createArcDiagram(dataset) {
         }
     });
 
+    console.log(graph)
+
     const cont = d3.select(".chord-container");
     var contWidth = +cont.node().getBoundingClientRect().width;
     var contHeight = +cont.node().getBoundingClientRect().height;

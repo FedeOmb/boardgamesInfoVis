@@ -1,4 +1,36 @@
-function createArcDiagram(dataset) {
+var games = []
+var categories = []
+var mechanics = []
+var designers = []
+const gameTitles = {};
+Promise.all([
+    d3.json("data/dataset_converted_cleaned_v2.json"),
+    d3.json("data/categories.json"),
+    d3.json("data/mechanics.json"),
+    d3.json("data/designers.json")
+]).then(([data, catData, mecData, desData]) =>{
+    games = data.nodes.map(game => ({ id: game.id, title: game.title }));
+    games.forEach(game => {
+        gameTitles[game.id] = game.title;
+    })
+    categories = catData
+    mechanics = mecData 
+    designers = desData
+
+    createChordDiagram(designers);
+
+    console.log(JSON.stringify(buildFullNetwork(desData)));
+    console.log(JSON.stringify(buildFullNetwork(catData)));
+    console.log(JSON.stringify(buildFullNetwork(mecData)));
+});
+        
+function createDiagram(type) {
+    if (type === "designers") createChordDiagram(designers);
+    else if (type === "categories") createChordDiagram(categories);
+    else if (type === "mechanics") createChordDiagram(mechanics);
+}
+
+function createChordDiagram(dataset) {
 
     const tooltip = d3.select("body")
         .append("div")
@@ -149,8 +181,6 @@ function createArcDiagram(dataset) {
             matrix[targetIndex][sourceIndex] += link.weight;
         }
     });
-
-    console.log(graph)
 
     const cont = d3.select(".chord-container");
     var contWidth = +cont.node().getBoundingClientRect().width;
@@ -350,3 +380,59 @@ function adjustForViewport(svg, padding = 20) {
         }
     });
 }
+
+function buildFullNetwork(individuals) {
+    const entityToIndividuals = {};
+
+    // Mappa entità (giochi) → designer/categorie/meccaniche
+    individuals.forEach(individual => {
+        individual.games.forEach(entityId => {
+            if (!entityToIndividuals[entityId]) {
+                entityToIndividuals[entityId] = [];
+            }
+            entityToIndividuals[entityId].push(individual.id);
+        });
+    });
+
+    // Creazione dei nodi
+    const nodes = individuals.map(individual => ({
+        id: individual.id,
+        name: individual.name,
+        games: individual.games
+    }));
+
+    // Creazione dei link (connessioni tra individui che hanno lavorato sugli stessi giochi)
+    const linkMap = new Map();
+    const linkGames = new Map();
+
+    for (const entityId in entityToIndividuals) {
+        const individualIds = entityToIndividuals[entityId];
+        if (individualIds.length > 1) {
+            for (let i = 0; i < individualIds.length; i++) {
+                for (let j = i + 1; j < individualIds.length; j++) {
+                    const source = Math.min(individualIds[i], individualIds[j]);
+                    const target = Math.max(individualIds[i], individualIds[j]);
+                    const key = `${source}-${target}`;
+
+                    if (linkMap.has(key)) {
+                        linkMap.get(key).weight++;
+                        linkGames.get(key).push(entityId);
+                    } else {
+                        linkMap.set(key, {
+                            source: source,
+                            target: target,
+                            weight: 1
+                        });
+                        linkGames.set(key, [entityId]);
+                    }
+                }
+            }
+        }
+    }
+
+    // Convertiamo la mappa in un array di oggetti
+    const links = Array.from(linkMap.values());
+
+    return { nodes, links };
+}
+

@@ -129,34 +129,5 @@
 
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script type="text/javascript" src="code/chorddiagram.js"></script>
-    <script>
-        var games = []
-        var categories = []
-        var mechanics = []
-        var designers = []
-        const gameTitles = {};
-        Promise.all([
-            d3.json("data/dataset_converted_cleaned_v2.json"),
-            d3.json("data/categories.json"),
-            d3.json("data/mechanics.json"),
-            d3.json("data/designers.json")
-        ]).then(([data, catData, mecData, desData]) =>{
-            games = data.nodes.map(game => ({ id: game.id, title: game.title }));
-            games.forEach(game => {
-                gameTitles[game.id] = game.title;
-            })
-            categories = catData
-            mechanics = mecData 
-            designers = desData
-
-            createArcDiagram(designers);
-        });
-        
-        function createDiagram(type) {
-            if (type === "designers") createArcDiagram(designers);
-            else if (type === "categories") createArcDiagram(categories);
-            else if (type === "mechanics") createArcDiagram(mechanics);
-        }
-    </script>
 </body>
 </html>

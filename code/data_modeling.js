@@ -58,12 +58,6 @@
         //console.log("DATASET CONVERTED CLEANED")
         //console.log(dataset_conv_clean)
         //console.log(JSON.stringify(dataset_conv_clean))
-
-        //dataset con solo i link bidirezionali
-        const bidirectionalLinks = filterBidirectionalLinks(dataset_conv_clean.links);
-        dataset_conv_clean.links = bidirectionalLinks
-        //console.log("DATASET BIDIRECTIONAL")
-        //console.log(JSON.stringify(dataset_conv_clean));
       }
     );
 
@@ -81,7 +75,6 @@
 
     function create_categories(data){
         var categories = []
-        //categories versione 1
         var present = false
         for(let i in data){
             for(let j in data[i].categories){
@@ -106,24 +99,11 @@
                         categories[k].games.push(data[i].id)
             }
         }
-        console.log("CATEGORIES VERS1")
+        console.log("CATEGORIES")
         console.log(JSON.stringify(categories))
-
-        //categories versione 2
-        var categories2 = {}
-        for(let i in categories){
-            let id = categories[i].id
-            let temp = {}
-            temp.name = categories[i].name
-            temp.games = categories[i].games
-            categories2[id] = temp
-        }
-        console.log("CATEGORIES VERS2")
-        console.log(JSON.stringify(categories2))
     }
 
     function create_mechanics(data){
-        //mechanics versione 1
         var present = false
         for(let i in data){
             for(let j in data[i].mechanics){
@@ -149,19 +129,7 @@
             }
         }
         console.log("MECHANICS VERS1")
-        console.log(JSON.stringify(mechanics))
-
-        //mechanics versione 2
-        var mechanics2 = {}
-        for(let i in mechanics){
-            let id = mechanics[i].id
-            let temp = {}
-            temp.name = mechanics[i].name
-            temp.games = mechanics[i].games
-            mechanics2[id] = temp
-        }
-        console.log("MECHANICS VERS2")
-        console.log(JSON.stringify(mechanics2))        
+        console.log(JSON.stringify(mechanics))    
     }
 
     function create_designers(data) {
@@ -205,26 +173,4 @@
         console.log("DESIGNERS VERS2")
         console.log(JSON.stringify(designers2))
 
-    }
-
-    function filterBidirectionalLinks(links) {
-        const bidirectionalLinks = [];
-        const addedPairs = new Set(); // To track pairs that have already been added
-    
-        // Create a set of link pairs for quick lookup
-        const linkSet = new Set(links.map(link => `${link.source}-${link.target}`));
-    
-        // Iterate through the links and check if the reverse link exists
-        links.forEach(link => {
-            const reverseLink = `${link.target}-${link.source}`;
-            const pairKey = link.source < link.target ? `${link.source}-${link.target}` : `${link.target}-${link.source}`;
-    
-            // Check if the reverse link exists and the pair hasn't been added yet
-            if (linkSet.has(reverseLink) && !addedPairs.has(pairKey)) {
-                bidirectionalLinks.push(link); // Add the link
-                addedPairs.add(pairKey); // Mark the pair as added
-            }
-        });
-    
-        return bidirectionalLinks;
     }

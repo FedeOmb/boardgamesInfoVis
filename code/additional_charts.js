@@ -184,6 +184,7 @@ function createAdditionalBarchart(data, chartContainer, attr, title, attrMainCha
 
 // Dumbbell chart reusable function
 function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
+  console.log(data)
 
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
@@ -198,7 +199,12 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
     //const chartHeight = svgHeight - (margin.top + margin.bottom);
 
     const max_count = d3.max(data, n => Math.max(n[minProp], n[maxProp]));
-  
+
+    function updateTooltipPosition() {
+      tooltip
+        .style("left", (event.pageX - 40) + "px")
+        .style("top", (event.pageY + 10) + "px");
+    };
     svg.append("text")
       .attr("x", svgWidth / 2)
       .attr("y", margin.top -20)
@@ -224,7 +230,18 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
       .attr("y1", d => y(d.title) + y.bandwidth() / 2)
       .attr("y2", d => y(d.title) + y.bandwidth() / 2)
       .attr("stroke", "gray")
-      .attr("stroke-width", "1px");
+      .attr("stroke-width", "1px")
+      .on("mouseover", function(event, n) {
+        tooltip
+          .html(`${minProp}: ${data[n][minProp]} - ${maxProp}: ${data[n][maxProp]}`)
+          .style("visibility", "visible");
+      })
+      .on("mousemove", function(event) {
+        updateTooltipPosition();
+      })
+      .on("mouseout", function() {
+        tooltip.style("visibility", "hidden");
+      });
   
     svg.selectAll("circle.min")
       .data(data)
@@ -234,7 +251,18 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
       .attr("cx", d => x(d[minProp]))
       .attr("cy", d => y(d.title) + y.bandwidth() / 2)
       .attr("r", 5)
-      .attr("fill", "#69b3a2");
+      .attr("fill", "#69b3a2")
+      .on("mouseover", function(event, n) {
+        tooltip
+          .html(`${minProp}: ${data[n][minProp]}`)
+          .style("visibility", "visible");
+      })
+      .on("mousemove", function(event) {
+        updateTooltipPosition();
+      })
+      .on("mouseout", function() {
+        tooltip.style("visibility", "hidden");
+      });
   
     svg.selectAll("circle.max")
       .data(data)
@@ -244,7 +272,18 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
       .attr("cx", d => x(d[maxProp]))
       .attr("cy", d => y(d.title) + y.bandwidth() / 2)
       .attr("r", 5)
-      .attr("fill", "#4C4082");
+      .attr("fill", "#4C4082")
+      .on("mouseover", function(event, n) {
+        tooltip
+          .html(`${maxProp}: ${data[n][maxProp]}`)
+          .style("visibility", "visible");
+      })
+      .on("mousemove", function(event) {
+        updateTooltipPosition();
+      })
+      .on("mouseout", function() {
+        tooltip.style("visibility", "hidden");
+      });
   
     // Axes
     svg.append("g")

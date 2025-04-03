@@ -676,9 +676,9 @@ function createRatingChart(data){
     .attr("transform", `translate(${margin.left},0)`)
     .call(d3.axisLeft(ratingY));
 }
-
+/*
 // Dumbbell chart reusable function
-function createDumbbellChart(data, minProp, maxProp, container, title, neighborsLenght) {
+function createDumbbellChart_old(data, minProp, maxProp, container, title, neighborsLenght) {
   const svgWidth = d3.select("#chart-content").node().getBoundingClientRect().width - 10
   const svgHeight = neighborsLenght * 20 + 100 //200;
   const margin = { top: 30, right: 10, bottom: 30, left: 180 };
@@ -779,6 +779,7 @@ function createDumbbellChart(data, minProp, maxProp, container, title, neighbors
     .attr("transform", `translate(${margin.left},0)`)
     .call(d3.axisLeft(y));
 }
+*/
 
 function updateTooltipPosition() {
   tooltip

@@ -286,13 +286,16 @@ function handleNodeClick(d) {
       });
     const data = [d, ...neighbors];
     data.sort((a, b) => d3.descending(a.minage, b.minage));
+    console.log(data);
+    console.log(neighbors)
     d3.selectAll(".chart-btn").classed("active", false);
   
     d3.selectAll(".chart-btn").on("click", function() {
       const chartType = d3.select(this).attr("data-chart");
       d3.selectAll(".chart-btn").classed("active", false);
       d3.select(this).classed("active", true);
-      d3.select("#chart-content").html("");
+      const chartContent = d3.select("#chart-content")
+      chartContent.html("");
       if(chartType === "rating"){
         data.sort((a, b) => d3.descending(a.rating, b.rating));
         createRatingChart(data);
@@ -301,10 +304,12 @@ function handleNodeClick(d) {
         createMinAgeChart(data);
       } else if (chartType === "players") {
         data.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
-        createDumbbellChart(data, "minplayers", "maxplayers", "#chart-content", "Players", neighbors.length);
+        //createDumbbellChart_old(data, "minplayers", "maxplayers", "#chart-content", "Players", neighbors.length);
+        createDumbbellChart(data, "minplayers", "maxplayers", chartContent, "Players");
       } else if (chartType === "playtime") {
         data.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
-        createDumbbellChart(data, "minplaytime", "maxplaytime", "#chart-content", "Playtime (min)", neighbors.length);
+        //createDumbbellChart_old(data, "minplaytime", "maxplaytime", "#chart-content", "Playtime (min)", neighbors.length);
+        createDumbbellChart(data, "minplaytime", "maxplaytime", chartContent, "Playtime (min)");     
       } else if (chartType === "categories") {
         createCategoriesChart(data);
       }

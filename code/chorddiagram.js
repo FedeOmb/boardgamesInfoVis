@@ -157,15 +157,14 @@ function createArcDiagram(dataset) {
     var contHeight = +cont.node().getBoundingClientRect().height;
 
     const margin = {top: 40, right: 20, bottom: 20, left: 20};
-    const svgWidth = Math.min(contWidth, 1000) 
-    const svgHeight = Math.min(contHeight, 560) 
+    const svgWidth = Math.max(contWidth, 1000) 
+    const svgHeight = Math.max(contHeight, 560) 
     const width = svgWidth - margin.left - margin.right;
     const height = svgHeight - margin.top - margin.bottom;
 
     cont.selectAll("*").remove();
     const svg = cont.append("svg")
-        .attr("width", svgWidth)
-        .attr("height", svgHeight)
+        .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`)
         .append("g")
         .attr("transform", `translate(${width/2 + margin.left},${height/2 + margin.top})`);
 

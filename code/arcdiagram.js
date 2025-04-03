@@ -150,18 +150,27 @@ function createArcDiagram(dataset) {
         }
     });
 
+    const cont = d3.select(".chord-container");
+    var contWidth = +cont.node().getBoundingClientRect().width;
+    var contHeight = +cont.node().getBoundingClientRect().height;
 
     const margin = {top: 20, right: 20, bottom: 20, left: 20};
-    const width = Math.min(window.innerWidth, 1000) 
-    const height = Math.min(window.innerWidth, 560) 
+    const svgWidth = Math.min(contWidth, 1000) 
+    const svgHeight = Math.min(contHeight, 560) 
+    const width = svgWidth - margin.left - margin.right;
+    const height = svgHeight - margin.top - margin.bottom;
 
-    const svg = d3.select("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+    cont.selectAll("*").remove();
+    const svg = cont.append("svg")
+        .attr("width", svgWidth)
+        .attr("height", svgHeight)
         .append("g")
         .attr("transform", `translate(${width/2 + margin.left},${height/2 + margin.top})`);
-    const outerRadius = Math.min(width, height) * 0.5 - 100;
-    const innerRadius = outerRadius - 30;
+
+    //const outerRadius = Math.min(width, height) * 0.5 - 100;
+    //const innerRadius = outerRadius - 30;
+    const outerRadius = Math.min(width, height) * 0.5 - 50;
+    const innerRadius = outerRadius - 20;
 
     const chord = d3.chord()
         .padAngle(0.05)

@@ -9,6 +9,12 @@ d3.select("#zoom-in").on("click", function() {
     svg.transition().call(zoom.transform, d3.zoomIdentity);
 });
 
+d3.select("#toggle-labels").on("click", function() {
+  labelsVisible = !labelsVisible;
+  d3.selectAll(".node-label").style("display", labelsVisible ? "block" : "none");
+  d3.select(this).text(labelsVisible ? "Hide Labels" : "Show Labels");
+});
+
 // Function to handle mouseover node event
 function handleMouseOver(d) {
   

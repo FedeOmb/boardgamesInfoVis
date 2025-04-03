@@ -17,6 +17,7 @@ svg.append("defs").selectAll("marker")
   .attr("transform", d => d === "start" ? "rotate(180, 5, 0)" : null); 
 
 var infoPanelVisible = false;
+var labelsVisible = false;
 
 function updateSize() {
   width = +svg.node().getBoundingClientRect().width;
@@ -279,6 +280,21 @@ function initializeDisplay() {
     .on("click", function(event, d) {
       handleNodeClick.call(this, event, d); 
     });
+
+  node.append("text")
+    .attr("class", "node-label")
+    .attr("text-anchor", d => d.rank % 5 === 0 ? "start" : "end")
+    .attr("dx", d => {
+      const radius = radiusScale(d.rank);
+      return d.rank % 5 === 0 ? (radius) : -(radius);
+    })
+    .attr("dy", 4)
+    .style("font-size", d => `${Math.max(10, radiusScale(d.rank))}px`) 
+    .text(d => {
+      if(d.rank < 26)
+        return getShortTitle(d.title)
+    })
+    .style("display", "none");
 
   // visualize the graph
   updateDisplay();
@@ -902,12 +918,11 @@ function isBidirectional(sourceid, targetid) {
 
 function getShortTitle(title){
   title = String(title)
-  if(title.length > 35){
-    if(title.includes(":"))
-        return title.split(":")[0]
-    else if(title.includes("("))
-        return title.split("(")[0]
-  }else return title
+  if(title.includes(":"))
+      return title.split(":")[0]
+  else if(title.includes("("))
+      return title.split("(")[0]
+  else return title
 }
 
 function getShortCatName(catName){

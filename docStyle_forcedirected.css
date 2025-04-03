@@ -127,7 +127,6 @@ html {
     z-index: 1000;
   }
 
-  /* Zoom controls */
   #zoom-controls {
     display: flex;
     flex-direction: row;
@@ -155,7 +154,6 @@ html {
     background: #0056b3;
   }
 
-  /* Legenda */
   #color-legend {
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
@@ -194,17 +192,22 @@ html {
     border: 1px solid #999;
   }
 
-  /*#filter {
+  #toggle-labels {
     display: grid;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.9);
+    background: #007bff;
     border: 1px solid #ccc;
     padding: 10px 12px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    min-width: 200px;
+    border-radius: 6px;
+    height: 40px;
+    color:#ffffff;
+    transition: all 0.3s ease;
     align-content: center;
-  }*/
+  }
+
+  #toggle-labels:hover {
+    background: #0056b3;
+  }
 
   #node-header {
     margin-bottom: 15px;

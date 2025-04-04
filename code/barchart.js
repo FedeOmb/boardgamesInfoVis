@@ -13,10 +13,8 @@ const colorBarchart2 = "#2F4F4F";
 const colorScaleTypes = d3.scaleOrdinal().range(d3.schemeCategory10);
 
 const cont3 = d3.select("#bar-chart-3");
-//const cont2 = d3.select("#bar-chart-2");
 const cont1 = d3.select("#bar-chart-1");
 const svg1 = cont1.append("svg");
-//const svg2 = cont2.append("svg");
 const svg3 = cont3.append("svg");
 
 var svg1Width = +cont1.node().getBoundingClientRect().width;
@@ -24,7 +22,6 @@ var svg1Height = +cont1.node().getBoundingClientRect().height;
 svg1.attr("viewBox", `0 0 ${svg1Width} ${svg1Height}`);
 
 const chart1Margin = { top: 40, right: 20, bottom: 20, left: 170 };
-//const chart2Margin = { top: 20, right: 20, bottom: 100, left: 100 };
 
 var xScale3;
 var xScaleSubgroups3;
@@ -36,8 +33,18 @@ const chart3Margin = { top: 20 + legend3Height, right: 20, bottom: 50, left: 50 
 var chart3Width;
 var chart3Height;
 
+const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("position", "absolute")
+    .style("padding", "8px")
+    .style("background", "rgba(255, 255, 255, 1)")
+    .style("color", "black")
+    .style("border-radius", "5px")
+    .style("pointer-events", "none")
+    .style("font-size", "12px")
+    .style("visibility", "hidden");
+
   var maxItemsToVis1 = 10;
-  //var maxItemsToVis2 = 10;
   var minYearToVis = 0;
   var maxYearToVis = 10;
   var selectedTypes = [];
@@ -69,10 +76,7 @@ var chart3Height;
     rangeSlider1.attr("value", maxItemsToVis1);
     rangeValue1.text(maxItemsToVis1.toString());
     createBarchart1(attr, "name", "count");
-    d3.select("#additional-info-1 .info-selected-text").style("display","none");
-    d3.select("#additional-info-1 .info-default-text").style("display","block");
-    d3.select("#additional-info-1 .chart-selector").style("display","none");
-    d3.select("#additional-info-1 .chart-content").style("display","none");
+    closeAdditionalCharts("#additional-info-1");
     });
 
     //listener per modifica slider
@@ -81,22 +85,15 @@ var chart3Height;
       rangeValue1.text(maxItemsToVis1.toString());
       attr = attrSelector1.property("value");
       createBarchart1(attr, "name", "count");
-      d3.select("#additional-info-1 .info-selected-text").style("display","none");
-      d3.select("#additional-info-1 .info-default-text").style("display","block");
-      d3.select("#additional-info-1 .chart-selector").style("display","none");
-      d3.select("#additional-info-1 .chart-content").style("display","none");
+      closeAdditionalCharts("#additional-info-1");
     })
 
   //--- listener controlli tab2 ---
 
   chartType3.on("change", () => {
     var value = d3.selectAll("input[name='chart-type']:checked").property("value");
-    if(value == "total"){
-      createBarchart3(chartType = "total");
-    }
-    if(value == "types"){
-      createBarchart3(chartType = "types");
-    }
+    createBarchart3(value);
+    closeAdditionalCharts("#additional-info-3");
   })
 
   //--- listener controlli tab3 ---
@@ -109,11 +106,8 @@ var chart3Height;
       yearSliderMax.property("value", maxYearToVis);
     }
     yearSliderMaxValue.text(years[maxYearToVis].toString());
-    if(value == "types"){
-      updateChart3("types");
-    }else if(value == "total"){
-      updateChart3("total");
-    }
+    updateChart3(value);
+    closeAdditionalCharts("#additional-info-3");
   });
 
   yearSliderMin.on("change", () => {
@@ -125,11 +119,8 @@ var chart3Height;
       yearSliderMin.property("value", minYearToVis);
     }
     yearSliderMinValue.text(years[minYearToVis].toString());
-      if(value == "types"){
-        updateChart3("types");
-      }else if(value == "total"){
-        updateChart3("total");
-      }
+    updateChart3(value);
+    closeAdditionalCharts("#additional-info-3");
   });
 
 loadDatasets();
@@ -154,18 +145,14 @@ function openTab(event, tabName) {
   if(tabName == "tab-1"){
     const attr = attrSelector1.property("value");
     createBarchart1(attr, "name", "count");
+    closeAdditionalCharts("#additional-info-1");
   }
   if(tabName == "tab-3"){
     var value = d3.selectAll("input[name='chart-type']:checked").property("value");
-    if(value == "types"){
-      createBarchart3("types");
-    }else if(value == "total"){
-      createBarchart3("total");
-    }
+    createBarchart3(value);
+    closeAdditionalCharts("#additional-info-3");
   }
 }
-
-//vers6 di d3 funziona solo con d3.json().then()
 
 async function loadDatasets(){
 
@@ -270,19 +257,6 @@ function createBarchart1(attr, varY, varX){
 
   var barSelected = false;
   
-  var tooltip = d3.select(".tooltip");
-  if (tooltip.empty()) 
-    tooltip = cont1.append("div")
-      .attr("class", "tooltip")
-      .style("position", "absolute")
-      .style("padding", "8px")
-      .style("background", "rgba(255, 255, 255, 1)")
-      .style("color", "black")
-      .style("border-radius", "5px")
-      .style("pointer-events", "none")
-      .style("font-size", "12px")
-      .style("visibility", "hidden");
-
   function showTooltip(d){
     tooltip
     .html(`<strong>${d.name} : ${d.count} games </strong>`)
@@ -291,8 +265,8 @@ function createBarchart1(attr, varY, varX){
 
   var mousemove = function(event,d) {
     tooltip
-    .style("left", (event.offsetX) + "px")
-    .style("top", (event.offsetY + 50) + "px");
+    .style("left", (event.pageX) + "px")
+    .style("top", (event.pageY) + "px");
   }
   const innerChart = svg1
     .append("g")
@@ -398,16 +372,14 @@ function createBarchart1(attr, varY, varX){
 
     svg1.on("click", (event) => {
       if (event.target.tagName === "svg") {
-        infoText.style("display", "none");
-        infoDefaultText.style("display", "block");
-        d3.select("#additional-info-1 .chart-selector").style("display","none");
-        d3.select("#additional-info-1 .chart-content").style("display","none");
-        d3.select("#additional-info-1 .show-all-selector").style("display","none");
+        closeAdditionalCharts("#additional-info-1");
         d3.selectAll("rect").attr("fill", d3.color(barsColor));
         barSelected = false;
       }
     });
 };
+
+
 
 function createBarchart3(chartType){
   var svg3Width = +cont3.node().getBoundingClientRect().width;
@@ -455,17 +427,6 @@ function createBarchart3(chartType){
   .domain(types);
 
   svg3.selectAll("*").remove();
-
-  const tooltip = cont3.append("div")
-  .attr("class", "tooltip")
-  .style("position", "absolute")
-  .style("padding", "8px")
-  .style("background", "rgba(255, 255, 255, 1)")
-  .style("color", "black")
-  .style("border-radius", "5px")
-  .style("pointer-events", "none")
-  .style("font-size", "12px")
-  .style("visibility", "hidden");
 
   const legend = svg3.append("g")
   .attr("class", "legend")
@@ -545,12 +506,10 @@ function updateChart3(chartType) {
   yScale3
   .domain([0, max_count]);
 
-  const tooltip = cont3.select(".tooltip");
-
   var mousemove = function(event,d) {
     tooltip
-    .style("left", (event.offsetX) + "px")
-    .style("top", (event.offsetY) + "px");
+    .style("left", (event.pageX) + "px")
+    .style("top", (event.pageY) + "px");
   }
 
   // Aggiungi rettangoli di sfondo alternati
@@ -562,7 +521,7 @@ function updateChart3(chartType) {
 
   const backgroundRectWidth = xScale3.step();
 
-  innerChart.selectAll(".background-rect")
+  const backgroundRects = innerChart.selectAll(".background-rect")
   .data(yearsToVis)
   .join("rect")
   .attr("class", "background-rect")
@@ -587,11 +546,28 @@ function updateChart3(chartType) {
 
     svg3.select(".legend").style("visibility", "visible");
 
+    backgroundRects    
+    .on("click", (event,d) => {
+      backgroundRects.attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
+      d3.select(event.currentTarget).attr("fill", d3.color("#f0f0f0").darker());
+      var games = gamesByYear.find(g => g.year == d).games;
+      var additionalData = [];
+      games.forEach(game => {
+        var gameData = dataset.nodes.find(d => d.id == game);
+        additionalData.push(gameData);
+      });
+      console.log(additionalData);
+      infoDefaultText.style("display", "none");
+      infoText.style("display","block").html(`Showing statistics about games released in year <strong>${d} </strong>`);
+      showAdditionalCharts(additionalData, attrMainChart="year",containerId="#additional-info-3");
+    });
+
   const yearGroups = innerChart.selectAll(".year-group")
     .data(yearsToVis)
     .join("g")
     .attr("class", "year-group")
     .attr("transform", (year) => `translate(${xScale3(year)}, 0)`);
+
 
   yearGroups.selectAll("rect")
     .data(year => {
@@ -680,11 +656,7 @@ function updateChart3(chartType) {
       if(chartType == "total"){
       svg3.on("click", (event) => {
         if (event.target.tagName === "svg" || event.target.classList.contains("background-rect")) {
-          infoText.style("display", "none");
-          infoDefaultText.style("display", "block");
-          d3.select("#additional-info-3 .chart-selector" ).style("display","none");
-          d3.select("#additional-info-3 .chart-content").style("display","none");
-          d3.select("#additional-info-3 .show-all-selector").style("display","none");
+          closeAdditionalCharts("#additional-info-3");
           d3.selectAll(".bar-group rect").attr("fill", d3.color(colorBarchart2));
         }
       });
@@ -740,4 +712,12 @@ function createLegend3(types){
 
     legendX += legendItem.node().getBBox().width + 10;
   });
+}
+
+function closeAdditionalCharts(containerId){
+  d3.select(containerId + " .info-selected-text").style("display", "none");
+  d3.select(containerId + " .info-default-text").style("display", "block");
+  d3.select(containerId + " .chart-selector").style("display","none");
+  d3.select(containerId + " .chart-content").style("display","none");
+  d3.select(containerId + " .show-all-selector").style("display","none");
 }

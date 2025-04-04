@@ -94,7 +94,7 @@ function createAdditionalBarchart(data, chartContainer, attr, title, attrMainCha
 
     console.log(attrMainChart)
 
-    const tooltip = chartContainer.append("div")
+/*     const tooltip = chartContainer.append("div")
     .attr("class", "tooltip")
     .style("position", "absolute")
     .style("padding", "8px")
@@ -103,7 +103,7 @@ function createAdditionalBarchart(data, chartContainer, attr, title, attrMainCha
     .style("border-radius", "5px")
     .style("pointer-events", "none")
     .style("font-size", "12px")
-    .style("visibility", "hidden");
+    .style("visibility", "hidden"); */
 
 
     svg.append("text")
@@ -122,8 +122,8 @@ function createAdditionalBarchart(data, chartContainer, attr, title, attrMainCha
 
     var mousemove = function(event,d) {
       tooltip
-      .style("left", (event.offsetX) + "px")
-      .style("top", (event.offsetY + 50) + "px");
+      .style("left", (event.pageX) + "px")
+      .style("top", (event.pageY) + "px");
     }
   
     const innerChart = svg
@@ -231,9 +231,10 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
       .attr("y2", d => y(d.title) + y.bandwidth() / 2)
       .attr("stroke", "gray")
       .attr("stroke-width", "1px")
-      .on("mouseover", function(event, n) {
+      .on("mouseover", function(event, d) {
+        console.log(d)
         tooltip
-          .html(`${minProp}: ${data[n][minProp]} - ${maxProp}: ${data[n][maxProp]}`)
+          .html(`${minProp}: ${d[minProp]} - ${maxProp}: ${d[maxProp]}`)
           .style("visibility", "visible");
       })
       .on("mousemove", function(event) {
@@ -252,9 +253,9 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
       .attr("cy", d => y(d.title) + y.bandwidth() / 2)
       .attr("r", 5)
       .attr("fill", "#69b3a2")
-      .on("mouseover", function(event, n) {
+      .on("mouseover", function(event, d) {
         tooltip
-          .html(`${minProp}: ${data[n][minProp]}`)
+          .html(`${minProp}: ${d[minProp]}`)
           .style("visibility", "visible");
       })
       .on("mousemove", function(event) {
@@ -273,9 +274,9 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
       .attr("cy", d => y(d.title) + y.bandwidth() / 2)
       .attr("r", 5)
       .attr("fill", "#4C4082")
-      .on("mouseover", function(event, n) {
+      .on("mouseover", function(event, d) {
         tooltip
-          .html(`${maxProp}: ${data[n][maxProp]}`)
+          .html(`${maxProp}: ${d[maxProp]}`)
           .style("visibility", "visible");
       })
       .on("mousemove", function(event) {

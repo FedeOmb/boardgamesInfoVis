@@ -653,15 +653,16 @@ function updateChart3(chartType) {
         .ticks(max_count)
         .tickFormat(d => Number.isInteger(d) ? d : ""));
     
-      if(chartType == "total"){
       svg3.on("click", (event) => {
-        if (event.target.tagName === "svg" || event.target.classList.contains("background-rect")) {
+        if(chartType == "total" && (event.target.tagName === "svg" || event.target.classList.contains("background-rect"))){
+            closeAdditionalCharts("#additional-info-3");
+            d3.selectAll(".bar-group rect").attr("fill", d3.color(colorBarchart2));
+        }
+        if(chartType == "types" && event.target.tagName === "svg"){
           closeAdditionalCharts("#additional-info-3");
-          d3.selectAll(".bar-group rect").attr("fill", d3.color(colorBarchart2));
+          backgroundRects.attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
         }
       });
-    }
-    
 }
 
 function createLegend3(types){
@@ -693,6 +694,7 @@ function createLegend3(types){
           selectedTypes.push(type);
         }
         updateChart3(chartType = "types");
+        closeAdditionalCharts("#additional-info-3");
         d3.select(this).select("rect").attr("fill", selectedTypes.includes(type) ? colorScaleTypes(type) : "#ccc");
       });
 

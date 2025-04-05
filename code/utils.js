@@ -1,31 +1,4 @@
-/*function calcAges(data) {
-    console.log(data);
-    var ages = [];
-    data.nodes.forEach(d => {
-        d.age = 2023 - d.year;
-    });
-  
-    data.nodes.forEach(game => {
-        const age = game.age;
-  
-        let ageEntry = ages.find(d => d.age == age)
-        if (!ageEntry) {
-          ageEntry = { 
-            age: age,
-            games: []
-          };
-            ages.push(ageEntry);
-        }
-        ageEntry.games.push(game.id);
-      });
-  
-    ages.forEach(game => {
-      game.count = game.games.length;
-    })
-    ages = d3.sort(ages, (a, b) => d3.descending(a.count, b.count));
-    return ages;
-  }
-*/
+
   function calcGamesByYear(data) {
     console.log(data);
     var years = [];

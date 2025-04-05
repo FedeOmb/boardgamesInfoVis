@@ -298,10 +298,14 @@ function handleNodeClick(event,d) {
       chartContent.html("");
       if(chartType === "rating"){
         data.sort((a, b) => d3.descending(a.rating, b.rating));
-        createRatingChart(data);
+        const maxValue = 10;
+        createAdditionalBarchart(data, chartContent, "rating", maxValue, "Rating", "steelblue",(value) => value.toFixed(2));
+        //createRatingChart(data);
       }else if (chartType === "minage") {
         data.sort((a, b) => d3.descending(a.minage, b.minage));
-        createMinAgeChart(data);
+        const maxValue = getMaxMinAge(graph);
+        createAdditionalBarchart(data, chartContent, "minage", maxValue, "Min Age", "steelblue",(value) => value);
+        //createMinAgeChart(data);
       } else if (chartType === "players") {
         data.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
         //createDumbbellChart_old(data, "minplayers", "maxplayers", "#chart-content", "Players", neighbors.length);
@@ -314,4 +318,8 @@ function handleNodeClick(event,d) {
         createCategoriesChart(data);
       }
     });
+
+    function getMaxMinAge(dataset){
+      return Math.max(...dataset.nodes.map(item => item.minage));
+    }
 }

@@ -79,7 +79,7 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, b
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
   
-    const chartMargin = { top: 30, right: 50, bottom: 0, left: 180 };
+    const chartMargin = { top: 40, right: 50, bottom: 0, left: 180 };
     svgHeight = data.length * 25 + chartMargin.top + chartMargin.bottom;
   
     chartContainer.selectAll("*").remove();
@@ -98,7 +98,7 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, b
 
     svg.append("text")
     .attr("x", svgWidth / 2)
-    .attr("y", chartMargin.top - 20)
+    .attr("y", chartMargin.top - 25)
     .attr("text-anchor", "middle")
     .text(title)
     .style("font-weight", "bold");
@@ -201,7 +201,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
     };
     svg.append("text")
       .attr("x", svgWidth / 2)
-      .attr("y", margin.top -20)
+      .attr("y", margin.top -25)
       .attr("text-anchor", "middle")
       .text(title)
       .style("font-weight", "bold");

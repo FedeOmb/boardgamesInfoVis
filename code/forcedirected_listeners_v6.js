@@ -230,7 +230,13 @@ function handleNodeClick(event,d) {
     });
     var colorScale = d3.scaleOrdinal().domain(types).range(custColDesaturated);
     d3.select("#node-header").style("background", colorScale(d.type[0]))
-    d3.select("#game-title").text(d.title);
+    d3.select("#game-title").html(`
+      ${d.title}
+      <img src="./game_thumbnails/${d.id}.jpg"
+           alt="${d.title} image"
+           style="height: 3em; margin-left: 0.5em; vertical-align: middle;"
+           onerror="this.style.display='none';">
+    `);    
     d3.select("#game-rank").html(`<strong>Rank:</strong> ${d.rank}`);
     d3.select("#node-header").select(".info-row:nth-child(3) .info-value").text(d.year);
     d3.select("#node-header").select(".info-row:nth-child(4) .info-value")

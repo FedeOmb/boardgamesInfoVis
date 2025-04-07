@@ -158,9 +158,9 @@ async function loadDatasets(){
 
   Promise.all([
     d3.json("data/dataset_converted_cleaned_v2.json"),
-    d3.json("data/categories.json"),
-    d3.json("data/mechanics.json"),
-    d3.json("data/designers.json")
+    d3.json("data/categories_network.json"),
+    d3.json("data/mechanics_network.json"),
+    d3.json("data/designer_network.json")
   ]).then(([data, catData, mecData, desData]) =>{
 
     gamesByYear = calcGamesByYear(data);
@@ -168,23 +168,20 @@ async function loadDatasets(){
     typeByYear = calcTypeByYears2(data);
     //typeByYear = calcTypeByYears(data);
 
-    catData.forEach( d => {
+    catData.nodes.forEach( d => {
       d.count = d.games.length
     });
-    mecData.forEach( d => {
+    mecData.nodes.forEach( d => {
       d.count = d.games.length
     });
-    desData.forEach( d => {
+    desData.nodes.forEach( d => {
       d.count = d.games.length
     });
-    mecData = d3.sort(mecData, (a, b) => d3.descending(a.count, b.count))
-    catData = d3.sort(catData, (a, b) => d3.descending(a.count, b.count))
-    desData = d3.sort(desData, (a, b) => d3.descending(a.count, b.count))
-
+    
     dataset = data;
-    categories = catData;
-    mechanics = mecData;
-    designers = desData;
+    categories = d3.sort(catData.nodes, (a, b) => d3.descending(a.count, b.count))
+    mechanics = d3.sort(mecData.nodes, (a, b) => d3.descending(a.count, b.count))
+    designers = d3.sort(desData.nodes, (a, b) => d3.descending(a.count, b.count))
     console.log("categories",categories);
     console.log("mechanics",mechanics);
     console.log("designers",designers);

@@ -136,6 +136,8 @@ header h1 {
     min-height: 80vh;
     height: auto;
     font-size: 1rem;
+    position: sticky;
+    top: 0px;
 }
 
 .controls-container,

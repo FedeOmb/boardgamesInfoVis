@@ -321,7 +321,7 @@ function handleNodeClick(event,d) {
         //createDumbbellChart_old(data, "minplaytime", "maxplaytime", "#chart-content", "Playtime (min)", neighbors.length);
         createDumbbellChart(data, "minplaytime", "maxplaytime", chartContent, "Playtime (min)");     
       } else if (chartType === "categories") {
-        createCategoriesChart(data);
+        createCategoriesChart(data, chartContent);
       }
     });
 

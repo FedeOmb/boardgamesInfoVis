@@ -57,7 +57,10 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
     } else if (chartType === "rating") {
       const maxValue = 10;
       createAdditionalBarchart(filteredData, chartContent, "rating", maxValue, "User rating", barsColor, (value) => value.toFixed(2));
+    } else if (chartType === "categories") {
+      createCategoriesChart(filteredData, chartContent);
     }
+    
   }
 
   //listener for show all selector
@@ -194,11 +197,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
 
     const max_count = d3.max(data, n => Math.max(n[minProp], n[maxProp]));
 
-    function updateTooltipPosition() {
-      tooltip
-        .style("left", (event.pageX - 40) + "px")
-        .style("top", (event.pageY + 10) + "px");
-    };
+
     svg.append("text")
       .attr("x", svgWidth / 2)
       .attr("y", margin.top -25)
@@ -301,7 +300,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
 
   //--ADDITIONAL CHARTS FOR FORCE DIRECTED--
   
-  function createCategoriesChart(data) {
+  function createCategoriesChart(data, chartContainer) {
     // Extract categories
     let categories = data.flatMap(d => d.categories || []);
     
@@ -313,11 +312,11 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
     counts.sort((a, b) => d3.descending(a.count, b.count));
   
     // Define dimensions and margins
-    const width = d3.select("#chart-content").node().getBoundingClientRect().width - 15;
+    const width = chartContainer.node().getBoundingClientRect().width - 15;
     const height = counts.length * 20 + 100; 
     const margin = { top: 30, right: 10, bottom: 30, left: 180 };
   
-    const svg = d3.select("#chart-content")
+    const svg = chartContainer
       .append("svg")
       .attr("width", width)
       .attr("height", height);
@@ -353,7 +352,8 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
         .filter(d =>  d.categories.some(cat => cat.name === n.name))
         .map(d => d.title);
         tooltip
-          .html(`${games}`)
+          .html(`<strong>Games in category ${n.name}:</strong><br>
+            ${games.join("<br>")}`)
           .style("visibility", "visible");
       })
       .on("mousemove", function(event) {
@@ -378,8 +378,8 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
     // Add x-axis
     svg.append("g")
       .attr("class", "x axis")
-      .attr("transform", `translate(0,${height - margin.bottom})`) 
-      .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0f")));
+      .attr("transform", `translate(0,${margin.top})`) 
+      .call(d3.axisTop(x).ticks(5).tickFormat(d3.format(".0f")));
   
     // Add y-axis
     svg.append("g")
@@ -390,6 +390,12 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
       .style("font-size", "12px") 
       .call(wrapText2, margin.left - 10); 
   }
+
+  function updateTooltipPosition() {
+    tooltip
+      .style("left", (event.pageX - 40) + "px")
+      .style("top", (event.pageY + 10) + "px");
+  };
 
   /*
   function createMinAgeChart(data) {

@@ -234,15 +234,15 @@ function handleNodeClick(event,d) {
     d3.select("#game-rank").html(`<strong>Rank:</strong> ${d.rank}`);
     d3.select("#node-header").select(".info-row:nth-child(3) .info-value").text(d.year);
     d3.select("#node-header").select(".info-row:nth-child(4) .info-value")
-      .text(d.categories.map(c => c.name).join(", "));
+      .text(d.categories.map(c => c.name).join(" | "));
     d3.select("#node-header").select(".info-row:nth-child(5) .info-value")
-      .text(d.mechanics.map(m => m.name).join(", "));
+      .text(d.mechanics.map(m => m.name).join(" | "));
     d3.select("#node-header").select(".info-row:nth-child(6) .info-value")
-      .text(d.type.map(t => t).join(", "));
+      .text(d.type.map(t => t).join(" | "));
     d3.select("#node-header").select(".info-row:nth-child(7) .info-value")
-      .text(d.designer.map(des => des.name).join(", "));
+      .text(d.designer.map(des => des.name).join(" | "));
     d3.select("#node-header").select(".info-row:nth-child(8) .info-value")
-      .text(fans_liked.join(", "));
+      .text(fans_liked.join(" | "));
   
     // Adjust SVG size and redraw hull if necessary
     svg.transition()

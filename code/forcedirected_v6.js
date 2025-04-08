@@ -271,6 +271,7 @@ function initializeDisplay() {
     .enter()
     .append("g")
     .attr("class", "node")
+    .attr("id", d => d.id)
     .on("mouseover", handleMouseOver) 
     .on("mouseout", handleMouseOut)
     .on("click", handleNodeClick);
@@ -658,4 +659,16 @@ function getUniqueLinks(links) {
   });
 
   return uniqueLinks;
+}
+
+function openNodeById(nodeId) {
+  const targetNode = graph.nodes.find(n => n.id === nodeId);
+  if (targetNode) {
+    const nodeElement = d3.selectAll(".node").filter(d => d.id === nodeId).node();
+    if (nodeElement) {
+      handleNodeClick.call(nodeElement, null, targetNode);
+    }
+  } else {
+    console.error(`Node with ID ${nodeId} not found.`);
+  }
 }

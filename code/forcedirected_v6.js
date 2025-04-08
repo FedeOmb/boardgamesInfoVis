@@ -48,7 +48,7 @@ var bidirectionalLinks
 const radiusScale = d3.scaleSqrt().domain([1, 100]).range([15, 5]);
 
 //var colorScaleType  = d3.scaleOrdinal(d3.schemeCategory10);
-var customColors = ["#377eb8","#4daf4a","#f781bf","#ffff33","#ff7f00","#e41a1c","#8dd3c7","#b1b1b1"];
+//var customColors = ["#377eb8","#4daf4a","#f781bf","#ffff33","#ff7f00","#e41a1c","#8dd3c7","#b1b1b1"];
 var custColDesaturated = ["#a5bdd3", "#b3d0b3", "#f5cfdc", "#ffffd9", "#ffd6ad", "#e5aaaa", "#cfe5e1", "#e0e0e0"]
 var colorScaleType  = d3.scaleOrdinal()
 

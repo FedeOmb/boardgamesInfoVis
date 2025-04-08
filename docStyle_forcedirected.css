@@ -255,12 +255,13 @@ html {
 
   .info-label {
     font-weight: 600;
+    max-width: 25%;
     color: #444;
   }
 
   .info-value {
     color: darkslategray;
-    max-width: 60%;
+    max-width: 70%;
     text-align: right;
   }
   span.chart-info {

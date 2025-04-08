@@ -240,7 +240,7 @@ function handleNodeClick(event,d) {
     d3.select("#node-header").select(".info-row:nth-child(6) .info-value")
       .text(d.type.map(t => t).join(" | "));
     d3.select("#node-header").select(".info-row:nth-child(7) .info-value")
-      .text(d.designer.map(des => des.name).join(", "));
+      .text(d.designer.map(des => des.name).join(" | "));
     d3.select("#node-header").select(".info-row:nth-child(8) .info-value")
       .text(fans_liked.join(" | "));
   

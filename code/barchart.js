@@ -160,7 +160,7 @@ async function loadDatasets(){
     d3.json("data/dataset_converted_cleaned_v2.json"),
     d3.json("data/categories_network.json"),
     d3.json("data/mechanics_network.json"),
-    d3.json("data/designer_network.json")
+    d3.json("data/designers_network.json")
   ]).then(([data, catData, mecData, desData]) =>{
 
     gamesByYear = calcGamesByYear(data);

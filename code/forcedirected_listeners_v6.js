@@ -83,10 +83,6 @@ function mouseEnterEdge(event,d) {
     const targetNode = graph.nodes.find(n => n.id === (d.target.id || d.target));
   
     if (!sourceNode || !targetNode) return;
-  
-    const sourceCategories = new Set(sourceNode.categories?.map(c => c.name) || []);
-    const targetCategories = new Set(targetNode.categories?.map(c => c.name) || []);
-    const commonCategories = [...sourceCategories].filter(c => targetCategories.has(c));
 
     if (!infoPanelVisible) {
       d3.select(this)
@@ -112,36 +108,23 @@ function mouseEnterEdge(event,d) {
   
     // Show tooltip
     tooltip.transition().duration(200).style("opacity", 0.9);
-  
-    if (commonCategories.length > 0) {
-      if (isBidirectional(sourceNode.id, targetNode.id)) {
-        tooltip.html(`<strong>${d.source.title} ↔ ${d.target.title}</strong><br>${commonCategories}`)
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY - 10) + "px")
-          .style("visibility", "visible");
-      } else {
-        tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>${commonCategories}`)
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY - 10) + "px")
-          .style("visibility", "visible");
-      }
-    } else {
-      if (isBidirectional(sourceNode.id, targetNode.id)) {
-        tooltip.html(`<strong>${d.source.title} ↔ ${d.target.title}</strong><br>`)
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY - 10) + "px")
-          .style("visibility", "visible");
-      }else {
-        tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>`)
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY - 10) + "px")
-          .style("visibility", "visible");
-      }
+
+    if (isBidirectional(sourceNode.id, targetNode.id)) {
+      tooltip.html(`<strong>${d.source.title} ↔ ${d.target.title}</strong><br>`)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px")
+        .style("visibility", "visible");
+    }else {
+      tooltip.html(`<strong>${d.source.title} → ${d.target.title}</strong><br>`)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px")
+        .style("visibility", "visible");
     }
+    
   }
 
 //handle mouseout edge
-function mouseLeaveEdge(event,d) {
+function mouseLeaveEdge(event, d) {
     if (!infoPanelVisible) {
       // Unhighlight edge
       d3.select(this)
@@ -292,8 +275,6 @@ function handleNodeClick(event,d) {
       });
     const data = [d, ...neighbors];
     data.sort((a, b) => d3.descending(a.minage, b.minage));
-    console.log(data);
-    console.log(neighbors)
     d3.selectAll(".chart-btn").classed("active", false);
   
     d3.selectAll(".chart-btn").on("click", function() {

@@ -3,11 +3,12 @@ var categories = []
 var mechanics = []
 var designers = []
 const gameTitles = {};
+
 Promise.all([
     d3.json("data/dataset_converted_cleaned_v2.json"),
-    d3.json("data/categories.json"),
-    d3.json("data/mechanics.json"),
-    d3.json("data/designers.json")
+    d3.json("data/categories_network.json"),
+    d3.json("data/mechanics_network.json"),
+    d3.json("data/designers_network.json")
 ]).then(([data, catData, mecData, desData]) =>{
     games = data.nodes.map(game => ({ id: game.id, title: game.title }));
     games.forEach(game => {
@@ -18,10 +19,6 @@ Promise.all([
     designers = desData
 
     createChordDiagram(designers);
-
-    console.log(JSON.stringify(buildFullNetwork(desData)));
-    console.log(JSON.stringify(buildFullNetwork(catData)));
-    console.log(JSON.stringify(buildFullNetwork(mecData)));
 });
         
 function createDiagram(type) {
@@ -30,7 +27,10 @@ function createDiagram(type) {
     else if (type === "mechanics") createChordDiagram(mechanics);
 }
 
+let currentDataset
 function createChordDiagram(dataset) {
+
+    currentDataset = dataset
 
     const tooltip = d3.select("body")
         .append("div")
@@ -54,7 +54,7 @@ function createChordDiagram(dataset) {
     const collaboratingIndividuals = new Set();
     const entityToIndividuals = {};
 
-    individuals.forEach(individual => {
+    individuals.nodes.forEach(individual => {
         individual.games.forEach(entityId => {
             if (!entityToIndividuals[entityId]) {
                 entityToIndividuals[entityId] = [];
@@ -70,29 +70,21 @@ function createChordDiagram(dataset) {
         }
     }
 
-    const nodes = individuals
-        .filter(individual => collaboratingIndividuals.has(individual.id))
-        .map(individual => ({
-            id: individual.id,
-            name: individual.name,
-            games: individual.games
-        }));
-
     let largestComponent = new Set();
-    individuals.forEach(individual => {
+    individuals.nodes.forEach(individual => {
         let component = findConnectedComponent(individual.id, entityToIndividuals);
         if (component.size > largestComponent.size) {
             largestComponent = component;
         }
     });
     
-    // Start with individuals from the largest component
-    let topIndividuals = individuals.filter(d => largestComponent.has(d.id));
+    //componente connessa massima
+    let topIndividuals = individuals.nodes.filter(d => largestComponent.has(d.id));
     
-    // If we don't have enough, add other collaborating individuals
+    //se la componente è troppo piccola aggiunge altri nodi
     if (topIndividuals.length < 10) {
         const additionalIndividuals = Array.from(collaboratingIndividuals)
-            .map(id => individuals.find(ind => ind.id === id))
+            .map(id => individuals.nodes.find(ind => ind.id === id))
             .filter(ind => !largestComponent.has(ind.id)) // exclude ones we already have
             .sort((a, b) => {
                 const aCount = Object.values(entityToIndividuals).filter(ids => ids.includes(a.id)).length;
@@ -104,7 +96,6 @@ function createChordDiagram(dataset) {
         topIndividuals = topIndividuals.concat(additionalIndividuals);
     }
     
-    // Still limit to 10 in case we somehow got more
     topIndividuals = topIndividuals.slice(0, 10);
 
     const topIndividualIds = new Set(topIndividuals.map(d => d.id));
@@ -182,6 +173,7 @@ function createChordDiagram(dataset) {
         }
     });
 
+    //Create the chord diagram visualization
     const cont = d3.select(".chord-container");
     var contWidth = +cont.node().getBoundingClientRect().width;
     var contHeight = +cont.node().getBoundingClientRect().height;
@@ -198,8 +190,6 @@ function createChordDiagram(dataset) {
         .append("g")
         .attr("transform", `translate(${width/2 + margin.left},${height/2 + margin.top})`);
 
-    //const outerRadius = Math.min(width, height) * 0.5 - 100;
-    //const innerRadius = outerRadius - 30;
     const outerRadius = Math.min(width, height) * 0.5 - 50;
     const innerRadius = outerRadius - 20;
 
@@ -221,6 +211,7 @@ function createChordDiagram(dataset) {
         .data(chords)
         .enter()
         .append("path")
+        .attr("class", "ribbon")
         .attr("d", ribbon)
         .style("fill", d => color(d.source.index))
         .style("stroke", d => d3.rgb(color(d.source.index)).darker())
@@ -267,7 +258,23 @@ function createChordDiagram(dataset) {
         .append("path")
         .attr("d", arc)
         .style("fill", d => color(d.index))
-        .style("stroke", d => d3.rgb(color(d.index)).darker());
+        .style("stroke", d => d3.rgb(color(d.index)).darker())
+        .on("mouseover", function () {
+            const d = d3.select(this).datum();
+            const index = d.index;
+        
+            svg.selectAll(".ribbon")
+                .transition()
+                .duration(200)
+                .style("opacity", p => (p.source.index === index || p.target.index === index) ? 1 : 0.1);
+        })
+        .on("mouseout", function () {
+            svg.selectAll(".ribbon")
+                .transition()
+                .duration(200)
+                .style("opacity", 0.8);
+        });
+               
     
     // Add labels
     svg.append("g")
@@ -380,59 +387,3 @@ function adjustForViewport(svg, padding = 20) {
         }
     });
 }
-
-function buildFullNetwork(individuals) {
-    const entityToIndividuals = {};
-
-    // Mappa entità (giochi) → designer/categorie/meccaniche
-    individuals.forEach(individual => {
-        individual.games.forEach(entityId => {
-            if (!entityToIndividuals[entityId]) {
-                entityToIndividuals[entityId] = [];
-            }
-            entityToIndividuals[entityId].push(individual.id);
-        });
-    });
-
-    // Creazione dei nodi
-    const nodes = individuals.map(individual => ({
-        id: individual.id,
-        name: individual.name,
-        games: individual.games
-    }));
-
-    // Creazione dei link (connessioni tra individui che hanno lavorato sugli stessi giochi)
-    const linkMap = new Map();
-    const linkGames = new Map();
-
-    for (const entityId in entityToIndividuals) {
-        const individualIds = entityToIndividuals[entityId];
-        if (individualIds.length > 1) {
-            for (let i = 0; i < individualIds.length; i++) {
-                for (let j = i + 1; j < individualIds.length; j++) {
-                    const source = Math.min(individualIds[i], individualIds[j]);
-                    const target = Math.max(individualIds[i], individualIds[j]);
-                    const key = `${source}-${target}`;
-
-                    if (linkMap.has(key)) {
-                        linkMap.get(key).weight++;
-                        linkGames.get(key).push(entityId);
-                    } else {
-                        linkMap.set(key, {
-                            source: source,
-                            target: target,
-                            weight: 1
-                        });
-                        linkGames.set(key, [entityId]);
-                    }
-                }
-            }
-        }
-    }
-
-    // Convertiamo la mappa in un array di oggetti
-    const links = Array.from(linkMap.values());
-
-    return { nodes, links };
-}
-

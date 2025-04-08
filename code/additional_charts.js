@@ -82,7 +82,7 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, b
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
   
-    const chartMargin = { top: 40, right: 50, bottom: 0, left: 180 };
+    const chartMargin = { top: 40, right: 50, bottom: 30, left: 180 };
     svgHeight = data.length * 25 + chartMargin.top + chartMargin.bottom;
   
     chartContainer.selectAll("*").remove();
@@ -189,7 +189,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
     
-    const margin = { top: 40, right: 50, bottom: 0, left: 180 };
+    const margin = { top: 40, right: 50, bottom: 30, left: 180 };
     svgHeight = data.length * 25 + margin.top + margin.bottom;
   
     chartContainer.selectAll("*").remove();
@@ -314,7 +314,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
     // Define dimensions and margins
     const width = chartContainer.node().getBoundingClientRect().width - 15;
     const height = counts.length * 20 + 100; 
-    const margin = { top: 30, right: 10, bottom: 30, left: 180 };
+    const margin = { top: 40, right: 10, bottom: 30, left: 180 };
   
     const svg = chartContainer
       .append("svg")
@@ -323,7 +323,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
   
     svg.append("text")
       .attr("x", width / 2)
-      .attr("y", margin.top / 2)
+      .attr("y", margin.top -25)
       .attr("text-anchor", "middle")
       .text("Categories frequency")
       .style("font-weight", "bold");

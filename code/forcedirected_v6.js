@@ -85,7 +85,23 @@ d3.json("data/dataset_converted_cleaned_v2.json").then((data) =>{
   resetNetColors();
   initializeSimulation();
   addLegend();
+
+  addSearchBar();
 });
+
+const titleToIdMap = {};
+function addSearchBar(){
+  // Mappa titoli → id per ricerca
+  graph.nodes.forEach(node => {
+    titleToIdMap[node.title] = node.id;
+
+    // Popola datalist per suggerimenti
+    d3.select("#game-titles")
+      .append("option")
+      .attr("value", node.title);
+  });
+
+}
 
 function addLegend() {
   var allTypes = Array.from(new Set(graph.nodes.flatMap(d => d.type)));

@@ -15,6 +15,17 @@ d3.select("#toggle-labels").on("click", function() {
   d3.select(this).text(labelsVisible ? "Hide Labels" : "Show Labels");
 });
 
+// Gestione selezione da barra di ricerca
+d3.select("#search-box").on("change", function() {
+  const selectedTitle = this.value;
+  const nodeId = titleToIdMap[selectedTitle];
+  if (nodeId) {
+    openNodeById(nodeId); // chiama la funzione con l'id corretto
+  } else {
+    alert("Gioco non trovato. Assicurati di selezionare un titolo valido.");
+  }
+});
+
 // Function to handle mouseover node event
 function handleMouseOver(event,d) {
   

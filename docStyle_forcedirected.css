@@ -127,6 +127,21 @@ html {
     z-index: 1000;
   }
 
+  #search-bar {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    padding: 10px 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  #search-box {
+    border-radius: 6px;
+  }
+
   #zoom-controls {
     display: flex;
     flex-direction: row;

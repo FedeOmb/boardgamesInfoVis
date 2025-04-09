@@ -266,12 +266,60 @@ select {
     background: white;
     cursor: pointer;
 }
+.axis-title {
+    font-size: 1rem;
+    font-weight: 500;
+}
 
-input[type="radio"] {
+/*input[type="radio"] {
     border: 1px solid;
     border-radius: 100%;
     width: 1.2em;
     height: 1.2em;
     padding: 2px;
     cursor: pointer;
-}
+}*/
+
+      .radio-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      
+      .radio-container input[type="radio"] {
+        display: none;
+        pointer-events: none;
+      }
+      
+      .radio-container label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: auto;
+        height: 40px;
+        padding: 0px 5px 0px 5px;;
+        border: 2px solid #999;
+        background-color: #f8f8f8;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.3s ease;
+        text-align: center;
+        border-radius: 5px; 
+        color: #333;
+      }
+      
+      .radio-container input[type="radio"]:checked + label {
+        background-color: #999;
+        border-color: #333;
+        color: white;
+      }
+      
+      .radio-container label:hover {
+        background-color: #e0e0e0;
+        border-color: #999;
+      }
+      
+      .radio-container input[type="radio"]:checked + label:hover {
+        background-color: #999;
+      }

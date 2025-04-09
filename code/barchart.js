@@ -21,7 +21,7 @@ var svg1Width = +cont1.node().getBoundingClientRect().width;
 var svg1Height = +cont1.node().getBoundingClientRect().height;
 svg1.attr("viewBox", `0 0 ${svg1Width} ${svg1Height}`);
 
-const chart1Margin = { top: 40, right: 20, bottom: 20, left: 170 };
+const chart1Margin = { top: 50, right: 20, bottom: 20, left: 170 };
 
 var xScale3;
 var xScaleSubgroups3;
@@ -80,7 +80,7 @@ const tooltip = d3.select("body").append("div")
     });
 
     //listener per modifica slider
-    rangeSlider1.on("change", () => {
+    rangeSlider1.on("input", () => {
       maxItemsToVis1 = rangeSlider1.property("value");
       rangeValue1.text(maxItemsToVis1.toString());
       attr = attrSelector1.property("value");
@@ -97,7 +97,7 @@ const tooltip = d3.select("body").append("div")
   })
 
   //--- listener controlli tab3 ---
-  yearSliderMax.on("change", () => {
+  yearSliderMax.on("input", () => {
     var value = d3.selectAll("input[name='chart-type']:checked").property("value");
     maxYearToVis = parseInt(yearSliderMax.property("value"));
     minYearToVis = parseInt(yearSliderMin.property("value"));
@@ -110,7 +110,7 @@ const tooltip = d3.select("body").append("div")
     closeAdditionalCharts("#additional-info-3");
   });
 
-  yearSliderMin.on("change", () => {
+  yearSliderMin.on("input", () => {
     var value = d3.selectAll("input[name='chart-type']:checked").property("value");
     maxYearToVis = parseInt(yearSliderMax.property("value"));
     minYearToVis = parseInt(yearSliderMin.property("value"));
@@ -354,12 +354,14 @@ function createBarchart1(attr, varY, varX){
       // aggiunta etichette degli assi
       innerChart
       .append("text")
-      .attr("transform", `translate(${chartWidth / 2}, -30)`)
+      .attr("class", "axis-title")
+      .attr("transform", `translate(${chartWidth / 2}, ${-30})`)
       .style("text-anchor", "middle")
       .text("Number of games");
 
     innerChart
       .append("text")
+      .attr("class", "axis-title")
       .attr("transform", "rotate(-90)")
       .attr("y", 0 - chart1Margin.left )
       .attr("x", 0 - 200)
@@ -458,12 +460,14 @@ function createBarchart3(chartType){
       // aggiunta etichette degli assi
   innerChart
   .append("text")
+  .attr("class", "axis-title")
   .attr("transform", `translate(${chart3Width / 2}, ${chart3Height + 30})`)
   .style("text-anchor", "middle")
   .text("Release year");
 
   innerChart
   .append("text")
+  .attr("class", "axis-title")
   .attr("transform", "rotate(-90)")
   .attr("y", 0 - 20 )
   .attr("x", 0 - chart3Height/2)
@@ -515,6 +519,7 @@ function updateChart3(chartType) {
 
   const infoText = d3.select("#additional-info-3 .info-selected-text");
   const infoDefaultText = d3.select("#additional-info-3 .info-default-text");
+  var barSelected = false;
 
   const backgroundRectWidth = xScale3.step();
 
@@ -543,8 +548,19 @@ function updateChart3(chartType) {
 
     svg3.select(".legend").style("visibility", "visible");
 
-    backgroundRects    
+    backgroundRects
+    .on("mouseover", function(event,d){
+      if(!barSelected){
+        d3.select(event.currentTarget).attr("fill", d3.color("#f0f0f0").darker());
+      }
+    })
+    .on("mouseout", function(event,d){  
+      if(!barSelected){
+        backgroundRects.attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
+        }      
+    })
     .on("click", (event,d) => {
+      barSelected = true;
       backgroundRects.attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
       d3.select(event.currentTarget).attr("fill", d3.color("#f0f0f0").darker());
       var games = gamesByYear.find(g => g.year == d).games;
@@ -579,8 +595,16 @@ function updateChart3(chartType) {
     .attr("y", (d) => yScale3(d.games.length))
     .attr("fill", (d) => colorScaleTypes(d.type))
     .on("mouseover", function(event,d){
+      var gameNames = [];
+      console.log(d);
+      d.games.forEach(game => {
+        let gameData = dataset.nodes.find(g => g.id == game);
+        gameNames.push(gameData.title);
+      });
+      console.log(gameNames);
       tooltip
-      .html(`<strong>Year: ${d.year} <br> Type: ${d.type} <br> Number of games: ${d.games.length}</strong>`)
+      .html(`<strong>Year: ${d.year} <br> Type: ${d.type} <br> Number of games: ${d.games.length} <br> Games:</strong> <br>
+        ${gameNames.join("<br>")}`)
       .style("visibility", "visible");
     })
     .on("mousemove", mousemove)
@@ -611,10 +635,16 @@ function updateChart3(chartType) {
           tooltip
           .html(`<strong>Year ${d.year} : ${d.count} games </strong>`)
           .style("visibility", "visible");
+          if(!barSelected){
+            d3.select(this).attr("fill", d3.color(colorBarchart2).darker());
+          }
         })
         .on("mousemove", mousemove)
         .on("mouseout", function(event,d){
           tooltip.style("visibility", "hidden");
+          if(!barSelected){
+            d3.select(this).attr("fill", d3.color(colorBarchart2));
+          }
         })
         .on("click", (event,d) => {
           d3.selectAll(".bar-group rect").attr("fill", d3.color(colorBarchart2));
@@ -654,10 +684,12 @@ function updateChart3(chartType) {
         if(chartType == "total" && (event.target.tagName === "svg" || event.target.classList.contains("background-rect"))){
             closeAdditionalCharts("#additional-info-3");
             d3.selectAll(".bar-group rect").attr("fill", d3.color(colorBarchart2));
+            barSelected = false;
         }
         if(chartType == "types" && event.target.tagName === "svg"){
           closeAdditionalCharts("#additional-info-3");
           backgroundRects.attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
+          barSelected = false;
         }
       });
 }
@@ -696,8 +728,8 @@ function createLegend3(types){
       });
 
     legendItem.append("rect")
-      .attr("width", 15)
-      .attr("height", 15)
+      .attr("width", 16)
+      .attr("height", 16)
       .attr("x", 0)
       .attr("y", 0)
       .attr("fill", colorScaleTypes(type));
@@ -705,7 +737,7 @@ function createLegend3(types){
     legendItem.append("text")
       .attr("x", 20)
       .attr("y", 12)
-      .attr("font-size", "12px")
+      .attr("font-size", "13px")
       .attr("text-anchor", "start")
       .text(type);
 

@@ -18,6 +18,7 @@ svg.append("defs").selectAll("marker")
 
 var infoPanelVisible = false;
 var labelsVisible = false;
+var nodeOpenedFromQuery = false;
 
 function updateSize() {
   width = +svg.node().getBoundingClientRect().width;
@@ -87,6 +88,16 @@ d3.json("data/dataset_converted_cleaned_v2.json").then((data) =>{
   addLegend();
 
   addSearchBar();
+
+  window.addEventListener("message", function(event) {
+    // Verifica l'origine del messaggio se necessario
+    // if (event.origin !== "http://tuo-dominio.com") return;
+    console.log("message received",event.data);
+    
+    if (event.data.action === "openNode" && event.data.gameId) {
+      openNodeById(event.data.gameId);
+    }
+  });
 });
 
 const titleToIdMap = {};
@@ -163,6 +174,10 @@ function initializeSimulation() {
   simulation.nodes(graph.nodes);
   initializeForces();
   simulation.on("tick", ticked);
+  //al termine dell simulazione apre il nodo specificato nell'url se presente
+  simulation.on("end", function() { 
+    openNodeByQuery();
+  });
 }
 
 // values for all forces
@@ -480,6 +495,8 @@ svg.on("click", function(event) {
       const hull = computeSingleHull(graph.nodes, activeHull);
       drawSingleHull(svg, hull, activeHull);
     }
+
+    window.history.replaceState({}, '', `${window.location.pathname}`);
   }
 });
 
@@ -682,9 +699,26 @@ function openNodeById(nodeId) {
   if (targetNode) {
     const nodeElement = d3.selectAll(".node").filter(d => d.id === nodeId).node();
     if (nodeElement) {
+      console.log("opened node",nodeId)
       handleNodeClick.call(nodeElement, null, targetNode);
     }
   } else {
     console.error(`Node with ID ${nodeId} not found.`);
+  }
+}
+
+function openNodeByQuery(){
+
+    if(!nodeOpenedFromQuery){
+            // Controlla se c'è un parametro gameId nell'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameId = urlParams.get('gameId');
+    console.log("read parameter",gameId)
+    
+    if (gameId) {
+      openNodeById(parseInt(gameId)); 
+      //setTimeout(() => openNodeById(parseInt(gameId)), 1000);
+      nodeOpenedFromQuery = true;
+    }
   }
 }

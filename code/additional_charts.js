@@ -27,15 +27,8 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
   }
   console.log(filteredData)
 
-  var barsColor;
-  if(attrMainChart=="year"){
-    barsColor = colorBarchart2;
-  }else{
-    barsColor = colorsBarchart1[attrMainChart];
-  }
-
   const maxValue = 10;
-  createAdditionalBarchart(filteredData, chartContent, "rating", maxValue,"User rating", barsColor, (value) => value.toFixed(2));
+  createAdditionalBarchart(filteredData, chartContent, "rating", maxValue,"User rating", attrMainChart, (value) => value.toFixed(2));
 
   //function to show graphs based on current selections
   function showGraphs(chartType) {
@@ -49,14 +42,14 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
     chartContent.html("");
     if (chartType === "minage") {
       const maxValue = getMaxMinAge(dataset);
-      createAdditionalBarchart(filteredData, chartContent, "minage", maxValue,"Minimum player age", barsColor, (value) => value);
+      createAdditionalBarchart(filteredData, chartContent, "minage", maxValue,"Minimum player age", attrMainChart, (value) => value);
     } else if (chartType === "players") {
       createDumbbellChart(filteredData, "minplayers", "maxplayers", chartContent, "Players");
     } else if (chartType === "playtime") {
       createDumbbellChart(filteredData, "minplaytime", "maxplaytime", chartContent, "Playtime (min)");
     } else if (chartType === "rating") {
       const maxValue = 10;
-      createAdditionalBarchart(filteredData, chartContent, "rating", maxValue, "User rating", barsColor, (value) => value.toFixed(2));
+      createAdditionalBarchart(filteredData, chartContent, "rating", maxValue, "User rating", attrMainChart, (value) => value.toFixed(2));
     } else if (chartType === "categories") {
       createCategoriesChart(filteredData, chartContent);
     }
@@ -78,7 +71,7 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
 }
 
 //-- Common function to create bar chart for a given attribute--
-function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, barsColor, formatLabel = (value) => value){
+function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, attrMainChart, formatLabel = (value) => value){
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
   
@@ -106,7 +99,7 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, b
     .text(title)
     .style("font-weight", "bold");
   
-    var showTooltip = function(event,d){
+    function showTooltip(event,d){
       var designers = d.designer.map(des => des.name).join(", ");
       tooltip
       .html(`<strong>(${d.rank}°) ${d.title} </strong><br>
@@ -123,6 +116,15 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, b
       tooltip
       .style("left", (event.pageX) + "px")
       .style("top", (event.pageY) + "px");
+    }
+
+    var barsColor;
+    if(attrMainChart=="year"){
+      barsColor = colorBarchart2;
+    }else if(attrMainChart == "network"){
+      barsColor = "steelblue";
+    }else{
+      barsColor = colorsBarchart1[attrMainChart];
     }
   
     const innerChart = svg
@@ -146,10 +148,33 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, b
       .attr("x", 0)
       .attr("y", 0)
       .attr("fill", d3.color(barsColor))
-      .on("mouseover", showTooltip)
+      .on("mouseover", function(event, d) {
+        innerChart.selectAll("rect").attr("fill", d3.color(barsColor));
+        d3.select(this).attr("fill", d3.color(barsColor).darker());
+        showTooltip(event,d);
+      })
       .on("mousemove", mousemove)
       .on("mouseout", () => {
-      tooltip.style("visibility", "hidden");
+        innerChart.selectAll("rect").attr("fill", d3.color(barsColor));
+        tooltip.style("visibility", "hidden");
+      })
+      .on("click", function(event, d) {
+        let gameId = d.id;
+        
+        if(attrMainChart == "network"){
+          openNodeById(gameId);
+        }
+        else{
+          // Controlla se la pagina del force directed è già aperta
+          let newPage = window.open("index_forcedirected.html?gameId=" + gameId, "ForceDirectedPage");
+        }
+
+        
+        // Se la pagina era già aperta, invia un messaggio
+        /*if (!newPage.opener) {
+          newPage.postMessage({ action: "openNode", gameId: gameId }, "*");
+          console.log("messagggio inviato")
+        }*/
       });
   
     barGroup

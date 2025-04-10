@@ -751,4 +751,5 @@ function closeAdditionalCharts(containerId){
   d3.select(containerId + " .chart-selector").style("display","none");
   d3.select(containerId + " .chart-content").style("display","none");
   d3.select(containerId + " .show-all-selector").style("display","none");
+  d3.select(containerId + " .info-add-text").style("display","none");
 }

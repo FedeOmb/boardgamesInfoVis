@@ -241,13 +241,13 @@ span.chart-info {
     display: none;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
     align-items: center;
 }
 .info-add-text {
     display: none;
     flex-direction: row;
     text-align: center;
+    align-items: center;
     font-size: 0.8rem;
     padding: 5px;
 }

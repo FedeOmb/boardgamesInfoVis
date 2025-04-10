@@ -6,7 +6,6 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
   const showAllSelector = d3.select(containerId + " .show-all-selector");
   const infoAddText = d3.select(containerId + " .info-add-text");
   showAllSelector.style("display", "none");
-  infoAddText.style("display", "none");
   chartSelector.style("display", "flex");
   chartContent.style("display", "flex");
 
@@ -30,7 +29,7 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
   console.log(filteredData)
 
   const maxValue = 10;
-  infoAddText.style("display", "flex");
+  infoAddText.style("display", "block");
   createAdditionalBarchart(filteredData, chartContent, "rating", maxValue,"User rating", attrMainChart, (value) => value.toFixed(2));
 
   //function to show graphs based on current selections
@@ -45,7 +44,7 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
     chartContent.html("");
     if (chartType === "minage") {
       const maxValue = getMaxMinAge(dataset);
-      infoAddText.style("display", "flex");
+      infoAddText.style("display", "block");
       createAdditionalBarchart(filteredData, chartContent, "minage", maxValue,"Minimum player age", attrMainChart, (value) => value);
     } else if (chartType === "players") {
       createDumbbellChart(filteredData, "minplayers", "maxplayers", chartContent, "Players");
@@ -53,7 +52,7 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
       createDumbbellChart(filteredData, "minplaytime", "maxplaytime", chartContent, "Playtime (min)");
     } else if (chartType === "rating") {
       const maxValue = 10;
-      infoAddText.style("display", "flex");
+      infoAddText.style("display", "block");
       createAdditionalBarchart(filteredData, chartContent, "rating", maxValue, "User rating", attrMainChart, (value) => value.toFixed(2));
     } else if (chartType === "categories") {
       createCategoriesChart(filteredData, chartContent);
@@ -313,7 +312,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
     svg.append("g")
       .attr("transform", `translate(0,${margin.top})`)
       .call(d3.axisTop(x)
-        .ticks(max_count > 10 ? x.ticks().length : max_count)
+        .ticks(5)
         .tickFormat(d => Number.isInteger(d) ? d : ""));
   
     svg.append("g")

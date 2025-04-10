@@ -215,6 +215,42 @@ forceProperties = {
   },
 };
 
+/* ALTRI POSSIBILI PARAMETRI FORZE
+forceProperties = {
+  center: {
+    x: 0.5,
+    y: 0.5,
+  },
+  charge: {
+    enabled: true,
+    strength: -70,
+    distanceMin: 1,
+    distanceMax: 6000,
+  },
+  collide: {
+    enabled: true,
+    strength: 0.7,
+    iterations: 1,
+    radius: 14,
+  },
+  forceX: {
+    enabled: false,
+    strength: 0.4,
+    x: 0.5,
+  },
+  forceY: {
+    enabled: false,
+    strength: 0.4,
+    y: 0.5,
+  },
+  link: {
+    enabled: true,
+    distance: 60,
+    iterations: 1,
+  },
+};
+*/
+
 // add forces to the simulation
 function initializeForces() {
   // add forces and associate each with a name

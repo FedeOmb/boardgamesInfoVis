@@ -160,6 +160,7 @@ function handleNodeClick(event,d) {
     infoPanelVisible = true;
     d3.select("body").classed("panel-open", true);
     d3.select("#info-panel").style("display", "block");
+    tooltip.style("visibility", "hidden");
 
     // Resettiamo la visualizzazione
     resetNetColors();
@@ -236,7 +237,7 @@ function handleNodeClick(event,d) {
     d3.select("#node-header").select(".info-row:nth-child(4) .info-value")
       .text(d.categories.map(c => c.name).join(" | "));
     d3.select("#node-header").select(".info-row:nth-child(5) .info-value")
-      .text(d.mechanics.map(m => m.name).join("| "));
+      .text(d.mechanics.map(m => m.name).join(" | "));
     d3.select("#node-header").select(".info-row:nth-child(6) .info-value")
       .text(d.type.map(t => t).join(" | "));
     d3.select("#node-header").select(".info-row:nth-child(7) .info-value")

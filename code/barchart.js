@@ -329,9 +329,13 @@ function createBarchart1(attr, varY, varX){
   barAndLabel
     .append("text")
     .text((d) => d.count)
-    .attr("x", (d) => xScale(d[varX]) + 3)
-    .attr("y", yScale.bandwidth() / 2)
-    .style("font-size", "9px");
+    .attr("x", (d) => xScale(d[varX]) - 10)
+    .attr("y", (yScale.bandwidth() / 2) + 4)
+    .style("text-anchor", "end")
+      .style("font-family", "sans-serif")
+      .style("font-size", "11px")
+      .style("fill", "white")
+      .style("font-weight", "bold");
 
     //aggiunta assi
   innerChart
@@ -357,6 +361,7 @@ function createBarchart1(attr, varY, varX){
       .attr("class", "axis-title")
       .attr("transform", `translate(${chartWidth / 2}, ${-30})`)
       .style("text-anchor", "middle")
+      .style("font-weight", "bold")
       .text("Number of games");
 
     innerChart

@@ -156,6 +156,7 @@ header h1 {
     margin-right: 10px;
 }
 
+
 #bar-chart-1 {
     min-height: 80vh;
     height: auto;
@@ -179,6 +180,7 @@ header h1 {
 /*additional charts css*/
 .additional-info h2 {
     text-align: center;
+    margin:5px;
 }
 
 .info-default-text,
@@ -207,7 +209,7 @@ span.chart-info {
 }
 
 .chart-content {
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 .chart-btn {
@@ -242,6 +244,13 @@ span.chart-info {
     justify-content: center;
     align-items: center;
 }
+.info-add-text {
+    display: none;
+    flex-direction: row;
+    text-align: center;
+    font-size: 0.8rem;
+    padding: 5px;
+}
 
 
 .custom-button {
@@ -271,20 +280,12 @@ select {
     font-weight: 500;
 }
 
-/*input[type="radio"] {
-    border: 1px solid;
-    border-radius: 100%;
-    width: 1.2em;
-    height: 1.2em;
-    padding: 2px;
-    cursor: pointer;
-}*/
-
       .radio-container {
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 5px;
+        max-width: 50%;
       }
       
       .radio-container input[type="radio"] {
@@ -297,7 +298,10 @@ select {
         align-items: center;
         justify-content: center;
         width: auto;
-        height: 40px;
+        max-width: 50%;
+        height: auto;
+        min-height: 30px;
+        max-height: 60px;
         padding: 0px 5px 0px 5px;;
         border: 2px solid #999;
         background-color: #f8f8f8;
@@ -323,3 +327,49 @@ select {
       .radio-container input[type="radio"]:checked + label:hover {
         background-color: #999;
       }
+
+@media (max-width: 1000px) {
+    .tab-content {
+        display: none;
+        flex-direction: column;
+    }
+    .tab-content.active {
+        display: flex;
+        flex-direction: column; 
+    }
+    .col {
+        min-height: 50vh;
+        padding: 10px;
+        margin-right: 10px;
+        position: relative;
+    }
+    
+    .col-9 {
+        flex: 1 0 60%;
+        max-width: 100%;
+    }
+    
+    .col-3 {
+        display: block;
+        flex: 1 0 20%;
+        max-width: 100%;
+    }
+    .radio-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 5px;
+        max-width: 100%;
+    }
+    .controls-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+        padding: 10px;
+        height: auto;
+        max-height: 20vh;
+        font-size: 1rem;
+    }
+    
+}

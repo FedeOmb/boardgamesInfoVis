@@ -4,7 +4,9 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
   const chartSelector = d3.select(containerId + " .chart-selector");
   const chartContent = d3.select(containerId + " .chart-content");
   const showAllSelector = d3.select(containerId + " .show-all-selector");
+  const infoAddText = d3.select(containerId + " .info-add-text");
   showAllSelector.style("display", "none");
+  infoAddText.style("display", "none");
   chartSelector.style("display", "flex");
   chartContent.style("display", "flex");
 
@@ -28,6 +30,7 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
   console.log(filteredData)
 
   const maxValue = 10;
+  infoAddText.style("display", "flex");
   createAdditionalBarchart(filteredData, chartContent, "rating", maxValue,"User rating", attrMainChart, (value) => value.toFixed(2));
 
   //function to show graphs based on current selections
@@ -42,6 +45,7 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
     chartContent.html("");
     if (chartType === "minage") {
       const maxValue = getMaxMinAge(dataset);
+      infoAddText.style("display", "flex");
       createAdditionalBarchart(filteredData, chartContent, "minage", maxValue,"Minimum player age", attrMainChart, (value) => value);
     } else if (chartType === "players") {
       createDumbbellChart(filteredData, "minplayers", "maxplayers", chartContent, "Players");
@@ -49,11 +53,11 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
       createDumbbellChart(filteredData, "minplaytime", "maxplaytime", chartContent, "Playtime (min)");
     } else if (chartType === "rating") {
       const maxValue = 10;
+      infoAddText.style("display", "flex");
       createAdditionalBarchart(filteredData, chartContent, "rating", maxValue, "User rating", attrMainChart, (value) => value.toFixed(2));
     } else if (chartType === "categories") {
       createCategoriesChart(filteredData, chartContent);
     }
-    
   }
 
   //listener for show all selector
@@ -66,6 +70,7 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
     const chartType = d3.select(this).attr("data-chart");
     buttons.classed("active", false);
     d3.select(this).classed("active", true);
+    infoAddText.style("display", "none");
     showGraphs(chartType)
   });
 }
@@ -75,7 +80,7 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, a
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
   
-    const chartMargin = { top: 40, right: 50, bottom: 30, left: 180 };
+    const chartMargin = { top: 40, right: 40, bottom: 30, left: 160 };
     svgHeight = data.length * 25 + chartMargin.top + chartMargin.bottom;
   
     chartContainer.selectAll("*").remove();
@@ -214,7 +219,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
     
-    const margin = { top: 40, right: 50, bottom: 30, left: 180 };
+    const margin = { top: 40, right: 40, bottom: 30, left: 160 };
     svgHeight = data.length * 25 + margin.top + margin.bottom;
   
     chartContainer.selectAll("*").remove();
@@ -339,7 +344,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
     // Define dimensions and margins
     const width = chartContainer.node().getBoundingClientRect().width - 15;
     const height = counts.length * 20 + 100; 
-    const margin = { top: 40, right: 10, bottom: 30, left: 180 };
+    const margin = { top: 40, right: 40, bottom: 30, left: 160 };
   
     const svg = chartContainer
       .append("svg")

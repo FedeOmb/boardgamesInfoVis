@@ -2,7 +2,7 @@ var games = []
 var categoriesNetwork = []
 var mechanicsNetwork = []
 var designersNetwork = []
-var gamesNetwork = [];
+var gamesNetwork = {};
 
 const gameTitles = {};
 
@@ -30,14 +30,363 @@ function createDiagram(type) {
     else if (type === "mechanics") createChordDiagram(mechanicsNetwork);
 }
 
-function prepareData(dataset){
+
+function prepareData(dataset) {
+    const network = dataset;
+    //set per le categorie, meccaniche e designer che sono in comune in qualche gioco
+    const collaboratingIndividuals = new Set(); 
+    // mantiene per ogni id di un gioco gli id dei suoi designer, categorie o meccaniche
+    const gamesToIndividualsMap = {}; 
+
+    network.nodes.forEach(individual => {
+        individual.games.forEach(game => {
+            if (!gamesToIndividualsMap[game]) {
+                gamesToIndividualsMap[game] = [];
+            }
+            gamesToIndividualsMap[game].push(individual.id);
+        });
+    });
+    console.log("games to individual map", gamesToIndividualsMap);
+
+    //filtra i designer, categorie e meccaniche che sono in comune in un gioco
+    network.links.forEach(link => {
+        collaboratingIndividuals.add(link.source);
+        collaboratingIndividuals.add(link.target);
+    });
+    console.log("collaborating individuals2", collaboratingIndividuals); 
+
+    //trova la componente connessa più grande nella rete di collaborazioni
+    let largestComponent = new Set();
+    network.nodes.forEach(individual => {
+        let component = findConnectedComponent(individual.id, gamesToIndividualsMap);
+        //console.log("component", component);
+        if (component.size > largestComponent.size) {
+            largestComponent = component;
+        }
+    });
+    console.log("largest component", largestComponent); 
+    
+    //nodi componente connessa massima
+    let topIndividuals = network.nodes.filter(d => largestComponent.has(d.id));
+    
+    //se la componente è troppo piccola aggiunge altri nodi tra quelli che hanno più giochi
+    if (topIndividuals.length < 10) {
+        const additionalIndividuals = Array.from(collaboratingIndividuals)
+            .map(id => network.nodes.find(ind => ind.id === id))
+            .filter(ind => !largestComponent.has(ind.id)) // exclude ones we already have
+            .sort((a, b) => {
+                const aCount = Object.values(gamesToIndividualsMap).filter(ids => ids.includes(a.id)).length;
+                const bCount = Object.values(gamesToIndividualsMap).filter(ids => ids.includes(b.id)).length;
+                return bCount - aCount;
+            })
+            .slice(0, 10 - topIndividuals.length);
+        
+        topIndividuals = topIndividuals.concat(additionalIndividuals);
+    }
+    //ordina i nodi in base al numero di giochi e prende i primi 10
+    console.log("top individuals after adding new", topIndividuals);
+    topIndividuals.sort((a, b) => d3.descending(a.games.length, b.games.length));
+    console.log("top individuals sorted", topIndividuals);
+    topIndividuals = topIndividuals.slice(0, 10);
+    console.log("top individuals after slice", topIndividuals);
+
+    const topIndividualIds = new Set(topIndividuals.map(d => d.id));
+
+    // Filtra i link esistenti per mantenere solo quelli tra i top designers
+    var relevantLinks = network.links.filter(link => 
+        topIndividualIds.has(link.source) && topIndividualIds.has(link.target)
+    );
+
+    console.log("relevant links", relevantLinks);
+
+    relevantLinks = relevantLinks.map(link => {
+        const sourceNode = network.nodes.find(n => n.id === link.source);
+        const targetNode = network.nodes.find(n => n.id === link.target);
+        const commonGames = sourceNode.games.filter(game => 
+            targetNode.games.includes(game)
+        );
+        return {
+            ...link,
+            commonGames: commonGames
+        };
+    });
+    console.log("relevant links with common games", relevantLinks);
+
+    // Crea la matrice per il chord diagram
+    const nodeMap = new Map(topIndividuals.map((node, i) => [node.id, i]));
+    console.log("node map", nodeMap);
+    const matrix = Array.from({ length: topIndividuals.length }, () => 
+        Array.from({ length: topIndividuals.length }, () => 0)
+    );
+
+    // Popola la matrice usando i link filtrati
+    relevantLinks.forEach(link => {
+        const sourceIndex = nodeMap.get(link.source);
+        const targetIndex = nodeMap.get(link.target);
+        matrix[sourceIndex][targetIndex] = link.weight;
+        matrix[targetIndex][sourceIndex] = link.weight;
+    });
+    console.log("matrix", matrix);
+    console.log("refined nodes", topIndividuals);
+    console.log("link games", relevantLinks);   
+    return { nodes: topIndividuals, links: relevantLinks, matrix };
+}
+
+
+// Trova i gruppi di individui connessi
+function findConnectedComponent(startId, gamesToIndividualsMap) {
+    let visited = new Set();
+    let queue = [startId];
+
+    while (queue.length > 0) {
+        let current = queue.pop();
+        if (!visited.has(current)) {
+            visited.add(current);
+            // Aggiungi vicini alla coda
+            for (const game in gamesToIndividualsMap) {
+                if (gamesToIndividualsMap[game].includes(current)) {
+                    gamesToIndividualsMap[game].forEach(id => {
+                        if (!visited.has(id)) queue.push(id);
+                    });
+                }
+            }
+        }
+    }
+    return visited;
+}
+
+
+function createChordDiagram(network) {
+
+    const { nodes, links, matrix } = prepareData(network);
+    
+    const tooltip = d3.select("body")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("padding", "8px")
+        .style("background", "rgba(0, 0, 0, 0.7)")
+        .style("color", "white")
+        .style("border-radius", "5px")
+        .style("pointer-events", "none")
+        .style("font-size", "12px")
+        .style("visibility", "hidden");
+
+    d3.select("svg").selectAll("*")
+        .transition()
+        .duration(500)
+        .style("opacity", 0)
+        .remove();
+
+    //Create the chord diagram visualization
+    const cont = d3.select(".chord-container");
+    var contWidth = +cont.node().getBoundingClientRect().width;
+    var contHeight = +cont.node().getBoundingClientRect().height;
+
+    const margin = {top: 40, right: 20, bottom: 20, left: 20};
+    const svgWidth = Math.max(contWidth, 1000) 
+    const svgHeight = Math.max(contHeight, 560) 
+    const width = svgWidth - margin.left - margin.right;
+    const height = svgHeight - margin.top - margin.bottom;
+
+    cont.selectAll("*").remove();
+    const svg = cont.append("svg")
+        .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`)
+        .append("g")
+        .attr("transform", `translate(${width/2 + margin.left},${height/2 + margin.top})`);
+
+    const outerRadius = Math.min(width, height) * 0.5 - 50;
+    const innerRadius = outerRadius - 20;
+
+    const chord = d3.chord()
+        .padAngle(0.05)
+        .sortSubgroups(d3.descending)
+        .sortChords(d3.descending);
+
+    const arc = d3.arc()
+        .innerRadius(innerRadius)
+        .outerRadius(outerRadius);
+
+    const ribbon = d3.ribbon().radius(innerRadius);
+    const chords = chord(matrix);
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    svg.append("g")
+        .selectAll("path")
+        .data(chords)
+        .enter()
+        .append("path")
+        .attr("class", "ribbon")
+        .attr("d", ribbon)
+        .style("fill", d => color(d.source.index))
+        .style("stroke", d => d3.rgb(color(d.source.index)).darker())
+        .style("opacity", 0.8)
+        .on("mouseover", function (d) {
+            d3.select(this).style("opacity", 1);
+            tooltip.transition().duration(200).style("visibility", "visible");
+            //console.log("d", d);
+
+            const sourceId = nodes[d.source.index].id;
+            const targetId = nodes[d.target.index].id;
+
+            // Trova il link corrispondente
+            const link = links.find(l => 
+                (l.source === sourceId && l.target === targetId) ||
+                (l.source === targetId && l.target === sourceId)
+            );
+            //console.log("link", link);
+            
+            const commonGames = link.commonGames.map(id => ({
+                id: id,
+                title: gameTitles[id] || `Unknown Game (ID: ${id})`
+            }));
+            
+            const sourceName = nodes[d.source.index].name;
+            const targetName = nodes[d.target.index].name;
+            
+            // Format tooltip content
+            let tooltipContent = `<strong>Connection: ${sourceName} ↔ ${targetName}</strong><br>`;
+            tooltipContent += `<em>${commonGames.length} game(s) in common:</em><br><ul>`;
+            commonGames.forEach(game => {
+                tooltipContent += `<li>${game.title}</li>`;
+            });
+            tooltipContent += `</ul>`;
+
+            tooltip.html(tooltipContent)
+                .style("left", (d3.event.pageX + 10) + "px")
+                .style("top", (d3.event.pageY - 10) + "px");
+        })
+        .on("mouseout", function () {
+            d3.select(this).style("opacity", 0.8);
+            tooltip.transition().duration(500).style("visibility", "hidden");
+        });
+
+    svg.append("g")
+        .selectAll("g")
+        .data(chords.groups)
+        .enter()
+        .append("g")
+        .append("path")
+        .attr("d", arc)
+        .style("fill", d => color(d.index))
+        .style("stroke", d => d3.rgb(color(d.index)).darker())
+        .on("mouseover", function () {
+            const d = d3.select(this).datum();
+            const index = d.index;
+        
+            svg.selectAll(".ribbon")
+                .transition()
+                .duration(200)
+                .style("opacity", p => (p.source.index === index || p.target.index === index) ? 1 : 0.1);
+        })
+        .on("mouseout", function () {
+            svg.selectAll(".ribbon")
+                .transition()
+                .duration(200)
+                .style("opacity", 0.8);
+        });
+               
+    
+    // Add labels
+    svg.append("g")
+        .selectAll("text")
+        .data(chords.groups)
+        .enter()
+        .append("text")
+        .each(function(d) {
+            d.angle = (d.startAngle + d.endAngle) / 2;
+            d.name = nodes[d.index].name;
+            d.textAnchor = d.flipped ? "end" : "start";
+            d.rotate = d.angle * 180 / Math.PI - 90;
+            d.flipped = d.angle > Math.PI;
+            d.textLenght = d3.select(this).node().getComputedTextLength()
+        })
+        .attr("transform", d => `
+            rotate(${d.rotate})
+            translate(${outerRadius + 10})
+            ${d.flipped ? "rotate(180)" : ""}
+        `)
+        .attr("text-anchor", d => d.flipped ? "end" : null)
+        .attr("dy", "0.35em") 
+        .text(d => d.name) 
+        .style("font-size", "10px")
+        .style("font-family", "sans-serif")
+        .call(wrapText, 50, outerRadius)
+        .style("paint-order", "stroke")
+        .style("font-weight", "bold");
+
+    adjustForViewport(svg);  
+}
+
+
+function truncateName(name, maxLength = 15) {
+    return name.length > maxLength ? name.substring(0, maxLength) + '...' : name;
+}
+
+// Add this helper function for text wrapping
+function wrapText(text, width) {
+    text.each(function () {
+        var textElement = d3.select(this);
+        var words = textElement.text().split(/\s+/).reverse();
+        var word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // Spaziatura più uniforme
+            x = textElement.attr("x") || 0, // Mantieni la posizione x originale
+            y = textElement.attr("y") || 0, // Mantieni la posizione y originale
+            dy = parseFloat(textElement.attr("dy")) || 0,
+            tspan = textElement.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
+
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = textElement.append("tspan")
+                    .attr("x", x)
+                    .attr("y", y)
+                    .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                    .text(word);
+            }
+        }
+    });
+}
+
+// Add this adjustment to prevent screen cutting
+function adjustForViewport(svg, padding = 20) {
+    const bbox = svg.node().getBBox();
+    const width = +svg.attr("width");
+    const height = +svg.attr("height");
+    
+    // Check if any labels extend beyond viewport
+    svg.selectAll("text").each(function() {
+        const text = d3.select(this);
+        const textBBox = this.getBBox();
+        
+        // Calculate position relative to SVG
+        const x = textBBox.x + bbox.x;
+        const y = textBBox.y + bbox.y;
+        
+        // Adjust vertical position if needed
+        if (y < padding) {
+            text.attr("dy", padding - y + "px");
+        } else if (y + textBBox.height > height - padding) {
+            text.attr("dy", (height - padding - y - textBBox.height) + "px");
+        }
+    });
+}
+
+/*
+function prepareData_oldvers(dataset){
     const network = dataset;
     //set per le categorie, meccaniche e designer che sono in comune in qualche gioco
     const collaboratingIndividuals = new Set(); 
     // mapppa per i giochi le loro categorie, meccaniche e designer
+
     const gamesToIndividualsMap = {}; 
 
-    //per ogni gioco associa gli 
     network.nodes.forEach(individual => {
         individual.games.forEach(game => {
             if (!gamesToIndividualsMap[game]) {
@@ -54,21 +403,24 @@ function prepareData(dataset){
             individualIds.forEach(id => collaboratingIndividuals.add(id));
         }
     }
+
     console.log("collaborating individuals", collaboratingIndividuals); 
 
     let largestComponent = new Set();
     network.nodes.forEach(individual => {
         let component = findConnectedComponent(individual.id, gamesToIndividualsMap);
+        //console.log("component", component);
         if (component.size > largestComponent.size) {
             largestComponent = component;
         }
     });
     console.log("largest component", largestComponent); 
     
-    //componente connessa massima
+    //nodi componente connessa massima
     let topIndividuals = network.nodes.filter(d => largestComponent.has(d.id));
+    console.log("top individuals", topIndividuals);
     
-    //se la componente è troppo piccola aggiunge altri nodi
+    //se la componente è troppo piccola aggiunge altri nodi tra quelli che hanno più giochi
     if (topIndividuals.length < 10) {
         const additionalIndividuals = Array.from(collaboratingIndividuals)
             .map(id => network.nodes.find(ind => ind.id === id))
@@ -83,10 +435,14 @@ function prepareData(dataset){
         topIndividuals = topIndividuals.concat(additionalIndividuals);
     }
     console.log("top individuals", topIndividuals);
+    topIndividuals.sort((a, b) => d3.descending(a.games.length, b.games.length));
+    console.log("top individuals sorted", topIndividuals);
     topIndividuals = topIndividuals.slice(0, 10);
-
+    console.log("top individuals after slice", topIndividuals);
 
     const topIndividualIds = new Set(topIndividuals.map(d => d.id));
+    
+    //mappa che include solo i giochi collegati agli individui principali
     const filteredGamesToIndividuals = {};
 
     for (const game in gamesToIndividualsMap) {
@@ -174,243 +530,4 @@ function prepareData(dataset){
 
     return { refinedNodes, linkGames, matrix };
 }
-
-
-function createChordDiagram(network) {
-
-    const { refinedNodes, linkGames, matrix } = prepareData(network);
-
-    const tooltip = d3.select("body")
-        .append("div")
-        .attr("class", "tooltip")
-        .style("position", "absolute")
-        .style("padding", "8px")
-        .style("background", "rgba(0, 0, 0, 0.7)")
-        .style("color", "white")
-        .style("border-radius", "5px")
-        .style("pointer-events", "none")
-        .style("font-size", "12px")
-        .style("visibility", "hidden");
-
-    d3.select("svg").selectAll("*")
-        .transition()
-        .duration(500)
-        .style("opacity", 0)
-        .remove();
-
-
-
-    //Create the chord diagram visualization
-    const cont = d3.select(".chord-container");
-    var contWidth = +cont.node().getBoundingClientRect().width;
-    var contHeight = +cont.node().getBoundingClientRect().height;
-
-    const margin = {top: 40, right: 20, bottom: 20, left: 20};
-    const svgWidth = Math.max(contWidth, 1000) 
-    const svgHeight = Math.max(contHeight, 560) 
-    const width = svgWidth - margin.left - margin.right;
-    const height = svgHeight - margin.top - margin.bottom;
-
-    cont.selectAll("*").remove();
-    const svg = cont.append("svg")
-        .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`)
-        .append("g")
-        .attr("transform", `translate(${width/2 + margin.left},${height/2 + margin.top})`);
-
-    const outerRadius = Math.min(width, height) * 0.5 - 50;
-    const innerRadius = outerRadius - 20;
-
-    const chord = d3.chord()
-        .padAngle(0.05)
-        .sortSubgroups(d3.descending)
-        .sortChords(d3.descending);
-
-    const arc = d3.arc()
-        .innerRadius(innerRadius)
-        .outerRadius(outerRadius);
-
-    const ribbon = d3.ribbon().radius(innerRadius);
-    const chords = chord(matrix);
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-    svg.append("g")
-        .selectAll("path")
-        .data(chords)
-        .enter()
-        .append("path")
-        .attr("class", "ribbon")
-        .attr("d", ribbon)
-        .style("fill", d => color(d.source.index))
-        .style("stroke", d => d3.rgb(color(d.source.index)).darker())
-        .style("opacity", 0.8)
-        .on("mouseover", function (d) {
-            d3.select(this).style("opacity", 1);
-            tooltip.transition().duration(200).style("visibility", "visible");
-
-            const sourceId = refinedNodes[d.source.index].id;
-            const targetId = refinedNodes[d.target.index].id;
-            const linkKey = `${Math.min(sourceId, targetId)}-${Math.max(sourceId, targetId)}`;
-            
-            const commonGameIds = linkGames.get(linkKey) || [];
-            const commonGames = commonGameIds.map(id => ({
-                id: id,
-                title: gameTitles[id] || `Unknown Game (ID: ${id})`
-            }));
-            
-            const sourceName = refinedNodes[d.source.index].name;
-            const targetName = refinedNodes[d.target.index].name;
-            
-            // Format tooltip content
-            let tooltipContent = `<strong>Connection: ${sourceName} ↔ ${targetName}</strong><br>`;
-            tooltipContent += `<em>${commonGames.length} game(s) in common:</em><br><ul>`;
-            commonGames.forEach(game => {
-                tooltipContent += `<li>${game.title}</li>`;
-            });
-            tooltipContent += `</ul>`;
-
-            tooltip.html(tooltipContent)
-                .style("left", (d3.event.pageX + 10) + "px")
-                .style("top", (d3.event.pageY - 10) + "px");
-        })
-        .on("mouseout", function () {
-            d3.select(this).style("opacity", 0.8);
-            tooltip.transition().duration(500).style("visibility", "hidden");
-        });
-
-    svg.append("g")
-        .selectAll("g")
-        .data(chords.groups)
-        .enter()
-        .append("g")
-        .append("path")
-        .attr("d", arc)
-        .style("fill", d => color(d.index))
-        .style("stroke", d => d3.rgb(color(d.index)).darker())
-        .on("mouseover", function () {
-            const d = d3.select(this).datum();
-            const index = d.index;
-        
-            svg.selectAll(".ribbon")
-                .transition()
-                .duration(200)
-                .style("opacity", p => (p.source.index === index || p.target.index === index) ? 1 : 0.1);
-        })
-        .on("mouseout", function () {
-            svg.selectAll(".ribbon")
-                .transition()
-                .duration(200)
-                .style("opacity", 0.8);
-        });
-               
-    
-    // Add labels
-    svg.append("g")
-        .selectAll("text")
-        .data(chords.groups)
-        .enter()
-        .append("text")
-        .each(function(d) {
-            d.angle = (d.startAngle + d.endAngle) / 2;
-            d.name = refinedNodes[d.index].name;
-            d.textAnchor = d.flipped ? "end" : "start";
-            d.rotate = d.angle * 180 / Math.PI - 90;
-            d.flipped = d.angle > Math.PI;
-            d.textLenght = d3.select(this).node().getComputedTextLength()
-        })
-        .attr("transform", d => `
-            rotate(${d.rotate})
-            translate(${outerRadius + 10})
-            ${d.flipped ? "rotate(180)" : ""}
-        `)
-        .attr("text-anchor", d => d.flipped ? "end" : null)
-        .attr("dy", "0.35em") 
-        .text(d => d.name) 
-        .style("font-size", "10px")
-        .style("font-family", "sans-serif")
-        .call(wrapText, 50, outerRadius)
-        .style("paint-order", "stroke")
-        .style("font-weight", "bold");
-
-    adjustForViewport(svg);  
-}
-
-// Trova i gruppi di individui connessi
-function findConnectedComponent(startId, gamesToIndividualsMap) {
-    let visited = new Set();
-    let queue = [startId];
-
-    while (queue.length > 0) {
-        let current = queue.pop();
-        if (!visited.has(current)) {
-            visited.add(current);
-            // Aggiungi vicini alla coda
-            for (const game in gamesToIndividualsMap) {
-                if (gamesToIndividualsMap[game].includes(current)) {
-                    gamesToIndividualsMap[game].forEach(id => {
-                        if (!visited.has(id)) queue.push(id);
-                    });
-                }
-            }
-        }
-    }
-    return visited;
-}
-
-function truncateName(name, maxLength = 15) {
-    return name.length > maxLength ? name.substring(0, maxLength) + '...' : name;
-}
-
-// Add this helper function for text wrapping
-function wrapText(text, width) {
-    text.each(function () {
-        var textElement = d3.select(this);
-        var words = textElement.text().split(/\s+/).reverse();
-        var word,
-            line = [],
-            lineNumber = 0,
-            lineHeight = 1.1, // Spaziatura più uniforme
-            x = textElement.attr("x") || 0, // Mantieni la posizione x originale
-            y = textElement.attr("y") || 0, // Mantieni la posizione y originale
-            dy = parseFloat(textElement.attr("dy")) || 0,
-            tspan = textElement.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
-
-        while (word = words.pop()) {
-            line.push(word);
-            tspan.text(line.join(" "));
-            if (tspan.node().getComputedTextLength() > width) {
-                line.pop();
-                tspan.text(line.join(" "));
-                line = [word];
-                tspan = textElement.append("tspan")
-                    .attr("x", x)
-                    .attr("y", y)
-                    .attr("dy", ++lineNumber * lineHeight + dy + "em")
-                    .text(word);
-            }
-        }
-    });
-}
-
-// Add this adjustment to prevent screen cutting
-function adjustForViewport(svg, padding = 20) {
-    const bbox = svg.node().getBBox();
-    const width = +svg.attr("width");
-    const height = +svg.attr("height");
-    
-    // Check if any labels extend beyond viewport
-    svg.selectAll("text").each(function() {
-        const text = d3.select(this);
-        const textBBox = this.getBBox();
-        
-        // Calculate position relative to SVG
-        const x = textBBox.x + bbox.x;
-        const y = textBBox.y + bbox.y;
-        
-        // Adjust vertical position if needed
-        if (y < padding) {
-            text.attr("dy", padding - y + "px");
-        } else if (y + textBBox.height > height - padding) {
-            text.attr("dy", (height - padding - y - textBBox.height) + "px");
-        }
-    });
-}
+*/

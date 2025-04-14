@@ -242,6 +242,7 @@ span.chart-info {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
 }
 .info-add-text {
     display: none;

@@ -26,6 +26,18 @@ d3.select("#search-box").on("change", function() {
   }
 });
 
+//funzioni per regolare la posizione dei marker quando sono evidenziati i link
+function adjustMarkerEnd(strokeWidth) {
+  const marker = d3.select(`#arrow-end`);
+  marker.attr("refX", 7 + (strokeWidth)); 
+  return "url(#arrow-end)";
+}
+function adjustMarkerStart(strokeWidth) {
+    const marker = d3.select(`#arrow-start`);
+    marker.attr("refX", 1 - (strokeWidth )); 
+    return "url(#arrow-start)";
+}
+
 // Function to handle mouseover node event
 function handleMouseOver(event,d) {
   
@@ -48,14 +60,20 @@ function handleMouseOver(event,d) {
           .attr("stroke", "DarkSlateGrey")
           .attr("stroke-width", 2)
           .attr("opacity", 1)
-          .attr("marker-end", "url(#arrow-end)")
-          .attr("marker-start", "url(#arrow-start)"); // Keep marker-start for bidirectional
+          .attr("marker-end", function(){
+            return adjustMarkerEnd(2);
+          })
+          .attr("marker-start", function(){
+            return adjustMarkerStart(2);
+          }); // Keep marker-start for bidirectional
       } else if (l.source === d) {
         d3.select(this)
           .attr("stroke", "DarkSlateGrey")
           .attr("stroke-width", 2)
           .attr("opacity", 1)
-          .attr("marker-end", "url(#arrow-end)")
+          .attr("marker-end", function(){
+            return adjustMarkerEnd(2);
+          })
           .attr("marker-start", null);
       }
     });
@@ -100,8 +118,15 @@ function mouseEnterEdge(event,d) {
         .attr("stroke", "lime")
         .attr("stroke-width", 3)
         .attr("opacity", 1)
-        .attr("marker-end", "url(#arrow-end)")
-        .attr("marker-start", isBidirectional(d.source.id, d.target.id) ? "url(#arrow-start)" : null);
+        .attr("marker-end", function(){
+          return adjustMarkerEnd(3);
+        })
+        .attr("marker-start", function(){
+          if(isBidirectional(d.source.id, d.target.id)){
+            return adjustMarkerStart(3);
+        }
+          else {return null};
+    });
       // Evidenziamo anche i nodi collegati
       node.each(function (n) {
         if (n === d.source || n === d.target) {
@@ -174,6 +199,8 @@ function handleNodeClick(event,d) {
       .attr("stroke-width", 2)
       .attr("opacity", 1);
 
+
+
     // Evidenziamo i link in uscita e bidirezionali
     link.each(function (l) {
       if (l.source === d || (l.source === d || l.target === d && isBidirectional(l.source.id, l.target.id)) ) {
@@ -181,10 +208,19 @@ function handleNodeClick(event,d) {
           .attr("stroke", "DarkSlateGrey")
           .attr("stroke-width", 2)
           .attr("opacity", 1)
-          .attr("marker-end", "url(#arrow-end)")
-          .attr("marker-start", isBidirectional(l.source, l.target) ? "url(#arrow-start)" : null);
-      }
-    });
+          .attr("marker-end", function(){
+            return adjustMarkerEnd(2);
+          })
+          .attr("marker-start", function(){
+            if(isBidirectional(l.source, l.target)){
+              return adjustMarkerStart(2);
+          }
+            else {return null};
+      });
+    }
+  });
+
+
 
     // Evidenziamo i nodi collegati
     node.each(function (n) {

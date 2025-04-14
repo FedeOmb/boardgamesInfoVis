@@ -266,6 +266,13 @@ function handleNodeClick(event,d) {
     d3.select("#close-info-panel").on("click", () => {
       d3.select("#info-panel").style("display", "none");
       infoPanelVisible = false;
+      nodeLabels
+        .text(d => d.rank<6 ? getShortTitle(d.title) : "")
+        .style("display", "block")
+        .attr("dx", d => -radiusScale(d.rank)) 
+        .attr("dy", "0.35em");
+      labelsVisible = true
+      d3.select("#toggle-labels").text("Hide Labels");
       d3.select("body").classed("panel-open", false);
       svg.style("flex-basis", "100%");
       width = +svg.node().getBoundingClientRect().width;
@@ -317,6 +324,18 @@ function handleNodeClick(event,d) {
         createCategoriesChart(data, chartContent);
       }
     });
+
+    nodeLabels
+      .text(d => {
+        const node = data.find(n => n.id == d.id);
+        return node ? getShortTitle(node.title) : "";
+      })
+      .style("display", "block")
+      .attr("dx", d => -radiusScale(d.rank)) 
+      .attr("dy", "0.35em");
+
+    labelsVisible = true
+    d3.select("#toggle-labels").text("Hide Labels");
 
     function getMaxMinAge(dataset){
       return Math.max(...dataset.nodes.map(item => item.minage));

@@ -514,6 +514,13 @@ function updateTooltipPosition() {
 svg.on("click", function(event) {
   if (event.target.tagName !== "circle" && event.target.tagName !== "path" && infoPanelVisible) {
     infoPanelVisible = false
+    nodeLabels
+      .text(d => d.rank<6 ? getShortTitle(d.title) : "")
+      .style("display", "block")
+      .attr("dx", d => -radiusScale(d.rank)) 
+      .attr("dy", "0.35em");
+    labelsVisible = true
+    d3.select("#toggle-labels").text("Hide Labels");
     d3.select("body").classed("panel-open", false);
     d3.select("#info-panel").style("display", "none");
     const infoPanel = d3.select("#info-panel");

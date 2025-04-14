@@ -218,11 +218,11 @@ function handleNodeClick(event,d) {
   
     // Write game information
     var fans_liked = graph.links
-    .filter(l => l.source.id === d.id || (l.target.id === d.id && isBidirectional(l.source.id, l.target.id)))
-    .map(l => {
-        let otherId = l.source.id === d.id ? l.target.id : l.source.id;
-        return graph.nodes.find(n => n.id === otherId).title;
-    });
+      .filter(l => l.source.id === d.id || (l.target.id === d.id && isBidirectional(l.source.id, l.target.id)))
+      .map(l => {
+          let otherId = l.source.id === d.id ? l.target.id : l.source.id;
+          return graph.nodes.find(n => n.id === otherId).title;
+      });
     var colorScale = d3.scaleOrdinal().domain(types).range(custColDesaturated);
     d3.select("#node-header").style("background", colorScale(d.type[0]))
     d3.select("#game-title").html(`
@@ -236,14 +236,42 @@ function handleNodeClick(event,d) {
     d3.select("#node-header").select(".info-row:nth-child(3) .info-value").text(d.year);
     d3.select("#node-header").select(".info-row:nth-child(4) .info-value")
       .text(d.categories.map(c => c.name).join(" | "));
-    d3.select("#node-header").select(".info-row:nth-child(5) .info-value")
-      .text(d.mechanics.map(m => m.name).join(" | "));
+    const mecContainer = d3.select("#node-header").select(".info-row:nth-child(5) .info-value");
+    mecContainer.html(""); 
+    mec = d.mechanics.map(m => m.name)
+    const visibleCount = 3;
+    if(mec.length >= 3){
+      const shorMectList = mec.slice(0, visibleCount);
+      const remainingMecList = mec.slice(visibleCount);
+      mecContainer.html(`
+        <details>
+          <summary>${shorMectList.join(" | ")}</summary>
+          ${remainingMecList.join(" | ")}
+        </details>
+      `);
+    }else {
+      d3.select("#node-header").select(".info-row:nth-child(5) .info-value")
+        .text(mec.join(" | "));
+    }
     d3.select("#node-header").select(".info-row:nth-child(6) .info-value")
       .text(d.type.map(t => t).join(" | "));
     d3.select("#node-header").select(".info-row:nth-child(7) .info-value")
       .text(d.designer.map(des => des.name).join(" | "));
-    d3.select("#node-header").select(".info-row:nth-child(8) .info-value")
-      .text(fans_liked.join(" | "));
+    const fansContainer = d3.select("#node-header").select(".info-row:nth-child(8) .info-value");
+    fansContainer.html(""); 
+    if(fans_liked.length >=3){
+      const shortFanList = fans_liked.slice(0, visibleCount);
+      const remainingFanList = fans_liked.slice(visibleCount);
+      fansContainer.html(`
+        <details>
+          <summary>${shortFanList.join(" | ")}</summary>
+          ${remainingFanList.join(" | ")}
+        </details>
+      `);
+    }else{
+      d3.select("#node-header").select(".info-row:nth-child(8) .info-value")
+        .text(fans_liked.join(" | "));
+    }
   
     // Adjust SVG size and redraw hull if necessary
     svg.transition()

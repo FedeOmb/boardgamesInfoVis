@@ -125,6 +125,15 @@ html {
   .close-btn:hover {
     background: #a71d2a;
   }
+  .toggle-fans-btn {
+    background: none;
+    border: none;
+    color: #0077cc;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.9em;
+  }
+  
   #controls-wrapper {
     position: absolute;
     bottom: 20px;

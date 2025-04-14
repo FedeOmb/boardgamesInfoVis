@@ -5,111 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boardgames Project</title>
     <link rel="icon" sizes="16x16" href="icons/dado.png" />
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        header {
-            text-align: center;
-            width: 100%;
-            padding: 10px 0;  
-            box-sizing: border-box;
-            position: relative;  
-            top: 0;  
-            left: 0;  
-            right: 0;  
-            height: 60px;  
-            display: flex;
-            align-items: center;  
-            background-color: white;
-            border-radius: 6px;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-
-        header h1 {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #333;
-            margin: 0;
-            text-align: center;
-            margin-left: 20px;
-            flex-grow: 1;
-        }
-
-        .custom-button {
-            font-size: 16px;
-            text-decoration: none;
-            background-color: #007bff;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            position: absolute;
-            right: 20px; 
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .custom-button:hover {
-            background-color: #0056b3;
-        }
-
-        .main-container {
-            position:relative;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: flex-start; 
-            flex-direction: row;
-            gap: 20px;
-            margin-top: 10px;
-            width:90vw;
-            height:90vh;
-        }
-
-        .controls {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 70px;
-            flex-shrink: 0;
-            flex-grow: 1;
-            flex-basis:10%;
-        }
-
-        .chord-container {
-            background: white;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-grow: 1;
-            flex-shrink: 0;
-            flex-basis: 80%;
-            min-height:80vh;
-            min-width: 500px;
-        }
-
-        select {
-            margin:auto;
-            padding: 8px 12px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: white;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="docStyle_chorddiagram.css" />
 </head>
 <body>
     <header>
@@ -117,6 +13,7 @@
     </header> 
     <div class="main-container">
         <div class="controls">
+            <p class="info">This visualization shows connections beetween <strong>Top 10 Designers</strong> who have collaborated in a game as well as <strong>Top 10 Categories and Mechanics</strong> that are present in the same games</p>
             <label for="diagram">Choose Visualization:</label>
             <select name="diagram" id="diagram" onchange="createDiagram(this.value)">
                 <option value="designers">Designers</option>
@@ -129,7 +26,7 @@
         </div>
     </div>
 
-    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
     <script type="text/javascript" src="code/chorddiagram.js"></script>
 </body>
 </html>

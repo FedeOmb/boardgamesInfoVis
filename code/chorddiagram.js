@@ -1,8 +1,11 @@
-var games = []
-var categoriesNetwork = []
-var mechanicsNetwork = []
-var designersNetwork = []
+var games = [];
+var categoriesNetwork = [];
+var mechanicsNetwork = [];
+var designersNetwork = [];
 var gamesNetwork = {};
+var designersToVis = {};
+var categoriesToVis = {};
+var mechanicsToVis = {};
 
 const gameTitles = {};
 
@@ -21,13 +24,41 @@ Promise.all([
     mechanicsNetwork = mecData 
     designersNetwork = desData
 
-    createChordDiagram(designersNetwork);
+    //filtering designers data and inizializing chord diagram
+    let dataToVis = prepareData(designersNetwork);
+    createChordDiagram(dataToVis);
+    designersToVis = dataToVis;
 });
         
 function createDiagram(type) {
-    if (type === "designers") createChordDiagram(designersNetwork);
-    else if (type === "categories") createChordDiagram(categoriesNetwork);
-    else if (type === "mechanics") createChordDiagram(mechanicsNetwork);
+    if (type === "designers") {
+        if(!designersToVis.nodes){
+            let data = prepareData(designersNetwork);
+            createChordDiagram(data);
+            designersToVis = data;
+        }else{
+            createChordDiagram(designersToVis);
+        }
+    }
+    else if (type === "categories") {
+        if(!categoriesToVis.nodes){
+            let data = prepareData(categoriesNetwork);
+            createChordDiagram(data);
+            categoriesToVis = data;
+        }else{
+            createChordDiagram(categoriesToVis);
+        }
+    }   
+    else if (type === "mechanics") {
+        if(!mechanicsToVis.nodes){
+            let data = prepareData(mechanicsNetwork);
+
+            createChordDiagram(data);
+            mechanicsToVis = data;
+        }else{
+            createChordDiagram(mechanicsToVis);
+        }
+    }
 }
 
 
@@ -156,9 +187,9 @@ function findConnectedComponent(startId, gamesToIndividualsMap) {
 }
 
 
-function createChordDiagram(network) {
+function createChordDiagram(dataToVis) {
 
-    const { nodes, links, matrix } = prepareData(network);
+    const { nodes, links, matrix } = dataToVis;
     
     const tooltip = d3.select("body")
         .append("div")
@@ -172,27 +203,22 @@ function createChordDiagram(network) {
         .style("font-size", "12px")
         .style("visibility", "hidden");
 
-    d3.select("svg").selectAll("*")
-        .transition()
-        .duration(500)
-        .style("opacity", 0)
-        .remove();
-
     //Create the chord diagram visualization
     const cont = d3.select(".chord-container");
     var contWidth = +cont.node().getBoundingClientRect().width;
     var contHeight = +cont.node().getBoundingClientRect().height;
 
-    const margin = {top: 40, right: 20, bottom: 20, left: 20};
+    const margin = {top: 40, right: 40, bottom: 40, left: 40};
     const svgWidth = Math.max(contWidth, 1000) 
     const svgHeight = Math.max(contHeight, 560) 
     const width = svgWidth - margin.left - margin.right;
     const height = svgHeight - margin.top - margin.bottom;
 
     cont.selectAll("*").remove();
-    const svg = cont.append("svg")
+    const outerSvg = cont.append("svg")
         .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`)
-        .append("g")
+
+    const svg = outerSvg.append("g")
         .attr("transform", `translate(${width/2 + margin.left},${height/2 + margin.top})`);
 
     const outerRadius = Math.min(width, height) * 0.5 - 50;
@@ -211,6 +237,14 @@ function createChordDiagram(network) {
     const chords = chord(matrix);
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
+    var arcSelected = false;
+
+    const mousemove = function(event,d) {
+        tooltip
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px");
+    }
+    
     svg.append("g")
         .selectAll("path")
         .data(chords)
@@ -221,10 +255,11 @@ function createChordDiagram(network) {
         .style("fill", d => color(d.source.index))
         .style("stroke", d => d3.rgb(color(d.source.index)).darker())
         .style("opacity", 0.8)
-        .on("mouseover", function (d) {
-            d3.select(this).style("opacity", 1);
+        .on("mouseover", function (event,d) {
+            if(!arcSelected){
+                d3.select(this).style("opacity", 1);
+            }
             tooltip.transition().duration(200).style("visibility", "visible");
-            //console.log("d", d);
 
             const sourceId = nodes[d.source.index].id;
             const targetId = nodes[d.target.index].id;
@@ -234,7 +269,6 @@ function createChordDiagram(network) {
                 (l.source === sourceId && l.target === targetId) ||
                 (l.source === targetId && l.target === sourceId)
             );
-            //console.log("link", link);
             
             const commonGames = link.commonGames.map(id => ({
                 id: id,
@@ -251,13 +285,14 @@ function createChordDiagram(network) {
                 tooltipContent += `<li>${game.title}</li>`;
             });
             tooltipContent += `</ul>`;
-
             tooltip.html(tooltipContent)
-                .style("left", (d3.event.pageX + 10) + "px")
-                .style("top", (d3.event.pageY - 10) + "px");
+
         })
+        .on("mousemove", mousemove)
         .on("mouseout", function () {
+            if(!arcSelected){
             d3.select(this).style("opacity", 0.8);
+            }
             tooltip.transition().duration(500).style("visibility", "hidden");
         });
 
@@ -270,22 +305,56 @@ function createChordDiagram(network) {
         .attr("d", arc)
         .style("fill", d => color(d.index))
         .style("stroke", d => d3.rgb(color(d.index)).darker())
-        .on("mouseover", function () {
-            const d = d3.select(this).datum();
+        .on("mouseover", function (event,d) {
+            if(!arcSelected){
+                const index = d.index;
+                d3.select(this).style("fill", d => d3.rgb(color(index)).darker(0.5));
+                
+                svg.selectAll(".ribbon")
+                    .transition()
+                    .duration(200)
+                    .style("opacity", p => (p.source.index === index || p.target.index === index) ? 1 : 0.1);
+            }
+        })
+        .on("mouseout", function (event,d) {
+            if(!arcSelected){            
+                const index = d.index;
+                d3.select(this).style("fill", d => d3.rgb(color(index)));
+
+                svg.selectAll(".ribbon")
+                    .transition()
+                    .duration(200)
+                    .style("opacity", 0.8);
+            }
+        })
+        .on("click", function (event,d) {
             const index = d.index;
-        
+            
             svg.selectAll(".ribbon")
                 .transition()
                 .duration(200)
                 .style("opacity", p => (p.source.index === index || p.target.index === index) ? 1 : 0.1);
-        })
-        .on("mouseout", function () {
+            
+            arcSelected = true;
+        });
+
+    outerSvg.on("click", (event) => {
+        console.log("click", event.target);
+        if(event.target.tagName === "svg" ){
             svg.selectAll(".ribbon")
                 .transition()
                 .duration(200)
                 .style("opacity", 0.8);
+
+            svg.selectAll("path:not(.ribbon)")
+                .transition()
+                .duration(200)
+                .style("fill", d => color(d.index));
+
+            arcSelected = false;
+        }
         });
-               
+            
     
     // Add labels
     svg.append("g")
@@ -309,7 +378,7 @@ function createChordDiagram(network) {
         .attr("text-anchor", d => d.flipped ? "end" : null)
         .attr("dy", "0.35em") 
         .text(d => d.name) 
-        .style("font-size", "10px")
+        .style("font-size", "1rem")
         .style("font-family", "sans-serif")
         .call(wrapText, 50, outerRadius)
         .style("paint-order", "stroke")
@@ -355,7 +424,7 @@ function wrapText(text, width) {
 }
 
 // Add this adjustment to prevent screen cutting
-function adjustForViewport(svg, padding = 20) {
+function adjustForViewport(svg, padding = 40) {
     const bbox = svg.node().getBBox();
     const width = +svg.attr("width");
     const height = +svg.attr("height");

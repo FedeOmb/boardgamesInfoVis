@@ -9,53 +9,65 @@ var mechanicsToVis = {};
 
 const gameTitles = {};
 
+const tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("position", "absolute")
+    .style("padding", "8px")
+    .style("background", "rgba(0, 0, 0, 0.7)")
+    .style("color", "white")
+    .style("border-radius", "5px")
+    .style("pointer-events", "none")
+    .style("font-size", "12px")
+    .style("visibility", "hidden");
+
 Promise.all([
     d3.json("data/dataset_converted_cleaned_v2.json"),
     d3.json("data/categories_network.json"),
     d3.json("data/mechanics_network.json"),
     d3.json("data/designers_network.json")
-]).then(([data, catData, mecData, desData]) =>{
+]).then(([data, catData, mecData, desData]) => {
     games = data.nodes.map(game => ({ id: game.id, title: game.title }));
     games.forEach(game => {
         gameTitles[game.id] = game.title;
     })
     gamesNetwork = data;
     categoriesNetwork = catData
-    mechanicsNetwork = mecData 
+    mechanicsNetwork = mecData
     designersNetwork = desData
 
-    //filtering designers data and inizializing chord diagram
+    // filtra i dati dei designer e inizializza la visualizzazione
     let dataToVis = prepareData(designersNetwork);
     createChordDiagram(dataToVis);
     designersToVis = dataToVis;
 });
-        
+
 function createDiagram(type) {
     if (type === "designers") {
-        if(!designersToVis.nodes){
+        if (!designersToVis.nodes) {
             let data = prepareData(designersNetwork);
             createChordDiagram(data);
             designersToVis = data;
-        }else{
+        } else {
             createChordDiagram(designersToVis);
         }
     }
     else if (type === "categories") {
-        if(!categoriesToVis.nodes){
+        if (!categoriesToVis.nodes) {
             let data = prepareData(categoriesNetwork);
             createChordDiagram(data);
             categoriesToVis = data;
-        }else{
+        } else {
             createChordDiagram(categoriesToVis);
         }
-    }   
+    }
     else if (type === "mechanics") {
-        if(!mechanicsToVis.nodes){
+        if (!mechanicsToVis.nodes) {
             let data = prepareData(mechanicsNetwork);
 
             createChordDiagram(data);
             mechanicsToVis = data;
-        }else{
+        } else {
             createChordDiagram(mechanicsToVis);
         }
     }
@@ -65,9 +77,9 @@ function createDiagram(type) {
 function prepareData(dataset) {
     const network = dataset;
     //set per le categorie, meccaniche e designer che sono in comune in qualche gioco
-    const collaboratingIndividuals = new Set(); 
+    const collaboratingIndividuals = new Set();
     // mantiene per ogni id di un gioco gli id dei suoi designer, categorie o meccaniche
-    const gamesToIndividualsMap = {}; 
+    const gamesToIndividualsMap = {};
 
     network.nodes.forEach(individual => {
         individual.games.forEach(game => {
@@ -84,7 +96,7 @@ function prepareData(dataset) {
         collaboratingIndividuals.add(link.source);
         collaboratingIndividuals.add(link.target);
     });
-    console.log("collaborating individuals2", collaboratingIndividuals); 
+    console.log("collaborating individuals2", collaboratingIndividuals);
 
     //trova la componente connessa più grande nella rete di collaborazioni
     let largestComponent = new Set();
@@ -95,11 +107,11 @@ function prepareData(dataset) {
             largestComponent = component;
         }
     });
-    console.log("largest component", largestComponent); 
-    
+    console.log("largest component", largestComponent);
+
     //nodi componente connessa massima
     let topIndividuals = network.nodes.filter(d => largestComponent.has(d.id));
-    
+
     //se la componente è troppo piccola aggiunge altri nodi tra quelli che hanno più giochi
     if (topIndividuals.length < 10) {
         const additionalIndividuals = Array.from(collaboratingIndividuals)
@@ -111,7 +123,7 @@ function prepareData(dataset) {
                 return bCount - aCount;
             })
             .slice(0, 10 - topIndividuals.length);
-        
+
         topIndividuals = topIndividuals.concat(additionalIndividuals);
     }
     //ordina i nodi in base al numero di giochi e prende i primi 10
@@ -124,7 +136,7 @@ function prepareData(dataset) {
     const topIndividualIds = new Set(topIndividuals.map(d => d.id));
 
     // Filtra i link esistenti per mantenere solo quelli tra i top designers
-    var relevantLinks = network.links.filter(link => 
+    var relevantLinks = network.links.filter(link =>
         topIndividualIds.has(link.source) && topIndividualIds.has(link.target)
     );
 
@@ -133,7 +145,7 @@ function prepareData(dataset) {
     relevantLinks = relevantLinks.map(link => {
         const sourceNode = network.nodes.find(n => n.id === link.source);
         const targetNode = network.nodes.find(n => n.id === link.target);
-        const commonGames = sourceNode.games.filter(game => 
+        const commonGames = sourceNode.games.filter(game =>
             targetNode.games.includes(game)
         );
         return {
@@ -146,7 +158,7 @@ function prepareData(dataset) {
     // Crea la matrice per il chord diagram
     const nodeMap = new Map(topIndividuals.map((node, i) => [node.id, i]));
     console.log("node map", nodeMap);
-    const matrix = Array.from({ length: topIndividuals.length }, () => 
+    const matrix = Array.from({ length: topIndividuals.length }, () =>
         Array.from({ length: topIndividuals.length }, () => 0)
     );
 
@@ -159,7 +171,7 @@ function prepareData(dataset) {
     });
     console.log("matrix", matrix);
     console.log("refined nodes", topIndividuals);
-    console.log("link games", relevantLinks);   
+    console.log("link games", relevantLinks);
     return { nodes: topIndividuals, links: relevantLinks, matrix };
 }
 
@@ -186,31 +198,17 @@ function findConnectedComponent(startId, gamesToIndividualsMap) {
     return visited;
 }
 
-
 function createChordDiagram(dataToVis) {
-
-    const { nodes, links, matrix } = dataToVis;
     
-    const tooltip = d3.select("body")
-        .append("div")
-        .attr("class", "tooltip")
-        .style("position", "absolute")
-        .style("padding", "8px")
-        .style("background", "rgba(0, 0, 0, 0.7)")
-        .style("color", "white")
-        .style("border-radius", "5px")
-        .style("pointer-events", "none")
-        .style("font-size", "12px")
-        .style("visibility", "hidden");
+    const { nodes, links, matrix } = dataToVis;
 
-    //Create the chord diagram visualization
     const cont = d3.select(".chord-container");
     var contWidth = +cont.node().getBoundingClientRect().width;
     var contHeight = +cont.node().getBoundingClientRect().height;
 
-    const margin = {top: 40, right: 40, bottom: 40, left: 40};
-    const svgWidth = Math.max(contWidth, 1000) 
-    const svgHeight = Math.max(contHeight, 560) 
+    const margin = { top: 40, right: 40, bottom: 40, left: 40 };
+    const svgWidth = Math.max(contWidth, 1000)
+    const svgHeight = Math.max(contHeight, 560)
     const width = svgWidth - margin.left - margin.right;
     const height = svgHeight - margin.top - margin.bottom;
 
@@ -219,7 +217,7 @@ function createChordDiagram(dataToVis) {
         .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`)
 
     const svg = outerSvg.append("g")
-        .attr("transform", `translate(${width/2 + margin.left},${height/2 + margin.top})`);
+        .attr("transform", `translate(${width / 2 + margin.left},${height / 2 + margin.top})`);
 
     const outerRadius = Math.min(width, height) * 0.5 - 50;
     const innerRadius = outerRadius - 20;
@@ -239,12 +237,13 @@ function createChordDiagram(dataToVis) {
 
     var arcSelected = false;
 
-    const mousemove = function(event,d) {
+    const mousemove = function (event, d) {
         tooltip
-        .style("left", (event.pageX + 10) + "px")
-        .style("top", (event.pageY - 10) + "px");
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 10) + "px");
     }
-    
+
+    //disegna i collegamenti nel chord diagram
     svg.append("g")
         .selectAll("path")
         .data(chords)
@@ -255,8 +254,8 @@ function createChordDiagram(dataToVis) {
         .style("fill", d => color(d.source.index))
         .style("stroke", d => d3.rgb(color(d.source.index)).darker())
         .style("opacity", 0.8)
-        .on("mouseover", function (event,d) {
-            if(!arcSelected){
+        .on("mouseover", function (event, d) {
+            if (!arcSelected) {
                 d3.select(this).style("opacity", 1);
             }
             tooltip.transition().duration(200).style("visibility", "visible");
@@ -264,21 +263,20 @@ function createChordDiagram(dataToVis) {
             const sourceId = nodes[d.source.index].id;
             const targetId = nodes[d.target.index].id;
 
-            // Trova il link corrispondente
-            const link = links.find(l => 
+            // Trova il link corrispondente e ottieni i giochi in comune
+            const link = links.find(l =>
                 (l.source === sourceId && l.target === targetId) ||
                 (l.source === targetId && l.target === sourceId)
             );
-            
+
             const commonGames = link.commonGames.map(id => ({
                 id: id,
                 title: gameTitles[id] || `Unknown Game (ID: ${id})`
             }));
-            
+
             const sourceName = nodes[d.source.index].name;
             const targetName = nodes[d.target.index].name;
-            
-            // Format tooltip content
+
             let tooltipContent = `<strong>Connection: ${sourceName} ↔ ${targetName}</strong><br>`;
             tooltipContent += `<em>${commonGames.length} game(s) in common:</em><br><ul>`;
             commonGames.forEach(game => {
@@ -286,38 +284,39 @@ function createChordDiagram(dataToVis) {
             });
             tooltipContent += `</ul>`;
             tooltip.html(tooltipContent)
-
         })
         .on("mousemove", mousemove)
         .on("mouseout", function () {
-            if(!arcSelected){
-            d3.select(this).style("opacity", 0.8);
+            if (!arcSelected) {
+                d3.select(this).style("opacity", 0.8);
             }
             tooltip.transition().duration(500).style("visibility", "hidden");
         });
-
+    
+    // disegna gli archi circolari
     svg.append("g")
         .selectAll("g")
         .data(chords.groups)
         .enter()
         .append("g")
         .append("path")
+        .attr("class", "arc")
         .attr("d", arc)
         .style("fill", d => color(d.index))
         .style("stroke", d => d3.rgb(color(d.index)).darker())
-        .on("mouseover", function (event,d) {
-            if(!arcSelected){
+        .on("mouseover", function (event, d) {
+            if (!arcSelected) {
                 const index = d.index;
                 d3.select(this).style("fill", d => d3.rgb(color(index)).darker(0.5));
-                
+
                 svg.selectAll(".ribbon")
                     .transition()
                     .duration(200)
                     .style("opacity", p => (p.source.index === index || p.target.index === index) ? 1 : 0.1);
             }
         })
-        .on("mouseout", function (event,d) {
-            if(!arcSelected){            
+        .on("mouseout", function (event, d) {
+            if (!arcSelected) {
                 const index = d.index;
                 d3.select(this).style("fill", d => d3.rgb(color(index)));
 
@@ -327,42 +326,27 @@ function createChordDiagram(dataToVis) {
                     .style("opacity", 0.8);
             }
         })
-        .on("click", function (event,d) {
+        .on("click", function (event, d) {
             const index = d.index;
-            
+            svg.selectAll(".arc").style("fill", d => color(d.index));
+
+            d3.select(this).style("fill", d => d3.rgb(color(index)).darker(0.5));
+
             svg.selectAll(".ribbon")
                 .transition()
                 .duration(200)
                 .style("opacity", p => (p.source.index === index || p.target.index === index) ? 1 : 0.1);
-            
+
             arcSelected = true;
         });
 
-    outerSvg.on("click", (event) => {
-        console.log("click", event.target);
-        if(event.target.tagName === "svg" ){
-            svg.selectAll(".ribbon")
-                .transition()
-                .duration(200)
-                .style("opacity", 0.8);
-
-            svg.selectAll("path:not(.ribbon)")
-                .transition()
-                .duration(200)
-                .style("fill", d => color(d.index));
-
-            arcSelected = false;
-        }
-        });
-            
-    
-    // Add labels
+    // aggiunge le etichette per gli elementi agli archi
     svg.append("g")
         .selectAll("text")
         .data(chords.groups)
         .enter()
         .append("text")
-        .each(function(d) {
+        .each(function (d) {
             d.angle = (d.startAngle + d.endAngle) / 2;
             d.name = nodes[d.index].name;
             d.textAnchor = d.flipped ? "end" : "start";
@@ -376,15 +360,33 @@ function createChordDiagram(dataToVis) {
             ${d.flipped ? "rotate(180)" : ""}
         `)
         .attr("text-anchor", d => d.flipped ? "end" : null)
-        .attr("dy", "0.35em") 
-        .text(d => d.name) 
-        .style("font-size", "1rem")
+        .attr("dy", "0.35em")
+        .text(d => d.name)
+        .style("font-size", "0.7rem")
         .style("font-family", "sans-serif")
-        .call(wrapText, 50, outerRadius)
+        .call(wrapArcText, 50, outerRadius)
         .style("paint-order", "stroke")
         .style("font-weight", "bold");
 
-    adjustForViewport(svg);  
+    // listener per i click sulle aree vuote dell'svg
+    outerSvg.on("click", (event) => {
+        console.log("click", event.target);
+        if (event.target.tagName === "svg") {
+            svg.selectAll(".ribbon")
+                .transition()
+                .duration(200)
+                .style("opacity", 0.8);
+
+            svg.selectAll(".arc")
+                .transition()
+                .duration(200)
+                .style("fill", d => color(d.index));
+
+            arcSelected = false;
+        }
+    });
+
+    adjustForViewport(svg);
 }
 
 
@@ -393,7 +395,7 @@ function truncateName(name, maxLength = 15) {
 }
 
 // Add this helper function for text wrapping
-function wrapText(text, width) {
+function wrapArcText(text, width) {
     text.each(function () {
         var textElement = d3.select(this);
         var words = textElement.text().split(/\s+/).reverse();
@@ -428,16 +430,16 @@ function adjustForViewport(svg, padding = 40) {
     const bbox = svg.node().getBBox();
     const width = +svg.attr("width");
     const height = +svg.attr("height");
-    
+
     // Check if any labels extend beyond viewport
-    svg.selectAll("text").each(function() {
+    svg.selectAll("text").each(function () {
         const text = d3.select(this);
         const textBBox = this.getBBox();
-        
+
         // Calculate position relative to SVG
         const x = textBBox.x + bbox.x;
         const y = textBBox.y + bbox.y;
-        
+
         // Adjust vertical position if needed
         if (y < padding) {
             text.attr("dy", padding - y + "px");

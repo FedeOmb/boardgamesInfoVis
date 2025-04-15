@@ -26,6 +26,7 @@ function updateSize() {
 
   simulation.force("center", d3.forceCenter(width / 2, height / 2));
   simulation.alpha(0).restart();
+  console.log("update size", width, height)
 }
 
 var networkGroup = svg.append("g").attr("class", "network-group");
@@ -88,16 +89,6 @@ d3.json("data/dataset_converted_cleaned_v2.json").then((data) =>{
   addLegend();
 
   addSearchBar();
-
-  window.addEventListener("message", function(event) {
-    // Verifica l'origine del messaggio se necessario
-    // if (event.origin !== "http://tuo-dominio.com") return;
-    console.log("message received",event.data);
-    
-    if (event.data.action === "openNode" && event.data.gameId) {
-      openNodeById(event.data.gameId);
-    }
-  });
 });
 
 const titleToIdMap = {};
@@ -454,6 +445,39 @@ function ticked() {
     .attr("y", d => d.y);
 }
 
+//chiude il pannello info al click su un area vuota
+svg.on("click", function(event) {
+  if (event.target.tagName !== "circle" && event.target.tagName !== "path" && infoPanelVisible) {
+    infoPanelVisible = false
+    nodeLabels
+      .text(d => d.rank<6 ? getShortTitle(d.title) : "")
+      .style("display", "block")
+      .attr("dx", d => -radiusScale(d.rank)) 
+      .attr("dy", "0.35em");
+    labelsVisible = true
+    d3.select("#toggle-labels").text("Hide Labels");
+    d3.select("body").classed("panel-open", false);
+    d3.select("#info-panel").style("display", "none");
+    const infoPanel = d3.select("#info-panel");
+    infoPanel.style("display", "none");
+
+    svg.transition()
+    .duration(100)
+    .style("flex-basis", "100%");
+
+    updateSize()
+    resetNetColors()
+    // Redraw the hull if it was visible
+    if (activeHull !== null) {
+      const hull = computeSingleHull(graph.nodes, activeHull);
+      drawSingleHull(svg, hull, activeHull);
+    }
+
+
+    window.history.replaceState({}, '', `${window.location.pathname}`);
+  }
+});
+
 function adjustLinkStart(source, target, radius) {
   const dx = target.x - source.x;
   const dy = target.y - source.y;
@@ -510,34 +534,7 @@ function updateTooltipPosition() {
     .style("top", (event.pageY + 10) + "px");
 };
 
-//chiude il pannello info al click su un area vuota
-svg.on("click", function(event) {
-  if (event.target.tagName !== "circle" && event.target.tagName !== "path" && infoPanelVisible) {
-    infoPanelVisible = false
-    nodeLabels
-      .text(d => d.rank<6 ? getShortTitle(d.title) : "")
-      .style("display", "block")
-      .attr("dx", d => -radiusScale(d.rank)) 
-      .attr("dy", "0.35em");
-    labelsVisible = true
-    d3.select("#toggle-labels").text("Hide Labels");
-    d3.select("body").classed("panel-open", false);
-    d3.select("#info-panel").style("display", "none");
-    const infoPanel = d3.select("#info-panel");
-    infoPanel.style("display", "none");
-    svg.style("flex-basis", "100%");
-    width = +svg.node().getBoundingClientRect().width;
-    updateSize()
-    resetNetColors()
-    // Redraw the hull if it was visible
-    if (activeHull !== null) {
-      const hull = computeSingleHull(graph.nodes, activeHull);
-      drawSingleHull(svg, hull, activeHull);
-    }
 
-    window.history.replaceState({}, '', `${window.location.pathname}`);
-  }
-});
 
 // Helper function to check if two nodes are adjacent
 function isAdjacent(source, target) {

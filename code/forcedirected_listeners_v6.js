@@ -180,6 +180,21 @@ function mouseLeaveEdge(event, d) {
     tooltip.style("visibility", "hidden");
   }
 
+function centerNode(node) {
+  width = +svg.node().getBoundingClientRect().width;
+  height = +svg.node().getBoundingClientRect().height;
+  const scale = d3.zoomTransform(svg.node()).k; // mantiene lo zoom corrente
+  const x = -node.x * scale + width/2;
+  const y = -node.y * scale + height/2;
+  
+  svg.transition()
+    .duration(200)
+    .call(zoom.transform, d3.zoomIdentity
+        .translate(x, y)
+        .scale(scale)
+    );
+}
+
 function handleNodeClick(event,d) {
     
     infoPanelVisible = true;
@@ -311,13 +326,12 @@ function handleNodeClick(event,d) {
   
     // Adjust SVG size and redraw hull if necessary
     svg.transition()
-        .duration(150)
+        .duration(100)
         .style("flex-basis", "70%")
         .on("end", function() {
-            width = +svg.node().getBoundingClientRect().width;
-            height = +svg.node().getBoundingClientRect().height;
-            updateSize(); // Update the simulation and center force
-        });
+            //updateSize(); // Update the simulation and center force
+            setTimeout(() => centerNode(d), 100);
+          });
   
     if (activeHull !== null) {
       const hull = computeSingleHull(graph.nodes, activeHull);
@@ -405,4 +419,5 @@ function handleNodeClick(event,d) {
       return Math.max(...dataset.nodes.map(item => item.minage));
     }
 }
+
 

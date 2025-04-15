@@ -26,6 +26,7 @@ function updateSize() {
 
   simulation.force("center", d3.forceCenter(width / 2, height / 2));
   simulation.alpha(0).restart();
+  console.log("update size", width, height)
 }
 
 var networkGroup = svg.append("g").attr("class", "network-group");

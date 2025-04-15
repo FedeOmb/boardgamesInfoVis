@@ -1,3 +1,5 @@
+svg = d3.select("svg");
+
 // Funzioni zoom
 d3.select("#zoom-in").on("click", function() {
     svg.transition().call(zoom.scaleBy, 1.2);
@@ -140,9 +142,6 @@ function mouseEnterEdge(event,d) {
   
     // Mostra tooltip
     tooltip.style("visibility", "visible");
-  
-  
-    // Show tooltip
     tooltip.transition().duration(200).style("opacity", 0.9);
 
     if (isBidirectional(sourceNode.id, targetNode.id)) {
@@ -199,8 +198,6 @@ function handleNodeClick(event,d) {
       .attr("stroke-width", 2)
       .attr("opacity", 1);
 
-
-
     // Evidenziamo i link in uscita e bidirezionali
     link.each(function (l) {
       if (l.source === d || (l.source === d || l.target === d && isBidirectional(l.source.id, l.target.id)) ) {
@@ -219,8 +216,6 @@ function handleNodeClick(event,d) {
       });
     }
   });
-
-
 
     // Evidenziamo i nodi collegati
     node.each(function (n) {
@@ -263,16 +258,17 @@ function handleNodeClick(event,d) {
     d3.select("#node-header").style("background", colorScale(d.type[0]))
     d3.select("#game-title").html(`
       ${d.title}
+    `); 
+    d3.select("#game-image").html(`      
       <img src="./game_thumbnails/${d.id}.jpg"
-           alt="${d.title} image"
-           style="height: 3em; margin-left: 0.5em; vertical-align: middle;"
-           onerror="this.style.display='none';">
-    `);    
+      alt="${d.title} image"
+      onerror="this.style.display='none';">
+      `);   
     d3.select("#game-rank").html(`<strong>Rank:</strong> ${d.rank}`);
-    d3.select("#node-header").select(".info-row:nth-child(3) .info-value").text(d.year);
-    d3.select("#node-header").select(".info-row:nth-child(4) .info-value")
+    d3.select("#node-header").select(".info-row:nth-child(2) .info-value").text(d.year);
+    d3.select("#node-header").select(".info-row:nth-child(3) .info-value")
       .text(d.categories.map(c => c.name).join(" | "));
-    const mecContainer = d3.select("#node-header").select(".info-row:nth-child(5) .info-value");
+    const mecContainer = d3.select("#node-header").select(".info-row:nth-child(4) .info-value");
     mecContainer.html(""); 
     mec = d.mechanics.map(m => m.name)
     const visibleCount = 3;
@@ -281,41 +277,39 @@ function handleNodeClick(event,d) {
       const remainingMecList = mec.slice(visibleCount);
       mecContainer.html(`
         <details>
-          <summary>${shorMectList.join(" | ")}</summary>
+          <summary><strong>(Show all)</strong> ${shorMectList.join(" | ")}</summary>
           ${remainingMecList.join(" | ")}
         </details>
       `);
     }else {
-      d3.select("#node-header").select(".info-row:nth-child(5) .info-value")
+      d3.select("#node-header").select(".info-row:nth-child(4) .info-value")
         .text(mec.join(" | "));
     }
-    d3.select("#node-header").select(".info-row:nth-child(6) .info-value")
+    d3.select("#node-header").select(".info-row:nth-child(5) .info-value")
       .text(d.type.map(t => t).join(" | "));
-    d3.select("#node-header").select(".info-row:nth-child(7) .info-value")
+    d3.select("#node-header").select(".info-row:nth-child(6) .info-value")
       .text(d.designer.map(des => des.name).join(" | "));
-    const fansContainer = d3.select("#node-header").select(".info-row:nth-child(8) .info-value");
+    const fansContainer = d3.select("#node-header").select(".info-row:nth-child(7) .info-value");
     fansContainer.html(""); 
     if(fans_liked.length >=3){
       const shortFanList = fans_liked.slice(0, visibleCount);
       const remainingFanList = fans_liked.slice(visibleCount);
       fansContainer.html(`
         <details>
-          <summary>${shortFanList.join(" | ")}</summary>
+          <summary><strong>(Show all)</strong> ${shortFanList.join(" | ")}</summary>
           ${remainingFanList.join(" | ")}
         </details>
       `);
     }else{
-      d3.select("#node-header").select(".info-row:nth-child(8) .info-value")
+      d3.select("#node-header").select(".info-row:nth-child(7) .info-value")
         .text(fans_liked.join(" | "));
     }
   
     // Adjust SVG size and redraw hull if necessary
     svg.transition()
-        .duration(150)
+        .duration(100)
         .style("flex-basis", "70%")
         .on("end", function() {
-            width = +svg.node().getBoundingClientRect().width;
-            height = +svg.node().getBoundingClientRect().height;
             updateSize(); // Update the simulation and center force
         });
   
@@ -326,27 +320,10 @@ function handleNodeClick(event,d) {
   
     d3.select("#node-details").html("");
     d3.select("#info-panel").style("position", "relative");
-  
+    
+    //listener click tasto chiusura info panel
     d3.select("#close-info-panel").on("click", () => {
-      d3.select("#info-panel").style("display", "none");
-      infoPanelVisible = false;
-      nodeLabels
-        .text(d => d.rank<6 ? getShortTitle(d.title) : "")
-        .style("display", "block")
-        .attr("dx", d => -radiusScale(d.rank)) 
-        .attr("dy", "0.35em");
-      labelsVisible = true
-      d3.select("#toggle-labels").text("Hide Labels");
-      d3.select("body").classed("panel-open", false);
-      svg.style("flex-basis", "100%");
-      width = +svg.node().getBoundingClientRect().width;
-      height = +svg.node().getBoundingClientRect().height;
-      updateSize();
-      resetNetColors();
-      if (activeHull !== null) {
-        const hull = computeSingleHull(graph.nodes, activeHull);
-        drawSingleHull(svg, hull, activeHull);
-      }
+      closeInfoPanel();
     });
   
     d3.select("#chart-content").html("");
@@ -370,19 +347,15 @@ function handleNodeClick(event,d) {
         data.sort((a, b) => d3.descending(a.rating, b.rating));
         const maxValue = 10;
         createAdditionalBarchart(data, chartContent, "rating", maxValue, "Rating", "network",(value) => value.toFixed(2));
-        //createRatingChart(data);
       }else if (chartType === "minage") {
         data.sort((a, b) => d3.descending(a.minage, b.minage));
         const maxValue = getMaxMinAge(graph);
         createAdditionalBarchart(data, chartContent, "minage", maxValue, "Min Age", "network",(value) => value);
-        //createMinAgeChart(data);
       } else if (chartType === "players") {
         data.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
-        //createDumbbellChart_old(data, "minplayers", "maxplayers", "#chart-content", "Players", neighbors.length);
         createDumbbellChart(data, "minplayers", "maxplayers", chartContent, "Players");
       } else if (chartType === "playtime") {
         data.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
-        //createDumbbellChart_old(data, "minplaytime", "maxplaytime", "#chart-content", "Playtime (min)", neighbors.length);
         createDumbbellChart(data, "minplaytime", "maxplaytime", chartContent, "Playtime (min)");     
       } else if (chartType === "categories") {
         createCategoriesChart(data, chartContent);
@@ -406,3 +379,34 @@ function handleNodeClick(event,d) {
     }
 }
 
+//listener che chiude l'info panel al click su un area vuota
+svg.on("click", function(event) {
+  if (event.target.tagName !== "circle" && event.target.tagName !== "path" && infoPanelVisible) {
+    closeInfoPanel();
+  }
+});
+
+function closeInfoPanel(){
+  infoPanelVisible = false
+  nodeLabels
+    .text(d => d.rank<6 ? getShortTitle(d.title) : "")
+    .style("display", "block")
+    .attr("dx", d => -radiusScale(d.rank)) 
+    .attr("dy", "0.35em");
+  labelsVisible = true
+  d3.select("#toggle-labels").text("Hide Labels");
+  d3.select("body").classed("panel-open", false);
+  d3.select("#info-panel").style("display", "none");
+
+  svg.style("flex-basis", "100%");
+
+  updateSize()
+  resetNetColors()
+  // Redraw the hull if it was visible
+  if (activeHull !== null) {
+    const hull = computeSingleHull(graph.nodes, activeHull);
+    drawSingleHull(svg, hull, activeHull);
+  }
+
+  window.history.replaceState({}, '', `${window.location.pathname}`);
+}

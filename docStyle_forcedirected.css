@@ -264,6 +264,38 @@ html {
     font-size: 1.3em;
   }
 
+  #game-title-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    height: auto;
+    max-height:8em;
+    gap:5px;
+    margin-bottom: 5px;
+  }
+  #game-title-rank {
+    flex-basis: 70%;
+    height:100%;
+  }
+  #game-title-rank h2 {
+    margin: 0 0 5px 0;
+    font-size: 1.7em;
+    color: #333;
+  }
+  #game-image {
+    flex-basis: 30%;
+    height:100%;
+    position: relative;
+
+  }
+  #game-image img {
+    height: 100%;
+    max-height: 7em;
+    border-radius: 6px;
+    margin-right:5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
   .info-row {
     display: flex;
     justify-content: space-between;

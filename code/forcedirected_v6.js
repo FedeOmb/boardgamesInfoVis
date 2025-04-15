@@ -89,15 +89,6 @@ d3.json("data/dataset_converted_cleaned_v2.json").then((data) =>{
 
   addSearchBar();
 
-  window.addEventListener("message", function(event) {
-    // Verifica l'origine del messaggio se necessario
-    // if (event.origin !== "http://tuo-dominio.com") return;
-    console.log("message received",event.data);
-    
-    if (event.data.action === "openNode" && event.data.gameId) {
-      openNodeById(event.data.gameId);
-    }
-  });
 });
 
 const titleToIdMap = {};
@@ -498,46 +489,11 @@ window.addEventListener("resize", () => {
   updateForces();
 });
 
-// convenience function to update everything (run after UI input)
-function updateAll() {
-  updateForces();
-  updateDisplay();
-}
-
 function updateTooltipPosition() {
   tooltip
     .style("left", (event.pageX - 40) + "px")
     .style("top", (event.pageY + 10) + "px");
 };
-
-//chiude il pannello info al click su un area vuota
-svg.on("click", function(event) {
-  if (event.target.tagName !== "circle" && event.target.tagName !== "path" && infoPanelVisible) {
-    infoPanelVisible = false
-    nodeLabels
-      .text(d => d.rank<6 ? getShortTitle(d.title) : "")
-      .style("display", "block")
-      .attr("dx", d => -radiusScale(d.rank)) 
-      .attr("dy", "0.35em");
-    labelsVisible = true
-    d3.select("#toggle-labels").text("Hide Labels");
-    d3.select("body").classed("panel-open", false);
-    d3.select("#info-panel").style("display", "none");
-    const infoPanel = d3.select("#info-panel");
-    infoPanel.style("display", "none");
-    svg.style("flex-basis", "100%");
-    width = +svg.node().getBoundingClientRect().width;
-    updateSize()
-    resetNetColors()
-    // Redraw the hull if it was visible
-    if (activeHull !== null) {
-      const hull = computeSingleHull(graph.nodes, activeHull);
-      drawSingleHull(svg, hull, activeHull);
-    }
-
-    window.history.replaceState({}, '', `${window.location.pathname}`);
-  }
-});
 
 // Helper function to check if two nodes are adjacent
 function isAdjacent(source, target) {
@@ -749,7 +705,7 @@ function openNodeById(nodeId) {
 function openNodeByQuery(){
 
     if(!nodeOpenedFromQuery){
-            // Controlla se c'è un parametro gameId nell'URL
+      // Controlla se c'è un parametro gameId nell'URL
     const urlParams = new URLSearchParams(window.location.search);
     const gameId = urlParams.get('gameId');
     console.log("read parameter",gameId)

@@ -75,7 +75,7 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
 }
 
 //-- Common function to create bar chart for a given attribute--
-function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, attrMainChart, formatLabel = (value) => value){
+function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, attrMainChart, formatLabel = (value) => value, gameId){
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
   
@@ -122,6 +122,7 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, a
       .style("top", (event.pageY) + "px");
     }
 
+    const currentGameColor = "#E68A47";
     var barsColor;
     if(attrMainChart=="year"){
       barsColor = colorBarchart2;
@@ -151,15 +152,32 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, a
       .attr("height", yScale.bandwidth())
       .attr("x", 0)
       .attr("y", 0)
-      .attr("fill", d3.color(barsColor))
+      .attr("fill", (d) => {
+        if(attrMainChart == "network" && gameId != null){
+          return (d.id == gameId) ? d3.color(currentGameColor) : d3.color(barsColor);
+        }
+        return d3.color(barsColor);
+      })
       .on("mouseover", function(event, d) {
-        innerChart.selectAll("rect").attr("fill", d3.color(barsColor));
-        d3.select(this).attr("fill", d3.color(barsColor).darker());
+        if(attrMainChart == "network" && gameId != null){
+          innerChart.selectAll("rect")          
+            .attr("fill", (d) => (d.id == gameId) ? d3.color(currentGameColor) : d3.color(barsColor));
+          d3.select(this)
+            .attr("fill", (d) => (d.id == gameId) ? d3.color(currentGameColor).darker() : d3.color(barsColor).darker());
+        }else{
+          innerChart.selectAll("rect").attr("fill", d3.color(barsColor));
+          d3.select(this).attr("fill", d3.color(barsColor).darker());
+        }
         showTooltip(event,d);
       })
       .on("mousemove", mousemove)
       .on("mouseout", () => {
-        innerChart.selectAll("rect").attr("fill", d3.color(barsColor));
+        if(attrMainChart == "network" && gameId != null){
+          innerChart.selectAll("rect")          
+            .attr("fill", (d) => (d.id == gameId) ? d3.color(currentGameColor) : d3.color(barsColor));
+        }else{
+          innerChart.selectAll("rect").attr("fill", d3.color(barsColor));
+        }
         tooltip.style("visibility", "hidden");
       })
       .on("click", function(event, d) {
@@ -173,12 +191,6 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, a
           let newPage = window.open("index_forcedirected.html?gameId=" + gameId, "ForceDirectedPage");
         }
 
-        
-        // Se la pagina era già aperta, invia un messaggio
-        /*if (!newPage.opener) {
-          newPage.postMessage({ action: "openNode", gameId: gameId }, "*");
-          console.log("messagggio inviato")
-        }*/
       });
   
     barGroup
@@ -212,7 +224,7 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, a
 
 
 //-- Common function to create dumbbell chart --
-function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
+function createDumbbellChart(data, minProp, maxProp, chartContainer, title, gameId = null) {
   console.log(data)
 
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
@@ -251,8 +263,8 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
       .attr("x2", d => x(d[maxProp]))
       .attr("y1", d => y(d.title) + y.bandwidth() / 2)
       .attr("y2", d => y(d.title) + y.bandwidth() / 2)
-      .attr("stroke", "gray")
-      .attr("stroke-width", "1px")
+      .attr("stroke", "grey")
+      .attr("stroke-width", (d) => ( gameId != null && d.id == gameId) ? "4px" : "1px")
       .on("mouseover", function(event, d) {
         console.log(d)
         tooltip
@@ -273,7 +285,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
       .attr("class", "dumbbell-circle")
       .attr("cx", d => x(d[minProp]))
       .attr("cy", d => y(d.title) + y.bandwidth() / 2)
-      .attr("r", 5)
+      .attr("r", (d) => ( gameId != null && d.id == gameId) ? 8 : 5)
       .attr("fill", "#69b3a2")
       .on("mouseover", function(event, d) {
         tooltip
@@ -294,7 +306,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title) {
       .attr("class", "dumbbell-circle")
       .attr("cx", d => x(d[maxProp]))
       .attr("cy", d => y(d.title) + y.bandwidth() / 2)
-      .attr("r", 5)
+      .attr("r", (d) => ( gameId != null && d.id == gameId) ? 8 : 5)
       .attr("fill", "#4C4082")
       .on("mouseover", function(event, d) {
         tooltip

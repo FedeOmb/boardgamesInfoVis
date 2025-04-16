@@ -362,17 +362,17 @@ function handleNodeClick(event,d) {
       if(chartType === "rating"){
         data.sort((a, b) => d3.descending(a.rating, b.rating));
         const maxValue = 10;
-        createAdditionalBarchart(data, chartContent, "rating", maxValue, "Rating", "network",(value) => value.toFixed(2));
+        createAdditionalBarchart(data, chartContent, "rating", maxValue, "Rating", "network",(value) => value.toFixed(2), d.id);
       }else if (chartType === "minage") {
         data.sort((a, b) => d3.descending(a.minage, b.minage));
         const maxValue = getMaxMinAge(graph);
-        createAdditionalBarchart(data, chartContent, "minage", maxValue, "Min Age", "network",(value) => value);
+        createAdditionalBarchart(data, chartContent, "minage", maxValue, "Min Age", "network",(value) => value, d.id);
       } else if (chartType === "players") {
         data.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
-        createDumbbellChart(data, "minplayers", "maxplayers", chartContent, "Players");
+        createDumbbellChart(data, "minplayers", "maxplayers", chartContent, "Players", d.id);
       } else if (chartType === "playtime") {
         data.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
-        createDumbbellChart(data, "minplaytime", "maxplaytime", chartContent, "Playtime (min)");     
+        createDumbbellChart(data, "minplaytime", "maxplaytime", chartContent, "Playtime (min)", d.id);     
       } else if (chartType === "categories") {
         createCategoriesChart(data, chartContent);
       }

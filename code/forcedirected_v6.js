@@ -351,7 +351,7 @@ function initializeDisplay() {
       .attr("text-anchor", "end")  // Keep as "end" for right alignment
       .attr("pointer-events", "none")
       .style("font-size", d => `${Math.max(10, radiusScale(d.rank))}px`)
-      .style("font-weight", "bold")
+      /*.style("font-weight", "bold")*/
       .text(d => {
         if (d.rank < 6)
           return getShortTitle(d.title);

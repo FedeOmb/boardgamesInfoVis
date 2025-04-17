@@ -174,7 +174,7 @@ function mouseLeaveEdge(event, d) {
         return n === d.source || n === d.target ? this : null;
       })
         .selectAll("circle, path")
-        .attr("stroke", "grey")
+        .attr("stroke", "#606060")
         .attr("stroke-width", 1);
     }
   

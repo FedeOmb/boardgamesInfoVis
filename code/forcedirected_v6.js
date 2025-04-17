@@ -188,16 +188,16 @@ forceProperties = {
     enabled: true,
     strength: 0.7,
     iterations: 1,
-    radius: 14,
+    radius: 16,
   },
   forceX: {
     enabled: true,
-    strength: -0.005,
+    strength: -0.05,
     x: 0.5,
   },
   forceY: {
     enabled: true,
-    strength: 0.006,
+    strength: 0.05,
     y: 0.5,
   },
   link: {
@@ -205,43 +205,45 @@ forceProperties = {
     distance: 60,
     iterations: 1,
   },
+  cluster: {
+    enabled: true,
+    strength: 0.15,
+  },
 };
+function forceCluster(alpha) {
+  const strength = 0.15;
+  const padding = 250;
+  let nodes;
+  let centers = {};
 
-/* ALTRI POSSIBILI PARAMETRI FORZE
-forceProperties = {
-  center: {
-    x: 0.5,
-    y: 0.5,
-  },
-  charge: {
-    enabled: true,
-    strength: -70,
-    distanceMin: 1,
-    distanceMax: 6000,
-  },
-  collide: {
-    enabled: true,
-    strength: 0.7,
-    iterations: 1,
-    radius: 14,
-  },
-  forceX: {
-    enabled: false,
-    strength: 0.4,
-    x: 0.5,
-  },
-  forceY: {
-    enabled: false,
-    strength: 0.4,
-    y: 0.5,
-  },
-  link: {
-    enabled: true,
-    distance: 60,
-    iterations: 1,
-  },
-};
-*/
+  function force(alpha) {
+    // Per ogni nodo
+    nodes.forEach(d => {
+      d.type.forEach(nodeType => {
+        if (centers[nodeType]) {
+          // Attrai il nodo verso il centro del suo gruppo
+          d.vx += (centers[nodeType].x - d.x) * strength * alpha;
+          d.vy += (centers[nodeType].y - d.y) * strength * alpha;
+        }
+      });
+    });
+  }
+
+  force.initialize = function(_nodes) {
+    nodes = _nodes;
+    // Calcola i centri per ogni tipo
+    const types = Array.from(new Set(nodes.flatMap(d => d.type)));
+    types.forEach((type, i) => {
+      const angle = (i / types.length) * 2 * Math.PI;
+      centers[type] = {
+        x: (width/2) + Math.cos(angle) * padding,
+        y: (height/2) + Math.sin(angle) * padding
+      };
+    });
+  }
+
+  return force;
+}
 
 // add forces to the simulation
 function initializeForces() {
@@ -252,7 +254,8 @@ function initializeForces() {
     .force("collide", d3.forceCollide())
     .force("center", d3.forceCenter())
     .force("forceX", d3.forceX())
-    .force("forceY", d3.forceY());
+    .force("forceY", d3.forceY())
+    .force("cluster", forceCluster());
   // apply properties to each of the forces
   updateForces();
 }
@@ -292,6 +295,9 @@ function updateForces() {
     .distance(forceProperties.link.distance)
     .iterations(forceProperties.link.iterations)
     .links(forceProperties.link.enabled ? graph.links : []);
+
+  simulation
+    .force("cluster");
 
   // updates ignored until this is run
   // restarts the simulation (important if simulation has already slowed down)
@@ -634,7 +640,7 @@ function resetNetColors() {
   networkGroup.selectAll(".node")
     .selectAll("circle, path") // Target both circle and path elements
     .attr("opacity", 1)
-    .attr("stroke", "grey")
+    .attr("stroke", "#606060")
     .attr("stroke-width", 1);
 
   // Reset fill for circles and paths based on node type

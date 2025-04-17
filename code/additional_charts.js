@@ -92,7 +92,7 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, a
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
   
-    const chartMargin = { top: 40, right: 40, bottom: 30, left: 160 };
+    const chartMargin = { top: 40, right: 40, bottom: 200, left: 160 };
     svgHeight = data.length * 25 + chartMargin.top + chartMargin.bottom;
   
     chartContainer.selectAll("*").remove();
@@ -243,7 +243,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
     
-    const margin = { top: 40, right: 40, bottom: 30, left: 160 };
+    const margin = { top: 40, right: 40, bottom: 200, left: 160 };
     svgHeight = data.length * 25 + margin.top + margin.bottom;
   
     chartContainer.selectAll("*").remove();
@@ -366,9 +366,9 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
     counts.sort((a, b) => d3.descending(a.count, b.count));
   
     // Define dimensions and margins
+    const margin = { top: 40, right: 40, bottom: 200, left: 160 };
     const width = chartContainer.node().getBoundingClientRect().width - 15;
-    const height = counts.length * 20 + 100; 
-    const margin = { top: 40, right: 40, bottom: 30, left: 160 };
+    const height = counts.length * 22 + margin.top + margin.bottom; 
   
     const svg = chartContainer
       .append("svg")

@@ -18,7 +18,7 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
   defaultButton.classed("active", true);
 
   let filteredData = data;
-  filteredData.sort((a, b) => d3.ascending(a.rank, b.rank));
+  filteredData.sort((a, b) => d3.descending(a.rating, b.rating));
   if(data.length > 10){
     showAllSelector.style("display", "flex");
     const showValue = showAllSelector.select("input[type='radio']:checked").property("value");
@@ -36,21 +36,34 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
   function showGraphs(chartType) {
     const showValue = showAllSelector.select("input[type='radio']:checked").property("value");
     let filteredData = data;
-    filteredData.sort((a, b) => d3.ascending(a.rank, b.rank));
-    if(showValue =="top10"){
-      filteredData = filteredData.slice(0,10);
-    }
     console.log(filteredData)
     chartContent.html("");
+
     if (chartType === "minage") {
+      filteredData.sort((a, b) => d3.descending(a.minage, b.minage));
+      if(showValue =="top10"){
+        filteredData = filteredData.slice(0,10);
+      }
       const maxValue = getMaxMinAge(dataset);
       infoAddText.style("display", "block");
       createAdditionalBarchart(filteredData, chartContent, "minage", maxValue,"Minimum player age", attrMainChart, (value) => value);
     } else if (chartType === "players") {
+      filteredData.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
+      if(showValue =="top10"){
+        filteredData = filteredData.slice(0,10);
+      }
       createDumbbellChart(filteredData, "minplayers", "maxplayers", chartContent, "Players");
     } else if (chartType === "playtime") {
+      filteredData.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
+      if(showValue =="top10"){
+        filteredData = filteredData.slice(0,10);
+      }
       createDumbbellChart(filteredData, "minplaytime", "maxplaytime", chartContent, "Playtime (min)");
     } else if (chartType === "rating") {
+      filteredData.sort((a, b) => d3.descending(a.rating, b.rating));
+      if(showValue =="top10"){
+        filteredData = filteredData.slice(0,10);
+      }
       const maxValue = 10;
       infoAddText.style("display", "block");
       createAdditionalBarchart(filteredData, chartContent, "rating", maxValue, "User rating", attrMainChart, (value) => value.toFixed(2));

@@ -10,7 +10,7 @@ var types = [];
 //colors definitions
 const colorsBarchart1 = {categories:"#4682B4", mechanics:"#FF8C00", designers:"#FF6347"};
 const colorBarchart2 = "#2F4F4F";
-const colorScaleTypes = d3.scaleOrdinal().range(customColors);
+const colorScaleTypes = d3.scaleOrdinal().range(d3.schemeTableau10);
 
 const cont3 = d3.select("#bar-chart-3");
 const cont1 = d3.select("#bar-chart-1");

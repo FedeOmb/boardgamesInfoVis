@@ -51,13 +51,13 @@ const radiusScale = d3.scaleSqrt().domain([1, 100]).range([15, 5]);
 
 //var colorScaleType  = d3.scaleOrdinal(d3.schemeCategory10);
 //var customColors = ["#377eb8","#4daf4a","#f781bf","#ffff33","#ff7f00","#e41a1c","#8dd3c7","#b1b1b1"];
-var custColDesaturated = ["#a5bdd3", "#b3d0b3", "#f5cfdc", "#ffffd9", "#ffd6ad", "#e5aaaa", "#cfe5e1", "#e0e0e0"]
+//var custColDesaturated = ["#a5bdd3", "#b3d0b3", "#f5cfdc", "#ffffd9", "#ffd6ad", "#e5aaaa", "#cfe5e1", "#e0e0e0"]
 var colorScaleType  = d3.scaleOrdinal()
 
 function setScale(data){
   types = data.nodes.flatMap(d => d.type);
   types = [...new Set(types)];  
-  colorScaleType.domain(types).range(customColors);
+  colorScaleType.domain(types).range(d3.schemeTableau10);
   //colorScaleType.domain(types);
 }
 
@@ -191,13 +191,13 @@ forceProperties = {
     radius: 14,
   },
   forceX: {
-    enabled: false,
-    strength: 0.4,
+    enabled: true,
+    strength: -0.005,
     x: 0.5,
   },
   forceY: {
-    enabled: false,
-    strength: 0.4,
+    enabled: true,
+    strength: 0.006,
     y: 0.5,
   },
   link: {
@@ -348,12 +348,12 @@ function initializeDisplay() {
       .enter()
       .append("text")
       .attr("class", "node-label")
-      .attr("text-anchor", "end")  // Keep as "end" for right alignment
+      .attr("text-anchor", "end")  
       .attr("pointer-events", "none")
       .style("font-size", d => `${Math.max(10, radiusScale(d.rank))}px`)
       /*.style("font-weight", "bold")*/
       .text(d => {
-        if (d.rank < 6)
+        if (d.rank < 11)
           return getShortTitle(d.title);
       })
       .style("display", "none")

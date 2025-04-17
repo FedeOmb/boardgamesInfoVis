@@ -8,7 +8,10 @@ d3.select("#zoom-in").on("click", function() {
     svg.transition().call(zoom.scaleBy, 0.8);
   });
   d3.select("#zoom-reset").on("click", function() {
-    svg.transition().call(zoom.transform, d3.zoomIdentity);
+    if(infoPanelVisible){
+      svg.transition().call(zoom.scaleTo, 1);
+    }else
+      svg.transition().call(zoom.transform, d3.zoomIdentity);
 });
 
 d3.select("#toggle-labels").on("click", function() {
@@ -24,7 +27,7 @@ d3.select("#search-box").on("change", function() {
   if (nodeId) {
     openNodeById(nodeId); // chiama la funzione con l'id corretto
   } else {
-    alert("Gioco non trovato. Assicurati di selezionare un titolo valido.");
+    alert("Game not found. Ensure that you select a valid title.");
   }
 });
 
@@ -183,11 +186,12 @@ function centerNode(node) {
   width = +svg.node().getBoundingClientRect().width;
   height = +svg.node().getBoundingClientRect().height;
   const scale = d3.zoomTransform(svg.node()).k; // mantiene lo zoom corrente
+  console.log(scale)
   const x = -node.x * scale + width/2;
   const y = -node.y * scale + height/2;
-  
+
   svg.transition()
-    .duration(200)
+    .duration(120)
     .call(zoom.transform, d3.zoomIdentity
         .translate(x, y)
         .scale(scale)
@@ -269,8 +273,8 @@ function handleNodeClick(event,d) {
           let otherId = l.source.id === d.id ? l.target.id : l.source.id;
           return graph.nodes.find(n => n.id === otherId).title;
       });
-    var colorScale = d3.scaleOrdinal().domain(types).range(custColDesaturated);
-    d3.select("#node-header").style("background", colorScale(d.type[0]))
+    var colorScale = d3.scaleOrdinal().domain(types).range(d3.schemeTableau10);
+    d3.select("#node-header").style("background", d3.color(colorScale(d.type[0])).copy({opacity: 0.5}))
     d3.select("#game-title").html(`
       ${d.title}
     `); 
@@ -406,7 +410,7 @@ svg.on("click", function(event) {
 function closeInfoPanel(){
   infoPanelVisible = false
   nodeLabels
-    .text(d => d.rank<6 ? getShortTitle(d.title) : "")
+    .text(d => d.rank<11 ? getShortTitle(d.title) : "")
     .style("display", "block")
     .attr("dx", d => -radiusScale(d.rank)) 
     .attr("dy", "0.35em");
@@ -426,4 +430,7 @@ function closeInfoPanel(){
   }
 
   window.history.replaceState({}, '', `${window.location.pathname}`);
+
+  if(d3.zoomTransform(svg.node()).k == 1 && !infoPanelVisible)
+    svg.transition().call(zoom.transform, d3.zoomIdentity);
 }

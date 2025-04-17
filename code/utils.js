@@ -24,8 +24,7 @@
     return years;
   }
 
-const customColors = ["#377eb8","#4daf4a","#f781bf","#ffff33","#ff7f00","#e41a1c","#8dd3c7","#b1b1b1"];
-
+//const customColors = ["#377eb8","#4daf4a","#f781bf","#ffff33","#ff7f00","#e41a1c","#8dd3c7","#b1b1b1"];
 
 function calcTypeByYears2(data){
 

@@ -101,8 +101,8 @@ function prepareData(dataset) {
     //trova la componente connessa più grande nella rete di collaborazioni
     let largestComponent = new Set();
     network.nodes.forEach(individual => {
-        let component = findConnectedComponent(individual.id, gamesToIndividualsMap);
-        //console.log("component", component);
+        let component = findConnectedComponentDFS(individual.id, network);
+        //let component = findConnectedComponent(individual.id, gamesToIndividualsMap);
         if (component.size > largestComponent.size) {
             largestComponent = component;
         }
@@ -176,7 +176,8 @@ function prepareData(dataset) {
 }
 
 
-// Trova i gruppi di individui connessi
+// DFS vecchia che usa la rete di giochi originale
+/*
 function findConnectedComponent(startId, gamesToIndividualsMap) {
     let visited = new Set();
     let queue = [startId];
@@ -195,6 +196,26 @@ function findConnectedComponent(startId, gamesToIndividualsMap) {
             }
         }
     }
+    return visited;
+}*/
+//DFS standard
+function findConnectedComponentDFS(startId, network) {
+    let visited = new Set();
+    console.log("findconnectedcomponentDFS")
+    function dfs(currentId) {
+        if (visited.has(currentId)) return;
+        visited.add(currentId);
+        // Trova tutti i link dove currentId è source o target
+        const adjacentLinks = network.links.filter(link => 
+            link.source === currentId || link.target === currentId
+        );
+        // Visita ricorsivamente tutti i nodi adiacenti
+        adjacentLinks.forEach(link => {
+            const nextId = link.source === currentId ? link.target : link.source;
+            dfs(nextId);
+        });
+    }
+    dfs(startId);
     return visited;
 }
 

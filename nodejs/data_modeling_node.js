@@ -1,9 +1,16 @@
+const fs = require('fs');
+const path = require('path');
 
-d3.json("./data/boardgames_100.json").then((_graph) =>{
+dataModeling();
+
+async function dataModeling() {
+    const rawDataset = fs.readFileSync(path.join(__dirname, '../data/boardgames_100.json'), 'utf8');
+    const _graph = JSON.parse(rawDataset);
 
     var nodes = [];
     var links = [];
 
+    //data cleaning
     var data = data_cleaning(_graph);
 
     for(let i in data){
@@ -22,6 +29,7 @@ d3.json("./data/boardgames_100.json").then((_graph) =>{
         data[i].designer = des
     }
 
+    //creating links from fans liked lists
     for(let i in data){
         for(let j in data[i].recommendations.fans_liked){
             let temp = {}
@@ -30,32 +38,36 @@ d3.json("./data/boardgames_100.json").then((_graph) =>{
             links.push(temp)
         }
     }
-    //console.log("LINKS")
-    //console.log(JSON.stringify(links))
 
+    //creating nodes
     for(let i in data){
         let temp = data[i]
         delete temp.recommendations
         nodes.push(temp)
     }
-    //console.log("NODES")
-    //console.log(JSON.stringify(nodes))
 
-    dataset_conv_clean = {}
-    dataset_conv_clean.nodes = nodes
-    dataset_conv_clean.links = links
+    dataset_conv_clean = {};
+    dataset_conv_clean.nodes = nodes;
+    dataset_conv_clean.links = links;
 
     console.log("DATASET CONVERTED CLEANED")
     console.log(JSON.stringify(dataset_conv_clean))
 
+    //creating collaboration networks for designers, categories and mechanics
     const categories = create_categories(data)
     const designers = create_designers(data)
     const mechanics = create_mechanics(data)
 
-    console.log(JSON.stringify(buildFullNetwork(designers)));
-    console.log(JSON.stringify(buildFullNetwork(categories)));
-    console.log(JSON.stringify(buildFullNetwork(mechanics)));
-})
+    const desNetwork = buildFullNetwork(designers)
+    const catNetwork = buildFullNetwork(categories)
+    const mecNetwork = buildFullNetwork(mechanics)
+
+    fs.writeFileSync('dataset_converted_cleaned.json', JSON.stringify(dataset_conv_clean, null, 2));
+    fs.writeFileSync('designers_network.json', JSON.stringify(desNetwork, null, 2));
+    fs.writeFileSync('categories_network.json', JSON.stringify(catNetwork, null, 2));
+    fs.writeFileSync('mechanics_network.json', JSON.stringify(mecNetwork, null, 2));
+
+}
 
 function data_cleaning(raw_data){
     let data = raw_data

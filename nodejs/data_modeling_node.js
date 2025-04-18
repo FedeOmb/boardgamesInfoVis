@@ -1,21 +1,17 @@
-var designers = []
-var mechanics = []
+const fs = require('fs');
+const path = require('path');
 
-Promise.all([
-    d3.json("./data/boardgames_100.json"),
-    d3.json("data/categories.json"),
-    d3.json("data/mechanics.json"),
-    d3.json("data/designers.json")
-]).then(([_graph, catData, mecData, desData]) =>{
-    console.log(JSON.stringify(buildFullNetwork(desData)));
-    console.log(JSON.stringify(buildFullNetwork(catData)));
-    console.log(JSON.stringify(buildFullNetwork(mecData)));
+dataModeling();
 
-    var data
-    var nodes = []
-    var links = []
+async function dataModeling() {
+    const rawDataset = fs.readFileSync(path.join(__dirname, '../data/boardgames_100.json'), 'utf8');
+    const _graph = JSON.parse(rawDataset);
 
-    data = data_cleaning(_graph)
+    var nodes = [];
+    var links = [];
+
+    //data cleaning
+    var data = data_cleaning(_graph);
 
     for(let i in data){
         let rat = data[i].rating.rating
@@ -32,8 +28,8 @@ Promise.all([
         data[i].mechanics = mec
         data[i].designer = des
     }
-    //console.log(data)
 
+    //creating links from fans liked lists
     for(let i in data){
         for(let j in data[i].recommendations.fans_liked){
             let temp = {}
@@ -42,28 +38,36 @@ Promise.all([
             links.push(temp)
         }
     }
-    //console.log("LINKS")
-    //console.log(JSON.stringify(links))
 
+    //creating nodes
     for(let i in data){
         let temp = data[i]
         delete temp.recommendations
         nodes.push(temp)
     }
-    //console.log("NODES")
-    //console.log(JSON.stringify(nodes))
 
-    create_categories(data)
-    create_designers(data)
-    create_mechanics(data)
-    
-    dataset_conv_clean = {}
-    dataset_conv_clean.nodes = nodes
-    dataset_conv_clean.links = links
+    dataset_conv_clean = {};
+    dataset_conv_clean.nodes = nodes;
+    dataset_conv_clean.links = links;
 
     console.log("DATASET CONVERTED CLEANED")
     console.log(JSON.stringify(dataset_conv_clean))
-})
+
+    //creating collaboration networks for designers, categories and mechanics
+    const categories = create_categories(data)
+    const designers = create_designers(data)
+    const mechanics = create_mechanics(data)
+
+    const desNetwork = buildFullNetwork(designers)
+    const catNetwork = buildFullNetwork(categories)
+    const mecNetwork = buildFullNetwork(mechanics)
+
+    fs.writeFileSync('dataset_converted_cleaned.json', JSON.stringify(dataset_conv_clean, null, 2));
+    fs.writeFileSync('designers_network.json', JSON.stringify(desNetwork, null, 2));
+    fs.writeFileSync('categories_network.json', JSON.stringify(catNetwork, null, 2));
+    fs.writeFileSync('mechanics_network.json', JSON.stringify(mecNetwork, null, 2));
+
+}
 
 function data_cleaning(raw_data){
     let data = raw_data
@@ -94,11 +98,11 @@ function create_categories(data) {
         });
     });
 
-    // Converte la mappa in un array
     const categories = Array.from(categoriesMap.values());
 
     console.log("CATEGORIES");
     console.log(JSON.stringify(categories));
+    return categories;
 }
 
 function create_mechanics(data) {
@@ -118,11 +122,11 @@ function create_mechanics(data) {
         });
     });
 
-    // Converte la mappa in un array
     const mechanics = Array.from(mechanicsMap.values());
 
     console.log("MECHANICS");
     console.log(JSON.stringify(mechanics));
+    return mechanics;
 }
 
 function create_designers(data) {
@@ -142,11 +146,11 @@ function create_designers(data) {
         });
     });
 
-    // Converte la mappa in un array
     const designers = Array.from(designersMap.values());
 
     console.log("DESIGNERS");
     console.log(JSON.stringify(designers));
+    return designers;
 }
 
 function buildFullNetwork(individuals) {
@@ -198,7 +202,6 @@ function buildFullNetwork(individuals) {
         }
     }
 
-    // Converte la mappa in un array di oggetti
     const links = Array.from(linkMap.values());
 
     return { nodes, links };

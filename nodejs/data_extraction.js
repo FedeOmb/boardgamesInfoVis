@@ -9,7 +9,7 @@ var dataset
 const imagesDir = path.join(__dirname, '../game_thumbnails/');
 
 //aggiunta del tipo di gioco
-/*fs.readFile(filename, 'utf-8', (err, data) => {
+fs.readFile(filename, 'utf-8', (err, data) => {
     if (err) throw err;
     dataset = JSON.parse(data)
     id = []
@@ -21,9 +21,9 @@ const imagesDir = path.join(__dirname, '../game_thumbnails/');
             console.log("file writed");
         })
       });
-});*/
+});
 
-/*fs.readFile(filename, 'utf-8', (err, data) => {
+fs.readFile(filename, 'utf-8', (err, data) => {
   if (err) throw err;
   dataset = JSON.parse(data)
   id = []
@@ -35,7 +35,7 @@ const imagesDir = path.join(__dirname, '../game_thumbnails/');
           console.log("file writed");
       })
     });
-})*/
+})
 
 fs.readFile("../game_images_links.json", 'utf-8', (err, data) => {
   if (err) throw err;

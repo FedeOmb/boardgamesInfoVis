@@ -192,12 +192,12 @@ forceProperties = {
   },
   forceX: {
     enabled: true,
-    strength: -0.05,
+    strength: -0.1,
     x: 0.5,
   },
   forceY: {
     enabled: true,
-    strength: 0.05,
+    strength: -0.05,
     y: 0.5,
   },
   link: {
@@ -266,7 +266,7 @@ function updateForces() {
   simulation
     .force("center")
     .x(width * forceProperties.center.x)
-    .y(height * forceProperties.center.y);
+    .y(300); //height * forceProperties.center.y
   simulation
     .force("charge")
     .strength(forceProperties.charge.strength * forceProperties.charge.enabled)

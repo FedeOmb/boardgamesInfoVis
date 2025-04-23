@@ -40,7 +40,7 @@ html {
   .custom-button {
     font-size: 16px;
     text-decoration: none;
-    background-color: #007bff;
+    background-color: #075E6F;
     color: white;
     padding: 5px 10px;
     border-radius: 5px;
@@ -51,7 +51,7 @@ html {
   }
 
   .custom-button:hover {
-    background-color: #0056b3;
+    background-color: #065565;
   }
 
   body {
@@ -176,7 +176,7 @@ html {
     width: 40px;
     height: 40px;
     font-size: 20px;
-    background: #007bff;
+    background: #075E6F;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -185,7 +185,7 @@ html {
   }
 
   .zoom-btn:hover {
-    background: #0056b3;
+    background: #065565;
   }
 
   #color-legend {
@@ -229,7 +229,7 @@ html {
   #toggle-labels {
     display: grid;
     gap: 8px;
-    background: #007bff;
+    background: #075E6F;
     border: 1px solid #ccc;
     padding: 10px 12px;
     border-radius: 6px;
@@ -240,7 +240,7 @@ html {
   }
 
   #toggle-labels:hover {
-    background: #0056b3;
+    background: #065565;
   }
 
   #node-header {
@@ -340,7 +340,7 @@ html {
     margin: 0 5px;
     padding: 8px 12px;
     font-size: 0.85rem;
-    background: #007bff;
+    background: #075E6F;
     color: #fff;
     border: none;
     border-radius: 6px;
@@ -349,10 +349,10 @@ html {
     text-align: center;
   }
   .chart-btn:hover {
-    background: #0056b3;
+    background: #065565;
   }
   .chart-btn.active {
-    background: #0056b3;
+    background: #065565;
     font-weight: bold;
     box-shadow: 0 0 5px rgba(0,0,0,0.3);
 }

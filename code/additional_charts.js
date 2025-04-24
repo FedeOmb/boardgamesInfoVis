@@ -1,9 +1,11 @@
+var showAllSelector 
+
 //function to create additional charts on barchart page
 function showAdditionalCharts(data, attrMainChart, containerId) {
 
   const chartSelector = d3.select(containerId + " .chart-selector");
   const chartContent = d3.select(containerId + " .chart-content");
-  const showAllSelector = d3.select(containerId + " .show-all-selector");
+  showAllSelector = d3.select(containerId + " .show-all-selector");
   const infoAddText = d3.select(containerId + " .info-add-text");
   showAllSelector.style("display", "none");
   chartSelector.style("display", "flex");
@@ -106,6 +108,7 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
 
 //-- Common function to create bar chart for a given attribute--
 function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, attrMainChart, formatLabel = (value) => value, gameId){
+    showAllSelector.style("display", "flex");
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
   
@@ -255,7 +258,7 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, a
 
 //-- Common function to create dumbbell chart --
 function createDumbbellChart(data, minProp, maxProp, chartContainer, title, gameId = null) {
-  console.log(data)
+    showAllSelector.style("display", "flex");
 
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
@@ -372,6 +375,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
   //--ADDITIONAL CHARTS FOR FORCE DIRECTED--
   
   function createCategoriesChart(data, chartContainer) {
+    showAllSelector.style("display", "none");
     // Extract categories
     let categories = data.flatMap(d => d.categories || []);
     

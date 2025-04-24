@@ -19,8 +19,9 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
 
   let filteredData = data;
   filteredData.sort((a, b) => d3.descending(a.rating, b.rating));
+  var longData = false;
   if(data.length > 10){
-    showAllSelector.style("display", "flex");
+    longData = true;
     const showValue = showAllSelector.select("input[type='radio']:checked").property("value");
     if(showValue =="top10"){
       filteredData = data.slice(0,10);
@@ -30,6 +31,9 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
 
   const maxValue = 10;
   infoAddText.style("display", "block");
+  if(longData){
+    showAllSelector.style("display", "flex");
+  }
   createAdditionalBarchart(filteredData, chartContent, "rating", maxValue,"User rating", attrMainChart, (value) => value.toFixed(2));
 
   //function to show graphs based on current selections
@@ -46,11 +50,17 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
       }
       const maxValue = getMaxMinAge(dataset);
       infoAddText.style("display", "block");
+      if(longData){
+        showAllSelector.style("display", "flex");
+      }
       createAdditionalBarchart(filteredData, chartContent, "minage", maxValue,"Minimum player age", attrMainChart, (value) => value);
     } else if (chartType === "players") {
       filteredData.sort((a, b) => d3.descending(a.minplayers, b.minplayers));
       if(showValue =="top10"){
         filteredData = filteredData.slice(0,10);
+      }
+      if(longData){
+        showAllSelector.style("display", "flex");
       }
       createDumbbellChart(filteredData, "minplayers", "maxplayers", chartContent, "Players");
     } else if (chartType === "playtime") {
@@ -58,11 +68,17 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
       if(showValue =="top10"){
         filteredData = filteredData.slice(0,10);
       }
+      if(longData){
+        showAllSelector.style("display", "flex");
+      }
       createDumbbellChart(filteredData, "minplaytime", "maxplaytime", chartContent, "Playtime (min)");
     } else if (chartType === "rating") {
       filteredData.sort((a, b) => d3.descending(a.rating, b.rating));
       if(showValue =="top10"){
         filteredData = filteredData.slice(0,10);
+      }
+      if(longData){
+        showAllSelector.style("display", "flex");
       }
       const maxValue = 10;
       infoAddText.style("display", "block");
@@ -83,6 +99,7 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
     buttons.classed("active", false);
     d3.select(this).classed("active", true);
     infoAddText.style("display", "none");
+    showAllSelector.style("display", "none");
     showGraphs(chartType)
   });
 }

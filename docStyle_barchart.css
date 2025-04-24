@@ -307,30 +307,31 @@ select {
         height: auto;
         min-height: 30px;
         max-height: 60px;
-        padding: 0px 5px 0px 5px;;
-        border: 2px solid #999;
+        padding: 2px 5px 2px 5px;;
+        border: 2px solid #075E6F;
         background-color: #f8f8f8;
         cursor: pointer;
         user-select: none;
         transition: all 0.3s ease;
         text-align: center;
         border-radius: 5px; 
-        color: #333;
+        color: #03313a;
       }
       
       .radio-container input[type="radio"]:checked + label {
-        background-color: #999;
-        border-color: #333;
+        background-color: #075E6F;
+        border-color: #03313a;
         color: white;
       }
       
       .radio-container label:hover {
-        background-color: #e0e0e0;
-        border-color: #999;
+        background-color: #075E6F;
+        border-color: #03313a;
+        color: white;
       }
       
       .radio-container input[type="radio"]:checked + label:hover {
-        background-color: #999;
+        background-color: #075E6F;
       }
 
 @media (max-width: 1000px) {

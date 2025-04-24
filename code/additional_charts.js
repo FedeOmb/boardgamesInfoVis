@@ -108,7 +108,6 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
 
 //-- Common function to create bar chart for a given attribute--
 function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, attrMainChart, formatLabel = (value) => value, gameId){
-    showAllSelector.style("display", "flex");
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
   
@@ -258,7 +257,6 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, a
 
 //-- Common function to create dumbbell chart --
 function createDumbbellChart(data, minProp, maxProp, chartContainer, title, gameId = null) {
-    showAllSelector.style("display", "flex");
 
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
@@ -375,7 +373,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
   //--ADDITIONAL CHARTS FOR FORCE DIRECTED--
   
   function createCategoriesChart(data, chartContainer) {
-    showAllSelector.style("display", "none");
+
     // Extract categories
     let categories = data.flatMap(d => d.categories || []);
     
@@ -471,136 +469,6 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
       .style("left", (event.pageX - 40) + "px")
       .style("top", (event.pageY + 10) + "px");
   };
-
-  /*
-  function createMinAgeChart(data) {
-    const svgWidth = d3.select("#chart-content").node().getBoundingClientRect().width - 10
-    const svgHeight = data.length * 20 + 100;
-    const margin = { top: 30, right: 10, bottom: 30, left: 180 };
-  
-    const ageSvg = d3.select("#chart-content")
-      .append("svg")
-      .attr("width", svgWidth)
-      .attr("height", svgHeight);
-    
-    ageSvg.append("text")
-      .attr("x", svgWidth / 2)
-      .attr("y", margin.top / 2)
-      .attr("text-anchor", "middle")
-      .text("Min age")
-      .style("font-weight", "bold");
-  
-    const ageX = d3.scaleLinear()
-      //.domain([0, d3.max(data, n => n.minage)])
-      .domain([0, getMaxMinAge() * 1.1])
-      .range([margin.left, svgWidth - margin.right]);
-  
-    const ageY = d3.scaleBand()
-      .domain(data.map(n => getShortTitle(n.title)))
-      .range([margin.top, svgHeight - margin.bottom])
-      .padding(0.1);
-  
-    ageSvg.selectAll("rect")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", ageX(0))
-      .attr("y", n => ageY(getShortTitle(n.title)))
-      .attr("width", n => ageX(n.minage) - ageX(0))
-      .attr("height", ageY.bandwidth())
-      .attr("fill", "steelblue");
-  
-      ageSvg.selectAll(".label")
-      .data(data)
-      .enter()
-      .append("text")
-      .attr("class", "label")
-      .attr("x", d => ageX(d.minage) - 5) // Sposta leggermente a sinistra
-      .attr("y", d => ageY(getShortTitle(d.title)) + ageY.bandwidth() / 2 + 4) // Centra verticalmente
-      .attr("fill", "white")
-      .attr("text-anchor", "end") // Allinea a destra
-      .attr("font-weight", "bold")
-      .text(d => d.minage);
-  
-    ageSvg.append("g")
-      .attr("transform", `translate(0,${svgHeight - margin.bottom})`)
-      .call(d3.axisBottom(ageX).ticks(5).tickFormat(d3.format(".0f")));
-  
-    ageSvg.append("g")
-      .attr("transform", `translate(${margin.left},0)`)
-      .call(d3.axisLeft(ageY));
-  }
-
-    // Funzione per gestire testo lungo
-
-  
-  function createRatingChart(data){
-    const svgWidth = d3.select("#chart-content").node().getBoundingClientRect().width - 10
-    const svgHeight = data.length * 20 + 100;
-    const margin = { top: 30, right: 10, bottom: 30, left: 180 };
-  
-    const gameSvg = d3.select("#chart-content")
-      .append("svg")
-      .attr("width", svgWidth)
-      .attr("height", svgHeight);
-    
-    gameSvg.append("text")
-      .attr("x", svgWidth / 2)
-      .attr("y", margin.top / 2)
-      .attr("text-anchor", "middle")
-      .text("Rating")
-      .style("font-weight", "bold");
-  
-    const ratingX = d3.scaleLinear()
-      .domain([0, d3.max(data, n => n.rating) * 1.1])
-      .range([margin.left, svgWidth - margin.right]);
-  
-    const ratingY = d3.scaleBand()
-      .domain(data.map(n => getShortTitle(n.title)))
-      .range([margin.top, svgHeight - margin.bottom])
-      .padding(0.1);
-  
-    gameSvg.selectAll("rect")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", ratingX(0))
-      .attr("y", n => ratingY(getShortTitle(n.title)))
-      .attr("width", n => ratingX(n.rating) - ratingX(0))
-      .attr("height", ratingY.bandwidth())
-      .attr("fill", "steelblue")
-      .on("mouseover", function(event, d) {
-        tooltip
-          .html(`Votes: ${d.num_of_reviews}`)
-          .style("visibility", "visible");
-      })
-      .on("mousemove", function(event) {
-        updateTooltipPosition();
-      })
-      .on("mouseout", function() {
-        tooltip.style("visibility", "hidden");
-      });
-  
-      gameSvg.selectAll(".label")
-      .data(data)
-      .enter()
-      .append("text")
-      .attr("class", "label")
-      .attr("x", d => ratingX(d.rating) - 5) 
-      .attr("y", d => ratingY(getShortTitle(d.title)) + ratingY.bandwidth() / 2 + 4) 
-      .attr("fill", "white")
-      .attr("text-anchor", "end") 
-      .attr("font-weight", "bold")
-      .text(d => d.rating.toFixed(1));
-  
-    gameSvg.append("g")
-      .attr("transform", `translate(0,${svgHeight - margin.bottom})`)
-      .call(d3.axisBottom(ratingX).ticks(5).tickFormat(d3.format(".0f")));
-  
-    gameSvg.append("g")
-      .attr("transform", `translate(${margin.left},0)`)
-      .call(d3.axisLeft(ratingY));
-  }*/
 
   function getShortTitle(title){
     title = String(title)

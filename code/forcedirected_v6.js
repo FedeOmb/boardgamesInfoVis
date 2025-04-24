@@ -266,7 +266,7 @@ function updateForces() {
   simulation
     .force("center")
     .x(width * forceProperties.center.x)
-    .y(300); //height * forceProperties.center.y
+    .y((height * forceProperties.center.y) - 60); //290
   simulation
     .force("charge")
     .strength(forceProperties.charge.strength * forceProperties.charge.enabled)

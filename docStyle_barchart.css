@@ -197,14 +197,14 @@ span.chart-info {
 
 .chart-selector {
     display: none;
-    justify-content: space-between;
+    justify-content: center;
     margin-top: 10px;
     margin-bottom: 10px;
     background: #ffffff;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 6px;
-    gap: 3px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
@@ -213,9 +213,10 @@ span.chart-info {
 }
 
 .chart-btn {
-    flex: 1 1 20%;
-    min-width: 50px;
-    margin: 0 5px;
+    flex: 1 0 20%;
+    min-width: 20px;
+    max-width: 100%;
+    min-height: 40px;
     padding: 8px 12px;
     font-size: 0.85rem;
     background: #075E6F;
@@ -308,32 +309,32 @@ select {
         min-height: 30px;
         max-height: 60px;
         padding: 5px 5px 5px 5px;;
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
         background-color: #f8f8f8;
         cursor: pointer;
         user-select: none;
         transition: all 0.3s ease;
         text-align: center;
         border-radius: 5px; 
-        color: white;
-        background-color: #075E6F;
+        border: 1px solid #03313a;
+        color: #03313a;
       }
       
       .radio-container input[type="radio"]:checked + label {
-        background-color: #065565;
+        border: 1px solid #03313a;
+        background-color: #075E6F;
         color: white;
-        font-weight: bold;
       }
       
       .radio-container label:hover {
-        background-color: #075E6F;
-        border-color: #03313a;
+        border: 1px solid #03313a;
         color: white;
         background-color: #3f99a3;
       }
       
       .radio-container input[type="radio"]:checked + label:hover {
-        background-color: #065565;
+        border: 1px solid #03313a;
+        background-color: #075E6F;
       }
 
 @media (max-width: 1000px) {

@@ -387,12 +387,12 @@ function handleNodeClick(event,d) {
         const node = data.find(n => n.id == d.id);
         return node ? getShortTitle(node.title) : "";
       })
-      .style("display", "block")
+      .style("display", "none")
       .attr("dx", d => -radiusScale(d.rank)) 
       .attr("dy", "0.35em");
 
-    labelsVisible = true
-    d3.select("#toggle-labels").text("Hide Labels");
+    //labelsVisible = true
+    //d3.select("#toggle-labels").text("Hide Labels");
 
     function getMaxMinAge(dataset){
       return Math.max(...dataset.nodes.map(item => item.minage));

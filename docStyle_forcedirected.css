@@ -321,7 +321,7 @@ html {
   }
   #chart-selector {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     margin-bottom: 15px;
     background: #ffffff;
     padding: 8px;
@@ -335,9 +335,10 @@ html {
     width: 100%;
   }
   .chart-btn {
-    flex: 1 1 30%;
-    min-width: 80px;
-    margin: 0 5px;
+    flex: 1 0 20%;
+    min-width: 20px;
+    max-width: max-content;
+    min-height: 40px;
     padding: 8px 12px;
     font-size: 0.85rem;
     background: #075E6F;

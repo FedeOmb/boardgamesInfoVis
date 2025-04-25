@@ -24,7 +24,7 @@ function updateSize() {
   width = +svg.node().getBoundingClientRect().width;
   height = +svg.node().getBoundingClientRect().height;
 
-  simulation.force("center", d3.forceCenter(width / 2, height / 2));
+  simulation.force("center", d3.forceCenter(width / 2, (height / 2) - 60));
   simulation.alpha(0).restart();
   console.log("update size", width, height)
 }
@@ -345,6 +345,29 @@ function initializeDisplay() {
       handleNodeClick.call(this, event, d); 
     });
 
+    node.call(d3.drag()
+      .on("start", function(event, d) {
+        // Niente simulazione da riattivare
+      })
+      .on("drag", function(event, d) {
+        d.x = event.x;
+        d.y = event.y;
+        d3.select(this).attr("transform", `translate(${d.x},${d.y})`);
+        
+        // Aggiorna la posizione dei link e delle label manualmente
+        link
+          .filter(l => l.source === d || l.target === d)
+          .attr("x1", d => adjustLinkStart(d.source, d.target, radiusScale(d.source.rank)).x)
+          .attr("y1", d => adjustLinkStart(d.source, d.target, radiusScale(d.source.rank)).y)
+          .attr("x2", d => adjustLinkEnd(d.source, d.target, radiusScale(d.target.rank)).x)
+          .attr("y2", d => adjustLinkEnd(d.source, d.target, radiusScale(d.target.rank)).y);
+    
+        nodeLabels
+          .filter(n => n.id === d.id)
+          .attr("x", d.x)
+          .attr("y", d.y);
+      })
+    );  
 
   var labelsGroup = networkGroup.append("g")
     .attr("class", "labels-group");

@@ -226,12 +226,14 @@ function createBarchart1(attr, varY, varX){
   var svgHeight = svg1Height
   var data = window[attr];
   var data = data.slice(0, maxItemsToVis1);
+  minHeightNeeded = data.length * 20 + (chart1Margin.top + chart1Margin.bottom);
   if(maxItemsToVis1 > 20){
     svgHeight = svg1Height + (maxItemsToVis1 - 20) * 20;
     svg1.attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
   } else {
     svgHeight = svg1Height;
   }
+  
   const attrSelected = attrSelector1.select("option:checked");
   const barsColor = colorsBarchart1[attr];
 
@@ -758,3 +760,14 @@ function closeAdditionalCharts(containerId){
   d3.select(containerId + " .show-all-selector").style("display","none");
   d3.select(containerId + " .info-add-text").style("display","none");
 }
+
+window.addEventListener("resize", () => {
+    const attr = attrSelector1.property("value");
+
+    createBarchart1(attr, "name", "count");
+    closeAdditionalCharts("#additional-info-1");
+
+    var value = d3.selectAll("input[name='chart-type']:checked").property("value");
+    updateChart3(value);
+    closeAdditionalCharts("#additional-info-3");
+});

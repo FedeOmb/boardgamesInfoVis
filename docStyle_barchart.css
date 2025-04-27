@@ -336,6 +336,10 @@ select {
         border: 1px solid #03313a;
         background-color: #075E6F;
       }
+      
+      .range-container, .show-all-selector{
+        accent-color: #075E6F;
+      }
 
 @media (max-width: 1000px) {
     .tab-content {

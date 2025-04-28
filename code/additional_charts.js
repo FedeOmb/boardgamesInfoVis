@@ -86,7 +86,7 @@ function showAdditionalCharts(data, attrMainChart, containerId) {
       infoAddText.style("display", "block");
       createAdditionalBarchart(filteredData, chartContent, "rating", maxValue, "User rating", attrMainChart, (value) => value.toFixed(2));
     } else if (chartType === "categories") {
-      createCategoriesChart(filteredData, chartContent);
+      createCategoriesChart(filteredData, chartContent, attrMainChart);
     }
   }
 
@@ -372,7 +372,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
 
   //--ADDITIONAL CHARTS FOR FORCE DIRECTED--
   
-  function createCategoriesChart(data, chartContainer) {
+  function createCategoriesChart(data, chartContainer, attrMainChart) {
 
     // Extract categories
     let categories = data.flatMap(d => d.categories || []);
@@ -409,7 +409,14 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
     const y = d3.scaleBand()
       .domain(counts.map(d => d.name)) 
       .range([margin.top, height - margin.bottom])
-      .padding(0.1);
+      .padding(0.2);
+
+    var barsColor;
+    if(attrMainChart=="year"){
+      barsColor = colorYearsChart;
+    }else if(attrMainChart == "network"){
+      barsColor = "steelblue";
+    }
   
     svg.selectAll("rect")
       .data(counts)
@@ -419,7 +426,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
       .attr("y", d => y(d.name))
       .attr("width", d => x(d.count) - margin.left) // Modificato per partire dal margine sinistro
       .attr("height", y.bandwidth())
-      .attr("fill", "steelblue")
+      .attr("fill", barsColor)
       .on("mouseover", function(event, n) {
         var games = data
         .filter(d =>  d.categories.some(cat => cat.name === n.name))
@@ -444,6 +451,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
       .attr("x", d => x(d.count) - 5) 
       .attr("y", d => y(d.name) + y.bandwidth() / 2 + 4) 
       .attr("fill", "white")
+      .attr("font-size", "11px")
       .attr("text-anchor", "end") 
       .attr("font-weight", "bold")
       .text(d => d.count);

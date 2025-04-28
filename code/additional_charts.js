@@ -157,7 +157,7 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, a
     const currentGameColor = "#E68A47";
     var barsColor;
     if(attrMainChart=="year"){
-      barsColor = colorBarchart2;
+      barsColor = colorYearsChart;
     }else if(attrMainChart == "network"){
       barsColor = "steelblue";
     }else{

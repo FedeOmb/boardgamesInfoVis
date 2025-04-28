@@ -7,15 +7,16 @@ var typeByYear = [];
 var gamesByYear = [];
 var years = [];
 var types = [];
+
 //colors definitions
 const colorsBarchart1 = {categories:"#4682B4", mechanics:"#FF8C00", designers:"#FF6347"};
-const colorBarchart2 = "#2F4F4F";
+const colorYearsChart = "#2F4F4F";
 const colorScaleTypes = d3.scaleOrdinal().range(d3.schemeTableau10);
 
-const cont3 = d3.select("#bar-chart-3");
+const cont2 = d3.select("#bar-chart-2");
 const cont1 = d3.select("#bar-chart-1");
 const svg1 = cont1.append("svg");
-const svg3 = cont3.append("svg");
+const svg2 = cont2.append("svg");
 
 var svg1Width = +cont1.node().getBoundingClientRect().width;
 var svg1Height = +cont1.node().getBoundingClientRect().height;
@@ -23,15 +24,15 @@ svg1.attr("viewBox", `0 0 ${svg1Width} ${svg1Height}`);
 
 const chart1Margin = { top: 50, right: 20, bottom: 20, left: 170 };
 
-var xScale3;
-var xScaleSubgroups3;
-var yScale3;
-var axisX3;
-var axisY3;
-const legend3Height = 40;
-const chart3Margin = { top: 20 + legend3Height, right: 20, bottom: 50, left: 50 };
-var chart3Width;
-var chart3Height;
+var xScale2;
+var xScaleSubgroups2;
+var yScale2;
+var axisX2;
+var axisY2;
+const typesLegendHeight = 40;
+const chart2Margin = { top: 20 + typesLegendHeight, right: 20, bottom: 50, left: 50 };
+var chart2Width;
+var chart2Height;
 
 const tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
@@ -58,12 +59,14 @@ const tooltip = d3.select("body").append("div")
   const rangeValue1 = d3.select("#range-value-1");
   const maxValue1 = d3.select("#max-value-1");  
 
-  const chartType3 = d3.selectAll("input[name='chart-type']");
+  const chartType2 = d3.selectAll("input[name='chart-type']");
 
   const yearSliderMax = d3.select("#max-year");
   const yearSliderMaxValue = d3.select("#max-year-value");
   const yearSliderMin = d3.select("#min-year");
   const yearSliderMinValue = d3.select("#min-year-value");
+
+  var currentTab = "tab-1";
 
   //--- listener controlli tab 1 ----
   //listener per cambio attributo
@@ -89,14 +92,12 @@ const tooltip = d3.select("body").append("div")
     })
 
   //--- listener controlli tab2 ---
-
-  chartType3.on("change", () => {
+  chartType2.on("change", () => {
     var value = d3.selectAll("input[name='chart-type']:checked").property("value");
-    createBarchart3(value);
-    closeAdditionalCharts("#additional-info-3");
+    createYearsChart(value);
+    closeAdditionalCharts("#additional-info-2");
   })
 
-  //--- listener controlli tab3 ---
   yearSliderMax.on("input", () => {
     var value = d3.selectAll("input[name='chart-type']:checked").property("value");
     maxYearToVis = parseInt(yearSliderMax.property("value"));
@@ -106,8 +107,8 @@ const tooltip = d3.select("body").append("div")
       yearSliderMax.property("value", maxYearToVis);
     }
     yearSliderMaxValue.text(years[maxYearToVis].toString());
-    updateChart3(value);
-    closeAdditionalCharts("#additional-info-3");
+    updateYearsChart(value);
+    closeAdditionalCharts("#additional-info-2");
   });
 
   yearSliderMin.on("input", () => {
@@ -119,38 +120,35 @@ const tooltip = d3.select("body").append("div")
       yearSliderMin.property("value", minYearToVis);
     }
     yearSliderMinValue.text(years[minYearToVis].toString());
-    updateChart3(value);
-    closeAdditionalCharts("#additional-info-3");
+    updateYearsChart(value);
+    closeAdditionalCharts("#additional-info-2");
   });
 
 loadDatasets();
 
 function openTab(event, tabName) {
   var i, tabContent, tabButtons;
-  
-  // Nasconde tutti i contenuti delle schede
+
   tabContent = document.getElementsByClassName("tab-content");
   for (i = 0; i < tabContent.length; i++) {
       tabContent[i].style.display = "none";
   }
-  // Rimuove la classe "active" da tutti i pulsanti
   tabButtons = document.getElementsByClassName("tab-button");
   for (i = 0; i < tabButtons.length; i++) {
       tabButtons[i].className = tabButtons[i].className.replace(" active", "");
   }
-  // Mostra la scheda corrente e aggiunge una classe "active" al pulsante
   document.getElementById(tabName).style.display = "flex";
   event.currentTarget.className += " active";
-
+  currentTab = tabName;
   if(tabName == "tab-1"){
     const attr = attrSelector1.property("value");
     createBarchart1(attr, "name", "count");
     closeAdditionalCharts("#additional-info-1");
   }
-  if(tabName == "tab-3"){
+  if(tabName == "tab-2"){
     var value = d3.selectAll("input[name='chart-type']:checked").property("value");
-    createBarchart3(value);
-    closeAdditionalCharts("#additional-info-3");
+    createYearsChart(value);
+    closeAdditionalCharts("#additional-info-2");
   }
 }
 
@@ -166,7 +164,6 @@ async function loadDatasets(){
     gamesByYear = calcGamesByYear(data);
     categByYear = calcCategByYears(data);
     typeByYear = calcTypeByYears2(data);
-    //typeByYear = calcTypeByYears(data);
 
     catData.nodes.forEach( d => {
       d.count = d.games.length
@@ -206,6 +203,7 @@ async function loadDatasets(){
     years = [...new Set(years)];
     years = years.sort((a, b) => d3.ascending(a, b));
     types = [...new Set(typeByYear.map(d => d.type))]; 
+    selectedTypes = types;
 
     maxYearToVis = years.length-1;
     minYearToVis = 0;
@@ -222,17 +220,17 @@ async function loadDatasets(){
 }
 
 function createBarchart1(attr, varY, varX){
+
+  var data = window[attr].slice(0, maxItemsToVis1);
+
   var svgWidth = svg1Width;
-  var svgHeight = svg1Height
-  var data = window[attr];
-  var data = data.slice(0, maxItemsToVis1);
-  minHeightNeeded = data.length * 20 + (chart1Margin.top + chart1Margin.bottom);
+  var svgHeight = svg1Height;
   if(maxItemsToVis1 > 20){
     svgHeight = svg1Height + (maxItemsToVis1 - 20) * 20;
-    svg1.attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
   } else {
     svgHeight = svg1Height;
   }
+  svg1.attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
   
   const attrSelected = attrSelector1.select("option:checked");
   const barsColor = colorsBarchart1[attr];
@@ -285,14 +283,14 @@ function createBarchart1(attr, varY, varX){
   );
 
   // gruppo rect + label interna
-  const barAndLabel = innerChart
+  const barGroup = innerChart
     .selectAll(".bar-group")
     .data(data)
     .join("g")
     .attr("class", "bar-group")
     .attr("transform", (d) => `translate(0, ${yScale(d[varY])})`);
 
-  barAndLabel
+  barGroup
     .append("rect")
     .attr("width", (d) => xScale(d[varX]))
     .attr("height", yScale.bandwidth())
@@ -328,7 +326,7 @@ function createBarchart1(attr, varY, varX){
       showAdditionalCharts(dataToVis, attr, "#additional-info-1");
     });
 
-  barAndLabel
+  barGroup
     .append("text")
     .text((d) => d.count)
     .attr("x", (d) => xScale(d[varX]) - 10)
@@ -387,22 +385,22 @@ function createBarchart1(attr, varY, varX){
 
 
 
-function createBarchart3(chartType){
-  var svg3Width = +cont3.node().getBoundingClientRect().width;
-  var svg3Height = +cont3.node().getBoundingClientRect().height;
-  svg3.attr("viewBox", `0 0 ${svg3Width} ${svg3Height}`);
+function createYearsChart(chartType){
+  var svg2Width = +cont2.node().getBoundingClientRect().width;
+  var svg2Height = +cont2.node().getBoundingClientRect().height;
+  svg2.attr("viewBox", `0 0 ${svg2Width} ${svg2Height}`);
 
   var yearsToVis = years.sort((a, b) => d3.ascending(a, b));
-  console.log(yearsToVis);
-  console.log(minYearToVis)
-  console.log(maxYearToVis)
+  // console.log(yearsToVis);
+  // console.log(minYearToVis)
+  // console.log(maxYearToVis)
   yearsToVis = yearsToVis.slice(minYearToVis, maxYearToVis+1);
-  console.log(yearsToVis);
-  selectedTypes = types;
-  console.log(types);
+  //console.log(yearsToVis);
+  //console.log(types);
+  //console.log(selectedTypes);
 
-  chart3Width = svg3Width - (chart3Margin.right + chart3Margin.left);
-  chart3Height = svg3Height - (chart3Margin.top + chart3Margin.bottom);
+  chart2Width = svg2Width - (chart2Margin.right + chart2Margin.left);
+  chart2Height = svg2Height - (chart2Margin.top + chart2Margin.bottom);
   var data;
   if(chartType == "types"){
     data = typeByYear;
@@ -413,62 +411,62 @@ function createBarchart3(chartType){
   const max_count = d3.max(data, (d) => d.games.length);
   
   //definizione scale per gli assi
-  xScale3 = d3
+  xScale2 = d3
   .scaleBand()
   .domain(yearsToVis)
-  .range([0, chart3Width])
+  .range([0, chart2Width])
   .padding(0.2);
 
-  xScaleSubgroups3 = d3
+  xScaleSubgroups2 = d3
   .scaleBand()
   .domain(types)
-  .range([0, xScale3.bandwidth()])
+  .range([0, xScale2.bandwidth()])
   .padding(0.1);
 
-  yScale3 = d3.scaleLinear()
+  yScale2 = d3.scaleLinear()
   .domain([0, max_count])
-  .range([chart3Height, 0]);
+  .range([chart2Height, 0]);
 
   colorScaleTypes
   .domain(types);
 
-  svg3.selectAll("*").remove();
+  svg2.selectAll("*").remove();
 
-  const legend = svg3.append("g")
+  const legend = svg2.append("g")
   .attr("class", "legend")
-  .attr("transform", `translate(${chart3Margin.left}, 0)`)
-  .attr("width", chart3Width)
-  .attr("height", legend3Height);
+  .attr("transform", `translate(${chart2Margin.left}, 0)`)
+  .attr("width", chart2Width)
+  .attr("height", typesLegendHeight);
 
-  const innerChart = svg3
+  const innerChart = svg2
     .append("g")
     .attr("class", "chart-group")
-    .attr("width", chart3Width)
-    .attr("height", chart3Height)
-    .attr("transform", `translate(${chart3Margin.left},${chart3Margin.top})`);
+    .attr("width", chart2Width)
+    .attr("height", chart2Height)
+    .attr("transform", `translate(${chart2Margin.left},${chart2Margin.top})`);
 
   const chartContent = innerChart
     .append("g")
     .attr("class", "chart-content")
-    .attr("width", chart3Width)
-    .attr("height", chart3Height);
+    .attr("width", chart2Width)
+    .attr("height", chart2Height);
     
     //aggiunta assi
-  axisX3 = innerChart
+  axisX2 = innerChart
     .append("g")
     .attr("class", "axis-x")
-    .attr("transform", `translate(0, ${chart3Height})`)
+    .attr("transform", `translate(0, ${chart2Height})`)
 
-  axisY3 = innerChart
+  axisY2 = innerChart
     .append("g")
     .attr("class", "axis-y")
-    .call(d3.axisLeft(yScale3));
+    .call(d3.axisLeft(yScale2));
 
       // aggiunta etichette degli assi
   innerChart
   .append("text")
   .attr("class", "axis-title")
-  .attr("transform", `translate(${chart3Width / 2}, ${chart3Height + 30})`)
+  .attr("transform", `translate(${chart2Width / 2}, ${chart2Height + 30})`)
   .style("text-anchor", "middle")
   .text("Release year");
 
@@ -477,16 +475,16 @@ function createBarchart3(chartType){
   .attr("class", "axis-title")
   .attr("transform", "rotate(-90)")
   .attr("y", 0 - 20 )
-  .attr("x", 0 - chart3Height/2)
+  .attr("x", 0 - chart2Height/2)
   .style("text-anchor", "middle")
   .text("Number of games");
 
   //creazione legenda e inizializzazione grafico
-  createLegend3(types);
-  updateChart3(chartType);
+  createTypesLegend(types);
+  updateYearsChart(chartType);
 };
 
-function updateChart3(chartType) {
+function updateYearsChart(chartType) {
   console.log(chartType)
   var yearsToVis = years.sort((a, b) => d3.ascending(a, b));
   yearsToVis = yearsToVis.slice(minYearToVis, maxYearToVis+1);
@@ -502,16 +500,16 @@ function updateChart3(chartType) {
 
   const max_count = d3.max(data, (d) => d.games.length);
 
-  xScale3
+  xScale2
   .domain(yearsToVis);
 
   if(chartType == "types"){
-  xScaleSubgroups3
-  .domain(types)
-  .range([0, xScale3.bandwidth()])
+    xScaleSubgroups2
+      .domain(types)
+      .range([0, xScale2.bandwidth()])
   }
 
-  yScale3
+  yScale2
   .domain([0, max_count]);
 
   var mousemove = function(event,d) {
@@ -521,72 +519,71 @@ function updateChart3(chartType) {
   }
 
   // Aggiungi rettangoli di sfondo alternati
-  const innerChart = svg3.select(".chart-content");
+  const innerChart = svg2.select(".chart-content");
   innerChart.selectAll("*").remove();
 
-  const infoText = d3.select("#additional-info-3 .info-selected-text");
-  const infoDefaultText = d3.select("#additional-info-3 .info-default-text");
+  const infoText = d3.select("#additional-info-2 .info-selected-text");
+  const infoDefaultText = d3.select("#additional-info-2 .info-default-text");
   var barSelected = false;
 
-  const backgroundRectWidth = xScale3.step();
+  const backgroundRectWidth = xScale2.step();
 
   const backgroundRects = innerChart.selectAll(".background-rect")
-  .data(yearsToVis)
-  .join("rect")
-  .attr("class", "background-rect")
-  .attr("x", (d) => (xScale3(d) - (xScale3.step()-xScale3.bandwidth())/2))
-  .attr("y", 0)
-  .attr("width", backgroundRectWidth)
-  .attr("height", chart3Height)
-  .attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
+    .data(yearsToVis)
+    .join("rect")
+    .attr("class", "background-rect")
+    .attr("x", (d) => (xScale2(d) - (xScale2.step() -  xScale2.bandwidth())/2))
+    .attr("y", 0)
+    .attr("width", backgroundRectWidth)
+    .attr("height", chart2Height)
+    .attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
 
   innerChart.append("g").call((g) => g
     .attr('class', 'grid')
     .selectAll('line')
-    .data(yScale3.ticks().filter(d => Number.isInteger(d)))
+    .data(yScale2.ticks().filter(d => Number.isInteger(d)))
     .join('line')
     .attr('x1', 0)
-    .attr('x2', chart3Width)
-    .attr('y1', d => yScale3(d))
-    .attr('y2', d => yScale3(d))
+    .attr('x2', chart2Width)
+    .attr('y1', d => yScale2(d))
+    .attr('y2', d => yScale2(d))
   );
 
   if(chartType == "types"){
-
-    svg3.select(".legend").style("visibility", "visible");
+    svg2.select(".legend").style("visibility", "visible");
 
     backgroundRects
-    .on("mouseover", function(event,d){
-      if(!barSelected){
-        d3.select(event.currentTarget).attr("fill", d3.color("#f0f0f0").darker());
-      }
-    })
-    .on("mouseout", function(event,d){  
-      if(!barSelected){
+      .on("mouseover", function(event,d){
+        if(!barSelected){
+          d3.select(event.currentTarget).attr("fill", d3.color("#f0f0f0").darker());
+        }
+      })
+      .on("mouseout", function(event,d){  
+        if(!barSelected){
+          backgroundRects.attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
+          }      
+      })
+      .on("click", (event,d) => {
+        barSelected = true;
         backgroundRects.attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
-        }      
-    })
-    .on("click", (event,d) => {
-      barSelected = true;
-      backgroundRects.attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
-      d3.select(event.currentTarget).attr("fill", d3.color("#f0f0f0").darker());
-      var games = gamesByYear.find(g => g.year == d).games;
-      var additionalData = [];
-      games.forEach(game => {
-        var gameData = dataset.nodes.find(d => d.id == game);
-        additionalData.push(gameData);
+        d3.select(event.currentTarget).attr("fill", d3.color("#f0f0f0").darker());
+        var games = gamesByYear.find(g => g.year == d).games;
+        var additionalData = [];
+        games.forEach(game => {
+          var gameData = dataset.nodes.find(d => d.id == game);
+          additionalData.push(gameData);
+        });
+        console.log(additionalData);
+        infoDefaultText.style("display", "none");
+        infoText.style("display","block").html(`Showing statistics about games released in year <strong>${d} </strong>`);
+        showAdditionalCharts(additionalData, attrMainChart="year",containerId="#additional-info-2");
       });
-      console.log(additionalData);
-      infoDefaultText.style("display", "none");
-      infoText.style("display","block").html(`Showing statistics about games released in year <strong>${d} </strong>`);
-      showAdditionalCharts(additionalData, attrMainChart="year",containerId="#additional-info-3");
-    });
 
   const yearGroups = innerChart.selectAll(".year-group")
     .data(yearsToVis)
     .join("g")
     .attr("class", "year-group")
-    .attr("transform", (year) => `translate(${xScale3(year)}, 0)`);
+    .attr("transform", (year) => `translate(${xScale2(year)}, 0)`);
 
 
   yearGroups.selectAll("rect")
@@ -596,19 +593,18 @@ function updateChart3(chartType) {
       })
     })
     .join("rect")
-    .attr("width", xScaleSubgroups3.bandwidth())
-    .attr("height", (d) => chart3Height - yScale3(d.games.length))
-    .attr("x", (d) => xScaleSubgroups3(d.type))
-    .attr("y", (d) => yScale3(d.games.length))
+    .attr("width", xScaleSubgroups2.bandwidth())
+    .attr("height", (d) => chart2Height - yScale2(d.games.length))
+    .attr("x", (d) => xScaleSubgroups2(d.type))
+    .attr("y", (d) => yScale2(d.games.length))
     .attr("fill", (d) => colorScaleTypes(d.type))
     .on("mouseover", function(event,d){
       var gameNames = [];
-      console.log(d);
       d.games.forEach(game => {
         let gameData = dataset.nodes.find(g => g.id == game);
         gameNames.push(gameData.title);
       });
-      console.log(gameNames);
+
       tooltip
       .html(`<strong>Year: ${d.year} <br> Type: ${d.type} <br> Number of games: ${d.games.length} <br> Games:</strong> <br>
         ${gameNames.join("<br>")}`)
@@ -621,41 +617,41 @@ function updateChart3(chartType) {
 
   } 
   else if(chartType == "total"){
-    svg3.select(".legend").style("visibility", "hidden");
+    svg2.select(".legend").style("visibility", "hidden");
 
       // gruppo rect + label interna
-        const barAndLabel = innerChart
+      const barGroup = innerChart
         .selectAll(".bar-group")
         .data(data)
         .join("g")
         .attr("class", "bar-group")
-        .attr("transform", (d) => `translate(${xScale3(d.year)}, 0)`);
+        .attr("transform", (d) => `translate(${xScale2(d.year)}, 0)`);
 
-      barAndLabel
+      barGroup
         .append("rect")
-        .attr("width", xScale3.bandwidth()-0.2)
-        .attr("height", (d) => chart3Height - yScale3(d.games.length))
+        .attr("width", xScale2.bandwidth()-0.2)
+        .attr("height", (d) => chart2Height - yScale2(d.games.length))
         .attr("x", 0)
-        .attr("y", (d) => yScale3(d.count))
-        .attr("fill", d3.color(colorBarchart2))
+        .attr("y", (d) => yScale2(d.count))
+        .attr("fill", d3.color(colorYearsChart))
         .on("mouseover", function(event,d){
           tooltip
           .html(`<strong>Year ${d.year} : ${d.count} games </strong>`)
           .style("visibility", "visible");
           if(!barSelected){
-            d3.select(this).attr("fill", d3.color(colorBarchart2).darker());
+            d3.select(this).attr("fill", d3.color(colorYearsChart).darker());
           }
         })
         .on("mousemove", mousemove)
         .on("mouseout", function(event,d){
           tooltip.style("visibility", "hidden");
           if(!barSelected){
-            d3.select(this).attr("fill", d3.color(colorBarchart2));
+            d3.select(this).attr("fill", d3.color(colorYearsChart));
           }
         })
         .on("click", (event,d) => {
-          d3.selectAll(".bar-group rect").attr("fill", d3.color(colorBarchart2));
-          d3.select(event.currentTarget).attr("fill", d3.color(colorBarchart2).darker());
+          d3.selectAll(".bar-group rect").attr("fill", d3.color(colorYearsChart));
+          d3.select(event.currentTarget).attr("fill", d3.color(colorYearsChart).darker());
           var games = d.games;
           var additionalData = [];
           games.forEach(game => {
@@ -665,58 +661,55 @@ function updateChart3(chartType) {
           console.log(additionalData);
           infoDefaultText.style("display", "none");
           infoText.style("display","block").html(`Showing statistics about games released in year <strong>${d.year} </strong>`);
-          showAdditionalCharts(additionalData, attrMainChart="year",containerId="#additional-info-3");
+          showAdditionalCharts(additionalData, attrMainChart="year",containerId="#additional-info-2");
         });
 
-      barAndLabel
+      barGroup
         .append("text")
         .text((d) => d.count)
-        .attr("x", xScale3.bandwidth() / 2)
-        .attr("y", (d) => yScale3(d.year) - 3)
+        .attr("x", xScale2.bandwidth() / 2)
+        .attr("y", (d) => yScale2(d.year) - 3)
         .style("font-family", "sans-serif")
         .style("font-size", "9px");
   }
 
-    axisX3.transition()
-      .call(d3.axisBottom(xScale3))
+    axisX2.transition()
+      .call(d3.axisBottom(xScale2))
       .selectAll("text")
       .style("text-anchor", "center");
     
-    axisY3.transition()    
-      .call(d3.axisLeft(yScale3)
+    axisY2.transition()    
+      .call(d3.axisLeft(yScale2)
         .ticks(max_count)
         .tickFormat(d => Number.isInteger(d) ? d : ""));
     
-      svg3.on("click", (event) => {
+      svg2.on("click", (event) => {
         if(chartType == "total" && (event.target.tagName === "svg" || event.target.classList.contains("background-rect"))){
-            closeAdditionalCharts("#additional-info-3");
-            d3.selectAll(".bar-group rect").attr("fill", d3.color(colorBarchart2));
+            closeAdditionalCharts("#additional-info-2");
+            d3.selectAll(".bar-group rect").attr("fill", d3.color(colorYearsChart));
             barSelected = false;
         }
         if(chartType == "types" && event.target.tagName === "svg"){
-          closeAdditionalCharts("#additional-info-3");
+          closeAdditionalCharts("#additional-info-2");
           backgroundRects.attr("fill", (d, i) => (i % 2 == 0 ? "#f0f0f0" : "#f9f9f9"));
           barSelected = false;
         }
       });
 }
 
-function createLegend3(types){
+function createTypesLegend(types){
 
-  const legend = svg3.select(".legend");
-  
+  const legend = svg2.select(".legend");  
   legend.style("visibility", "visible");
-
   legend.selectAll("*").remove();
 
   legend.append("text")
-  .attr("x", 0)
-  .attr("y", 20)
-  .attr("font-size", "15")
-  .attr("text-anchor", "start")
-  .text("Click on the legend to show/hide specific types");
+    .attr("x", 0)
+    .attr("y", 20)
+    .attr("font-size", "15")
+    .attr("text-anchor", "start")
+    .text("Click on the legend to show/hide specific types");
 
-  // aggiunta legenda
   let legendX = 0;
   types.forEach((type, i) => {
     const legendItem = legend.append("g")
@@ -729,8 +722,8 @@ function createLegend3(types){
         } else {
           selectedTypes.push(type);
         }
-        updateChart3(chartType = "types");
-        closeAdditionalCharts("#additional-info-3");
+        updateYearsChart(chartType = "types");
+        closeAdditionalCharts("#additional-info-2");
         d3.select(this).select("rect").attr("fill", selectedTypes.includes(type) ? colorScaleTypes(type) : "#ccc");
       });
 
@@ -739,7 +732,7 @@ function createLegend3(types){
       .attr("height", 16)
       .attr("x", 0)
       .attr("y", 0)
-      .attr("fill", colorScaleTypes(type));
+      .attr("fill", selectedTypes.includes(type) ? colorScaleTypes(type) : "#ccc");
 
     legendItem.append("text")
       .attr("x", 20)
@@ -762,12 +755,18 @@ function closeAdditionalCharts(containerId){
 }
 
 window.addEventListener("resize", () => {
-    const attr = attrSelector1.property("value");
+    if(currentTab == "tab-1"){
+      const attr = attrSelector1.property("value");
 
-    createBarchart1(attr, "name", "count");
-    closeAdditionalCharts("#additional-info-1");
+      svg1Height = (window.innerHeight * 0.8);
+      svg1Width = cont1.node().getBoundingClientRect().width;
+      svg1.attr("viewBox", `0 0 ${svg1Width} ${svg1Height}`);
+      createBarchart1(attr, "name", "count");
+      closeAdditionalCharts("#additional-info-1");
 
-    var value = d3.selectAll("input[name='chart-type']:checked").property("value");
-    updateChart3(value);
-    closeAdditionalCharts("#additional-info-3");
+    } else if(currentTab == "tab-2"){
+      var value = d3.selectAll("input[name='chart-type']:checked").property("value");
+      createYearsChart(value);
+      closeAdditionalCharts("#additional-info-2");
+    }
 });

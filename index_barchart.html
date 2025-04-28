@@ -12,7 +12,7 @@
       <div class="container">
         <div class="tabs">
           <button class="tab-button active" onclick="openTab(event, 'tab-1')">View most common categories, mechanics and designers among all games</button>
-          <button class="tab-button" onclick="openTab(event, 'tab-3')">View game types and other statistics by year of release</button>
+          <button class="tab-button" onclick="openTab(event, 'tab-2')">View game types and other statistics by year of release</button>
         </div>
 
         <div class="tab-content active" id="tab-1">
@@ -59,10 +59,10 @@
           </div>
         </div>
 
-        <div class="tab-content" id="tab-3">
+        <div class="tab-content" id="tab-2">
 
           <div class="col col-9">
-            <div class="controls-container" id="controls-3">
+            <div class="controls-container" id="controls-2">
               <div class="range-container">
                 <label for="min-year">Select min year</label>
                 <br>
@@ -85,12 +85,12 @@
                 <label for="total">View total number of games per year</label>
               </div>
             </div>
-            <div class="svg-container" id="bar-chart-3">
+            <div class="svg-container" id="bar-chart-2">
             </div>
           </div>
 
           <div class="col col-3">
-            <div class="additional-info" id="additional-info-3">
+            <div class="additional-info" id="additional-info-2">
               <h2>Additional Info</h2>
               <div class="info-default-text"><strong>Click on a year </strong>to show here more informations and statistics about the <strong>games</strong> released in specific <strong>year</strong></div>
               <div class="info-selected-text"></div>
@@ -102,9 +102,9 @@
                 <button class="chart-btn" data-chart="categories">Categories</button>
               </div>
               <div class="show-all-selector">
-                <input type="radio" name="show-all-3" value="top10" checked>
+                <input type="radio" name="show-all-2" value="top10" checked>
                 <label for="show-all">View only first 10 games</label>      
-                <input type="radio" name="show-all-3" value="all" >
+                <input type="radio" name="show-all-2" value="all" >
                 <label for="show-all">View all games</label>
               </div>
               <div class="info-add-text"><strong>Click on a bar </strong> to open the game node in the <strong>recommendation network</strong></div>

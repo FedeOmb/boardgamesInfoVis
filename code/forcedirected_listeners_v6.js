@@ -378,7 +378,7 @@ function handleNodeClick(event,d) {
         data.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
         createDumbbellChart(data, "minplaytime", "maxplaytime", chartContent, "Playtime (min)", d.id);     
       } else if (chartType === "categories") {
-        createCategoriesChart(data, chartContent, "network");
+        createCategoriesChart(data, chartContent);
       }
     });
 
@@ -410,7 +410,8 @@ svg.on("click", function(event) {
 function closeInfoPanel(){
   infoPanelVisible = false
   nodeLabels
-    .text(d => d.rank<11 ? getShortTitle(d.title) : "")
+    //.text(d => d.rank<11 ? getShortTitle(d.title) : "")
+    .text(d => getShortTitle(d.title))
     .style("display", labelsVisible? "block": "none")
     .attr("dx", d => -radiusScale(d.rank)) 
     .attr("dy", "0.35em");

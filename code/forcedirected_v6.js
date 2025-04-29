@@ -34,7 +34,10 @@ var networkGroup = svg.append("g").attr("class", "network-group");
 var zoom = d3.zoom()
   .scaleExtent([0.2, 5]) // limiti di zoom
   .on("zoom", function(event) {
-    networkGroup.attr("transform", event.transform); // Applica la trasformazione al gruppo
+    networkGroup.attr("transform", event.transform); 
+    nodeLabels.style("font-size", d => 
+      `${Math.max(10, radiusScale(d.rank) / event.transform.k)}px`
+    );
 });
 
 svg.call(zoom);
@@ -210,6 +213,11 @@ forceProperties = {
     strength: 0.15,
   },
 };
+forceProperties.labelCollision = {
+  enabled: true,
+  strength: 0.7,
+  radius: d => Math.max(10, radiusScale(d.rank)) * 2 
+};
 function forceCluster(alpha) {
   const strength = 0.15;
   const padding = 250;
@@ -256,6 +264,11 @@ function initializeForces() {
     .force("forceX", d3.forceX())
     .force("forceY", d3.forceY())
     .force("cluster", forceCluster());
+  simulation
+    .force("labelCollision", d3.forceCollide()
+      .strength(forceProperties.labelCollision.strength)
+      .radius(forceProperties.labelCollision.radius)
+    );
   // apply properties to each of the forces
   updateForces();
 }
@@ -364,30 +377,43 @@ function initializeDisplay() {
     
         nodeLabels
           .filter(n => n.id === d.id)
-          .attr("x", d.x)
-          .attr("y", d.y);
+          .attr("x", d => {
+            // Try to find a position with least overlap
+            const angle = Math.atan2(d.y - height/2, d.x - width/2);
+            const offset = radiusScale(d.rank) + 10;
+            return d.labelX = d.x + Math.cos(angle) * offset;
+          })
+          .attr("y", d => {
+            const angle = Math.atan2(d.y - height/2, d.x - width/2);
+            const offset = radiusScale(d.rank) + 10;
+            return d.labelY = d.y + Math.sin(angle) * offset;
+          });
       })
     );  
 
   var labelsGroup = networkGroup.append("g")
     .attr("class", "labels-group");
   
-    nodeLabels = labelsGroup.selectAll(".node-label")
-      .data(graph.nodes)
-      .enter()
-      .append("text")
-      .attr("class", "node-label")
-      .attr("text-anchor", "end")  
-      .attr("pointer-events", "none")
-      .style("font-size", d => `${Math.max(10, radiusScale(d.rank))}px`)
-      /*.style("font-weight", "bold")*/
-      .text(d => {
-        if (d.rank < 11)
-          return getShortTitle(d.title);
-      })
-      .style("display", "none")
-      .attr("dx", d => -radiusScale(d.rank)) 
-      .attr("dy", "0.35em");  
+  nodeLabels = labelsGroup.selectAll(".node-label")
+    .data(graph.nodes)
+    .enter()
+    .append("text")
+    .attr("class", "node-label")
+    .attr("text-anchor", "middle")  // Changed to middle for better centering
+    .attr("pointer-events", "none")
+    .style("font-size", d => `${Math.max(10, radiusScale(d.rank))}px`)
+    .text(d => {
+      //if (d.rank < 11)
+        return getShortTitle(d.title);
+    })
+    .style("display", "none")
+    .attr("dx", 0)  // Reset dx since we'll position differently
+    .attr("dy", "0.35em")
+    .each(function(d) {
+      // Store original position
+      d.labelX = d.x;
+      d.labelY = d.y + radiusScale(d.rank) + 5; // Position below node
+    });
 
   // visualize the graph
   updateDisplay();
@@ -470,9 +496,19 @@ function ticked() {
   }
   d3.select("#alpha_value").style("flex-basis", simulation.alpha() * 100 + "%");
 
+  // Update label positions with collision avoidance
   nodeLabels
-    .attr("x", d => d.x)  
-    .attr("y", d => d.y);
+    .attr("x", d => {
+      // Try to find a position with least overlap
+      const angle = Math.atan2(d.y - height/2, d.x - width/2);
+      const offset = radiusScale(d.rank) + 10;
+      return d.labelX = d.x + Math.cos(angle) * offset;
+    })
+    .attr("y", d => {
+      const angle = Math.atan2(d.y - height/2, d.x - width/2);
+      const offset = radiusScale(d.rank) + 10;
+      return d.labelY = d.y + Math.sin(angle) * offset;
+    });
 }
 
 function adjustLinkStart(source, target, radius) {

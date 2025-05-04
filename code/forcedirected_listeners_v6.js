@@ -219,13 +219,13 @@ function handleNodeClick(event,d) {
 
     // Evidenziamo il nodo cliccato
     clickedNode = d3.select(this);
-  /*
+  
     clickedNode
       .selectAll("circle, path")
       .attr("stroke", "DarkSlateGrey")
       .attr("stroke-width", 2)
       .attr("opacity", 1);
-  */
+  
     // Evidenziamo i link in uscita e bidirezionali
     link.each(function (l) {
       if (isBidirectional(l.source.id, l.target.id) && (l.source === d || l.target === d)) {
@@ -390,7 +390,6 @@ function handleNodeClick(event,d) {
       }
     });
 
-    /*
     nodeLabels
       .text(d => {
         const node = data.find(n => n.id == d.id);
@@ -398,13 +397,13 @@ function handleNodeClick(event,d) {
       })
       .attr("dx", d => -radiusScale(d.rank)) 
       .attr("dy", "0.35em");
-*/
-    nodeLabels
+
+    /*nodeLabels
       .style("display", function(d){
         const node = data.find(n => n.id == d.id);
         if(node && labelsVisible){return "block";}
         else {return "none";}
-      });
+      });*/
 
     d3.select("#toggle-labels").text(labelsVisible? "Hide Labels": "Show labels");
 

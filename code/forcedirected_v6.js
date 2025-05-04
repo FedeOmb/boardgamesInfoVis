@@ -31,13 +31,34 @@ function updateSize() {
 
 var networkGroup = svg.append("g").attr("class", "network-group");
 
+var zoomLevel = 1
 var zoom = d3.zoom()
   .scaleExtent([0.2, 5]) // limiti di zoom
   .on("zoom", function(event) {
+    zoomLevel = event.transform.k
     networkGroup.attr("transform", event.transform); 
-    nodeLabels.style("font-size", d => 
-      `${Math.max(10, radiusScale(d.rank) / event.transform.k)}px`
-    );
+    nodeLabels
+      .style("font-size", d => 
+        `${Math.max(10, radiusScale(d.rank) / event.transform.k)}px`
+      );
+    if(!infoPanelVisible)
+      nodeLabels
+        .text(d => {
+          if(zoomLevel <= 1){
+            if(d.rank < 16)
+              return getShortTitle(d.title)
+            else return ""
+          }else if(zoomLevel == 1.2){
+            if(d.rank < 36)
+              return getShortTitle(d.title)
+            else return ""
+          }else if(zoomLevel == 1.44){
+            if(d.rank < 51)
+              return getShortTitle(d.title)
+            else return ""
+          }else if(zoomLevel >=1.728)
+              return getShortTitle(d.title)
+      })
 });
 
 svg.call(zoom);
@@ -390,40 +411,24 @@ function initializeDisplay() {
   nodeLabels = labelsGroup.selectAll(".node-label")
     .data(graph.nodes)
     .enter()
-    .append("g")
+    .append("text")
     .attr("class", "node-label")
-    .attr("id", d => d.id)
-    .style("display", "none")
-    .style("pointer-events", "none")
-    .each(function(d) {
-      d.labelX = d.x;
-      d.labelY = d.y + radiusScale(d.rank) + 5; 
-    });
-
-  nodeLabels.append("rect")
-    .attr("class", "label-background")
-    .attr("fill", "white")
-    .attr("opacity", 0.5)
-    .attr("rx", 3)  
-    .attr("ry", 3);
-
-  nodeLabels.append("text")
-    .attr("class", "label-text")
-    .attr("text-anchor", "middle") 
+    .attr("text-anchor", "middle")  // Changed to middle for better centering
+    .attr("pointer-events", "none")
     .style("font-size", d => `${Math.max(10, radiusScale(d.rank))}px`)
-    .text(d => {
-      //if (d.rank < 11)
-        return getShortTitle(d.title);
-    })
+    .style("stroke", "white") // bordo
+    .style("stroke-width", "3px") // spessore del bordo
+    .style("paint-order", "stroke") // il bordo va sotto il testo
+    .style("stroke-linejoin", "round")
+    .style("stroke-opacity", 0.5)
+    .text(d => d.rank<16 ? getShortTitle(d.title) : "")
+    .style("display", "none")
+    .attr("dx", 0)  // Reset dx since we'll position differently
+    .attr("dy", "0.35em")
     .each(function(d) {
-      // Calcola dimensioni del testo e aggiorna il rettangolo
-      const textElement = d3.select(this);
-      const bbox = textElement.node().getBBox();
-      d3.select(this.parentNode).select("rect")
-        .attr("x", bbox.x - 2)
-        .attr("y", bbox.y - 2)
-        .attr("width", bbox.width + 2) 
-        .attr("height", bbox.height + 2); 
+      // Store original position
+      d.labelX = d.x;
+      d.labelY = d.y + radiusScale(d.rank) + 5; // Position below node
     });
 
   // visualize the graph
@@ -508,27 +513,18 @@ function ticked() {
   d3.select("#alpha_value").style("flex-basis", simulation.alpha() * 100 + "%");
 
   // Update label positions with collision avoidance
-  nodeLabels.each(function(d) {
-    adjustLabelPosition.call(this, d);
-    });
-  }
-
-function adjustLabelPosition(d) {
+  nodeLabels
+    .attr("x", d => {
+      // Try to find a position with least overlap
   const angle = Math.atan2(d.y - height/2, d.x - width/2);
   const offset = radiusScale(d.rank) + 10;
-  d.labelX = d.x + Math.cos(angle) * offset;
-  d.labelY = d.y + Math.sin(angle) * offset;
-
-  const textElement = d3.select(this).select("text");
-  const rectElement = d3.select(this).select("rect");
-
-  textElement.attr("x", d.labelX).attr("y", d.labelY);
-
-  const bbox = textElement.node().getBBox();
-
-  rectElement
-    .attr("x", bbox.x - 2).attr("y", bbox.y - 2) 
-    .attr("width", bbox.width + 2).attr("height", bbox.height + 2); 
+      return d.labelX = d.x + Math.cos(angle) * offset;
+    })
+    .attr("y", d => {
+      const angle = Math.atan2(d.y - height/2, d.x - width/2);
+      const offset = radiusScale(d.rank) + 10;
+      return d.labelY = d.y + Math.sin(angle) * offset;
+    });
 }
 
 function adjustLinkStart(source, target, radius) {

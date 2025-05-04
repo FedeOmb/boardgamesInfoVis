@@ -6,7 +6,7 @@ d3.select("#zoom-in").on("click", function() {
     svg.transition().call(zoom.scaleBy, 1.2);
   });
   d3.select("#zoom-out").on("click", function() {
-    svg.transition().call(zoom.scaleBy, 0.8);
+    svg.transition().call(zoom.scaleBy, 1/1.2);
   });
   d3.select("#zoom-reset").on("click", function() {
     if(infoPanelVisible){
@@ -194,7 +194,6 @@ function centerNode(node) {
   width = +svg.node().getBoundingClientRect().width;
   height = +svg.node().getBoundingClientRect().height;
   const scale = d3.zoomTransform(svg.node()).k; // mantiene lo zoom corrente
-  console.log(scale)
   const x = -node.x * scale + width/2;
   const y = -node.y * scale + height/2;
 
@@ -213,23 +212,23 @@ function handleNodeClick(event,d) {
     d3.select("#info-panel").style("display", "block");
     tooltip.style("visibility", "hidden");
 
-    // Resettiamo la visualizzazione
+    // Resetta la visualizzazione
     resetNetColors();
     networkGroup.selectAll("line").attr("opacity", 0.3);
     networkGroup.selectAll("circle, path").attr("opacity", 0.5);
 
     // Evidenziamo il nodo cliccato
     clickedNode = d3.select(this);
-  /*
+  
     clickedNode
       .selectAll("circle, path")
       .attr("stroke", "DarkSlateGrey")
       .attr("stroke-width", 2)
       .attr("opacity", 1);
-  */
+  
     // Evidenziamo i link in uscita e bidirezionali
     link.each(function (l) {
-      if (l.source === d || (l.source === d || l.target === d && isBidirectional(l.source.id, l.target.id)) ) {
+      if (isBidirectional(l.source.id, l.target.id) && (l.source === d || l.target === d)) {
         d3.select(this)
           .attr("stroke", "DarkSlateGrey")
           .attr("stroke-width", 2)
@@ -238,22 +237,21 @@ function handleNodeClick(event,d) {
             return adjustMarkerEnd(2);
           })
           .attr("marker-start", function(){
-            if(isBidirectional(l.source, l.target)){
-              return adjustMarkerStart(2);
-          }
-            else {return null};
-      });
-    }
-  });
+            return adjustMarkerStart(2);
+          }); // Keep marker-start for bidirectional
+      } else if (l.source === d) {
+        d3.select(this)
+          .attr("stroke", "DarkSlateGrey")
+          .attr("stroke-width", 2)
+          .attr("opacity", 1)
+          .attr("marker-end", function(){
+            return adjustMarkerEnd(2);
+          })
+          .attr("marker-start", null);
+      }
+    });
 
-    // Highlight the clicked node
-    clickedNode.selectAll("circle, path")
-      .attr("stroke", "DarkSlateGrey")
-      .attr("stroke-width", 2)
-      .attr("stroke-opacity", 1)
-      .attr("opacity", 1);
-
-    // Evidenziamo i nodi collegati
+    // Evidenziamo solo i nodi di destinazione
     node.each(function (n) {
       if (isAdjacent(d, n) || isBidirectional(d.id, n.id)) {
         d3.select(this)
@@ -340,6 +338,7 @@ function handleNodeClick(event,d) {
         .on("end", function() {
             //updateSize(); // Update the simulation and center force
             setTimeout(() => centerNode(d), 100);
+            
           });
   
     if (activeHull !== null) {
@@ -391,7 +390,6 @@ function handleNodeClick(event,d) {
       }
     });
 
-    /*
     nodeLabels
       .text(d => {
         const node = data.find(n => n.id == d.id);
@@ -399,16 +397,15 @@ function handleNodeClick(event,d) {
       })
       .attr("dx", d => -radiusScale(d.rank)) 
       .attr("dy", "0.35em");
-*/
-    nodeLabels
+
+    /*nodeLabels
       .style("display", function(d){
         const node = data.find(n => n.id == d.id);
         if(node && labelsVisible){return "block";}
         else {return "none";}
-      });
+      });*/
 
-    //labelsVisible = true
-    //d3.select("#toggle-labels").text(labelsVisible? "Hide Labels": "Show labels");
+    d3.select("#toggle-labels").text(labelsVisible? "Hide Labels": "Show labels");
 
     function getMaxMinAge(dataset){
       return Math.max(...dataset.nodes.map(item => item.minage));
@@ -427,8 +424,7 @@ function closeInfoPanel(){
   infoPanelVisible = false
   /*
   nodeLabels
-    //.text(d => d.rank<11 ? getShortTitle(d.title) : "")
-    .text(d => getShortTitle(d.title))
+    .text(d => d.rank<16 ? getShortTitle(d.title) : "")
     .style("display", labelsVisible? "block": "none")
     .attr("dx", d => -radiusScale(d.rank)) 
     .attr("dy", "0.35em");*/

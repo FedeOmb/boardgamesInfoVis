@@ -31,13 +31,34 @@ function updateSize() {
 
 var networkGroup = svg.append("g").attr("class", "network-group");
 
+var zoomLevel = 1
 var zoom = d3.zoom()
   .scaleExtent([0.2, 5]) // limiti di zoom
   .on("zoom", function(event) {
+    zoomLevel = event.transform.k
     networkGroup.attr("transform", event.transform); 
-    nodeLabels.style("font-size", d => 
-      `${Math.max(10, radiusScale(d.rank) / event.transform.k)}px`
-    );
+    nodeLabels
+      .style("font-size", d => 
+        `${Math.max(10, radiusScale(d.rank) / event.transform.k)}px`
+      );
+    if(!infoPanelVisible)
+      nodeLabels
+        .text(d => {
+          if(zoomLevel <= 1){
+            if(d.rank < 16)
+              return getShortTitle(d.title)
+            else return ""
+          }else if(zoomLevel == 1.2){
+            if(d.rank < 36)
+              return getShortTitle(d.title)
+            else return ""
+          }else if(zoomLevel == 1.44){
+            if(d.rank < 51)
+              return getShortTitle(d.title)
+            else return ""
+          }else if(zoomLevel >=1.728)
+              return getShortTitle(d.title)
+      })
 });
 
 svg.call(zoom);
@@ -402,10 +423,12 @@ function initializeDisplay() {
     .attr("text-anchor", "middle")  // Changed to middle for better centering
     .attr("pointer-events", "none")
     .style("font-size", d => `${Math.max(10, radiusScale(d.rank))}px`)
-    .text(d => {
-      //if (d.rank < 11)
-        return getShortTitle(d.title);
-    })
+    .style("stroke", "white") // bordo
+    .style("stroke-width", "3px") // spessore del bordo
+    .style("paint-order", "stroke") // il bordo va sotto il testo
+    .style("stroke-linejoin", "round")
+    .style("stroke-opacity", 0.5)
+    .text(d => d.rank<16 ? getShortTitle(d.title) : "")
     .style("display", "none")
     .attr("dx", 0)  // Reset dx since we'll position differently
     .attr("dy", "0.35em")

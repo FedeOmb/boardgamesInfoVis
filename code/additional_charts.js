@@ -411,7 +411,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
       .range([margin.top, height - margin.bottom])
       .padding(0.2);
 
-    var barsColor;
+    var barsColor = "steelblue";
     if(attrMainChart=="year"){
       barsColor = colorYearsChart;
     }else if(attrMainChart == "network"){

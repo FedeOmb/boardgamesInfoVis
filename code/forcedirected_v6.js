@@ -403,7 +403,7 @@ function initializeDisplay() {
   nodeLabels.append("rect")
     .attr("class", "label-background")
     .attr("fill", "white")
-    .attr("opacity", 0.3)
+    .attr("opacity", 0.5)
     .attr("rx", 3)  
     .attr("ry", 3);
 
@@ -574,12 +574,6 @@ window.addEventListener("resize", () => {
   updateSize();
   updateForces();
 });
-
-function updateTooltipPosition() {
-  tooltip
-    .style("left", (event.pageX - 40) + "px")
-    .style("top", (event.pageY + 10) + "px");
-};
 
 // Helper function to check if two nodes are adjacent
 function isAdjacent(source, target) {

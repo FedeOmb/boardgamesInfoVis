@@ -39,7 +39,7 @@ header h1 {
     color: #333;
     margin: 0;
     text-align: center;
-    margin-left: 20px;
+    margin-left: 110px;
     flex-grow: 1;
 }
 
@@ -263,7 +263,7 @@ span.chart-info {
     padding: 5px 10px;
     border-radius: 5px;
     position: absolute;
-    right: 20px;
+    left: 20px;
     top: 50%;
     transform: translateY(-50%);
 }

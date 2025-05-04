@@ -398,17 +398,10 @@ function initializeDisplay() {
     
         nodeLabels
           .filter(n => n.id === d.id)
-          .attr("x", d => {
-            // Try to find a position with least overlap
-            const angle = Math.atan2(d.y - height/2, d.x - width/2);
-            const offset = radiusScale(d.rank) + 10;
-            return d.labelX = d.x + Math.cos(angle) * offset;
-          })
-          .attr("y", d => {
-            const angle = Math.atan2(d.y - height/2, d.x - width/2);
-            const offset = radiusScale(d.rank) + 10;
-            return d.labelY = d.y + Math.sin(angle) * offset;
-          });
+          .each(function(d) {
+            adjustLabelPosition.call(this, d);
+          }
+      );
       })
     );  
 
@@ -418,10 +411,26 @@ function initializeDisplay() {
   nodeLabels = labelsGroup.selectAll(".node-label")
     .data(graph.nodes)
     .enter()
-    .append("text")
+    .append("g")
     .attr("class", "node-label")
-    .attr("text-anchor", "middle")  // Changed to middle for better centering
-    .attr("pointer-events", "none")
+    .attr("id", d => d.id)
+    .style("display", "none")
+    .style("pointer-events", "none")
+    .each(function(d) {
+      d.labelX = d.x;
+      d.labelY = d.y + radiusScale(d.rank) + 5; 
+    });
+
+  nodeLabels.append("rect")
+    .attr("class", "label-background")
+    .attr("fill", "white")
+    .attr("opacity", 0.3)
+    .attr("rx", 3)  
+    .attr("ry", 3);
+
+  nodeLabels.append("text")
+    .attr("class", "label-text")
+    .attr("text-anchor", "middle") 
     .style("font-size", d => `${Math.max(10, radiusScale(d.rank))}px`)
     .style("stroke", "white") // bordo
     .style("stroke-width", "3px") // spessore del bordo
@@ -433,9 +442,14 @@ function initializeDisplay() {
     .attr("dx", 0)  // Reset dx since we'll position differently
     .attr("dy", "0.35em")
     .each(function(d) {
-      // Store original position
-      d.labelX = d.x;
-      d.labelY = d.y + radiusScale(d.rank) + 5; // Position below node
+      // Calcola dimensioni del testo e aggiorna il rettangolo
+      const textElement = d3.select(this);
+      const bbox = textElement.node().getBBox();
+      d3.select(this.parentNode).select("rect")
+        .attr("x", bbox.x - 2)
+        .attr("y", bbox.y - 2)
+        .attr("width", bbox.width + 2) 
+        .attr("height", bbox.height + 2); 
     });
 
   // visualize the graph
@@ -520,18 +534,27 @@ function ticked() {
   d3.select("#alpha_value").style("flex-basis", simulation.alpha() * 100 + "%");
 
   // Update label positions with collision avoidance
-  nodeLabels
-    .attr("x", d => {
-      // Try to find a position with least overlap
-      const angle = Math.atan2(d.y - height/2, d.x - width/2);
-      const offset = radiusScale(d.rank) + 10;
-      return d.labelX = d.x + Math.cos(angle) * offset;
-    })
-    .attr("y", d => {
-      const angle = Math.atan2(d.y - height/2, d.x - width/2);
-      const offset = radiusScale(d.rank) + 10;
-      return d.labelY = d.y + Math.sin(angle) * offset;
+  nodeLabels.each(function(d) {
+    adjustLabelPosition.call(this, d);
     });
+  }
+
+function adjustLabelPosition(d) {
+  const angle = Math.atan2(d.y - height/2, d.x - width/2);
+  const offset = radiusScale(d.rank) + 10;
+  d.labelX = d.x + Math.cos(angle) * offset;
+  d.labelY = d.y + Math.sin(angle) * offset;
+
+  const textElement = d3.select(this).select("text");
+  const rectElement = d3.select(this).select("rect");
+
+  textElement.attr("x", d.labelX).attr("y", d.labelY);
+
+  const bbox = textElement.node().getBBox();
+
+  rectElement
+    .attr("x", bbox.x - 2).attr("y", bbox.y - 2) 
+    .attr("width", bbox.width + 2).attr("height", bbox.height + 2); 
 }
 
 function adjustLinkStart(source, target, radius) {
@@ -697,9 +720,9 @@ function isBidirectional(sourceid, targetid) {
 function getShortTitle(title){
   title = String(title)
   if(title.includes(":"))
-      return title.split(":")[0]
+      return title.split(":")[0]+"..."
   else if(title.includes("("))
-      return title.split("(")[0]
+      return title.split("(")[0]+"..."
   else return title
 }
 

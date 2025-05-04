@@ -1,4 +1,5 @@
 svg = d3.select("svg");
+var clickedNode = null;
 
 // Funzioni zoom
 d3.select("#zoom-in").on("click", function() {
@@ -16,8 +17,15 @@ d3.select("#zoom-in").on("click", function() {
 
 d3.select("#toggle-labels").on("click", function() {
   labelsVisible = !labelsVisible;
-  d3.selectAll(".node-label").style("display", labelsVisible ? "block" : "none");
   d3.select(this).text(labelsVisible ? "Hide Labels" : "Show Labels");
+  if(infoPanelVisible && labelsVisible && clickedNode){
+    d3.selectAll(".node-label").style("display", function(d) {
+      const nodeElement = d3.selectAll(".node").filter(n => n.id === d.id);
+      return isAdjacent(clickedNode.datum(), nodeElement.datum()) || isBidirectional(clickedNode.datum().id, d.id)|| clickedNode.datum().id === d.id ? "block" : "none";
+    });
+  }else{
+    d3.selectAll(".node-label").style("display", labelsVisible ? "block" : "none");
+  }
 });
 
 // Gestione selezione da barra di ricerca
@@ -209,6 +217,15 @@ function handleNodeClick(event,d) {
     networkGroup.selectAll("line").attr("opacity", 0.3);
     networkGroup.selectAll("circle, path").attr("opacity", 0.5);
 
+    // Evidenziamo il nodo cliccato
+    clickedNode = d3.select(this);
+  /*
+    clickedNode
+      .selectAll("circle, path")
+      .attr("stroke", "DarkSlateGrey")
+      .attr("stroke-width", 2)
+      .attr("opacity", 1);
+  */
     // Evidenziamo i link in uscita e bidirezionali
     link.each(function (l) {
       if (isBidirectional(l.source.id, l.target.id) && (l.source === d || l.target === d)) {
@@ -244,14 +261,6 @@ function handleNodeClick(event,d) {
           .attr("opacity", 1);
       }
     });
-
-    // Highlight the clicked node
-    const clickedNode = d3.select(this);
-    clickedNode.selectAll("circle, path")
-      .attr("stroke", "DarkSlateGrey")
-      .attr("stroke-width", 2)
-      .attr("stroke-opacity", 1)
-      .attr("opacity", 1);
 
     // Set fill to black for the clicked node
     if (d.type.length === 1) {
@@ -381,14 +390,21 @@ function handleNodeClick(event,d) {
       }
     });
 
+    /*
     nodeLabels
       .text(d => {
         const node = data.find(n => n.id == d.id);
         return node ? getShortTitle(node.title) : "";
       })
-      .style("display", labelsVisible? "block": "none")
       .attr("dx", d => -radiusScale(d.rank)) 
       .attr("dy", "0.35em");
+*/
+    nodeLabels
+      .style("display", function(d){
+        const node = data.find(n => n.id == d.id);
+        if(node && labelsVisible){return "block";}
+        else {return "none";}
+      });
 
     d3.select("#toggle-labels").text(labelsVisible? "Hide Labels": "Show labels");
 
@@ -407,11 +423,14 @@ svg.on("click", function(event) {
 
 function closeInfoPanel(){
   infoPanelVisible = false
+  /*
   nodeLabels
     .text(d => d.rank<16 ? getShortTitle(d.title) : "")
     .style("display", labelsVisible? "block": "none")
     .attr("dx", d => -radiusScale(d.rank)) 
-    .attr("dy", "0.35em");
+    .attr("dy", "0.35em");*/
+
+  d3.selectAll(".node-label").style("display", labelsVisible ? "block" : "none");
   //labelsVisible = true
   d3.select("#toggle-labels").text(labelsVisible? "Hide Labels": "Show labels");
   d3.select("body").classed("panel-open", false);

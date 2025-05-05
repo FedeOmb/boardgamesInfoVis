@@ -399,9 +399,24 @@ function initializeDisplay() {
         nodeLabels
           .filter(n => n.id === d.id)
           .each(function(d) {
-            adjustLabelPosition.call(this, d);
+            d.labelX = d.x;
+            d.labelY = d.y + radiusScale(d.rank) + 5;
           }
-      );
+        );
+
+          nodeLabels
+          .attr("x", d => {
+            // Try to find a position with least overlap
+            const angle = Math.atan2(d.y - height/2, d.x - width/2);
+            const offset = radiusScale(d.rank) + 10;
+            return d.labelX = d.x + Math.cos(angle) * offset;
+          })
+          .attr("y", d => {
+            const angle = Math.atan2(d.y - height/2, d.x - width/2);
+            const offset = radiusScale(d.rank) + 10;
+            return d.labelY = d.y + Math.sin(angle) * offset;
+          });
+  
       })
     );  
 
@@ -525,6 +540,12 @@ function ticked() {
       const offset = radiusScale(d.rank) + 10;
       return d.labelY = d.y + Math.sin(angle) * offset;
     });
+
+  nodeLabels
+    .each(function(d) {
+      d.labelX = d.x;
+      d.labelY = d.y + radiusScale(d.rank) + 5;
+    })
 }
 
 function adjustLinkStart(source, target, radius) {

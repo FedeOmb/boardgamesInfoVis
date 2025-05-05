@@ -386,7 +386,7 @@ function handleNodeClick(event,d) {
         data.sort((a, b) => d3.descending(a.minplaytime, b.minplaytime));
         createDumbbellChart(data, "minplaytime", "maxplaytime", chartContent, "Playtime (min)", d.id);     
       } else if (chartType === "categories") {
-        createCategoriesChart(data, chartContent);
+        createCategoriesChart(data, chartContent, "network");
       }
     });
 

@@ -571,12 +571,6 @@ window.addEventListener("resize", () => {
   updateForces();
 });
 
-function updateTooltipPosition() {
-  tooltip
-    .style("left", (event.pageX - 40) + "px")
-    .style("top", (event.pageY + 10) + "px");
-};
-
 // Helper function to check if two nodes are adjacent
 function isAdjacent(source, target) {
   return graph.links.some(link => 

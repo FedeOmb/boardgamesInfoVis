@@ -111,7 +111,7 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, a
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
   
-    const chartMargin = { top: 40, right: 40, bottom: 200, left: 160 };
+    const chartMargin = { top: 40, right: 40, bottom: 40, left: 160 };
     svgHeight = data.length * 25 + chartMargin.top + chartMargin.bottom;
   
     chartContainer.selectAll("*").remove();
@@ -146,12 +146,6 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, a
         <strong>Players: </strong>${d.minplayers} - ${d.maxplayers} <br> 
         <strong>Play Time: </strong>${d.minplaytime} - ${d.maxplaytime} min<br>`)
       .style("visibility", "visible");
-    }
-
-    var mousemove = function(event,d) {
-      tooltip
-      .style("left", (event.pageX) + "px")
-      .style("top", (event.pageY) + "px");
     }
 
     const currentGameColor = "#E68A47";
@@ -202,7 +196,9 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, a
         }
         showTooltip(event,d);
       })
-      .on("mousemove", mousemove)
+      .on("mousemove", function(event) {
+        updateTooltipPosition(event);
+      })
       .on("mouseout", () => {
         if(attrMainChart == "network" && gameId != null){
           innerChart.selectAll("rect")          
@@ -261,7 +257,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
     var svgWidth = chartContainer.node().getBoundingClientRect().width;
     var svgHeight = chartContainer.node().getBoundingClientRect().height;
     
-    const margin = { top: 40, right: 40, bottom: 200, left: 160 };
+    const margin = { top: 40, right: 40, bottom: 40, left: 160 };
     svgHeight = data.length * 25 + margin.top + margin.bottom;
   
     chartContainer.selectAll("*").remove();
@@ -303,7 +299,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
           .style("visibility", "visible");
       })
       .on("mousemove", function(event) {
-        updateTooltipPosition();
+        updateTooltipPosition(event);
       })
       .on("mouseout", function() {
         tooltip.style("visibility", "hidden");
@@ -324,7 +320,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
           .style("visibility", "visible");
       })
       .on("mousemove", function(event) {
-        updateTooltipPosition();
+        updateTooltipPosition(event);
       })
       .on("mouseout", function() {
         tooltip.style("visibility", "hidden");
@@ -345,7 +341,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
           .style("visibility", "visible");
       })
       .on("mousemove", function(event) {
-        updateTooltipPosition();
+        updateTooltipPosition(event);
       })
       .on("mouseout", function() {
         tooltip.style("visibility", "hidden");
@@ -369,8 +365,6 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
         wrapText(this,d);
       })
   }
-
-  //--ADDITIONAL CHARTS FOR FORCE DIRECTED--
   
   function createCategoriesChart(data, chartContainer, attrMainChart) {
 
@@ -385,7 +379,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
     counts.sort((a, b) => d3.descending(a.count, b.count));
   
     // Define dimensions and margins
-    const margin = { top: 40, right: 40, bottom: 200, left: 160 };
+    const margin = { top: 40, right: 40, bottom: 40, left: 160 };
     const width = chartContainer.node().getBoundingClientRect().width - 15;
     const height = counts.length * 22 + margin.top + margin.bottom; 
   
@@ -431,13 +425,21 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
         var games = data
         .filter(d =>  d.categories.some(cat => cat.name === n.name))
         .map(d => d.title);
-        tooltip
+        /*tooltip
           .html(`<strong>Games in category ${n.name}:</strong><br>
             ${games.join("<br>")}`)
           .style("visibility", "visible");
+*/        let tooltipContent = `<strong>Games in category ${n.name}:</strong><br><ul>`;
+          games.forEach(game => {
+              tooltipContent += `<li>${game}</li>`;
+          });
+          tooltipContent += `</ul>`;
+          tooltip
+            .html(tooltipContent)
+            .style("visibility", "visible");
       })
       .on("mousemove", function(event) {
-        updateTooltipPosition();
+        updateTooltipPosition(event);
       })
       .on("mouseout", function() {
         tooltip.style("visibility", "hidden");
@@ -471,12 +473,27 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
       .style("font-size", "12px") 
       .call(wrapText2, margin.left - 10); 
   }
-
-  function updateTooltipPosition() {
+/*
+  function updateTooltipPosition_old() {
     tooltip
       .style("left", (event.pageX - 40) + "px")
       .style("top", (event.pageY + 10) + "px");
   };
+*/
+  function updateTooltipPosition(event) {
+    const tooltipHeight = tooltip.node().getBoundingClientRect().height;
+    const windowHeight = window.innerHeight;
+    const mouseY = event.pageY;
+    
+    let tooltipY = mouseY + 10; 
+    
+    if (tooltipY + tooltipHeight > windowHeight) {
+      tooltipY = mouseY - tooltipHeight - 10;
+    }
+    tooltip
+      .style("left", (event.pageX - 40) + "px")
+      .style("top", tooltipY + "px");
+  }
 
   function getShortTitle(title){
     title = String(title)

@@ -83,26 +83,26 @@
             }
             .games-list {
                 display: flex;
-                flex-direction: column;
-                align-items: center;
+                flex-wrap: wrap;
+                justify-content: center;
                 gap: 20px;
                 margin-top: 40px;
             }
 
             .game-item {
+                flex: 0 1 calc(50% - 20px); /* due colonne con spazio */
+                box-sizing: border-box;
                 display: flex;
                 flex-direction: row;
                 align-items: center;
                 justify-content: space-between;
-                width: 95%;
-                max-width: 900px;
                 background-color: #fff;
                 padding: 15px 20px;
                 border-radius: 12px;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.1);
                 gap: 20px;
                 transition: transform 0.2s;
-                flex-wrap: wrap;
+                min-width: 320px;
             }
 
             .game-item:hover {
@@ -175,15 +175,6 @@
             }
 
             @media (max-width: 700px) {
-                .game-item {
-                    flex-direction: column;
-                    align-items: center;
-                }
-                .game-details {
-                    justify-content: center;
-                    flex-direction: column;
-                    align-items: center;
-                }
                 .view-button {
                     margin-top: 10px;
                 }
@@ -193,6 +184,22 @@
                         gap: 20px;
                     }
                 }
+                .game-item {
+                    flex: 1 1 100%;
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                }
+
+                .game-details {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .view-button {
+                    margin-top: 10px;
+                }
+            }
         </style>
     </head>
     <body>

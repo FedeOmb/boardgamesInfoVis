@@ -398,12 +398,12 @@ function handleNodeClick(event,d) {
       .attr("dx", d => -radiusScale(d.rank)) 
       .attr("dy", "0.35em");
 
-    /*nodeLabels
+    nodeLabels
       .style("display", function(d){
         const node = data.find(n => n.id == d.id);
         if(node && labelsVisible){return "block";}
         else {return "none";}
-      });*/
+    });
 
     d3.select("#toggle-labels").text(labelsVisible? "Hide Labels": "Show labels");
 

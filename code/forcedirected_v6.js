@@ -56,7 +56,11 @@ var zoom = d3.zoom()
             if(d.rank < 51)
               return getShortTitle(d.title)
             else return ""
-          }else if(zoomLevel >= 1.728)
+          }else if(zoomLevel > 1.44 && zoomLevel <= 1.728){
+            if(d.rank < 76)
+              return getShortTitle(d.title)
+            else return ""
+          }else if(zoomLevel > 1.728)
               return getShortTitle(d.title)
       })
 });

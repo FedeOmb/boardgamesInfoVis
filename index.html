@@ -15,6 +15,7 @@
             }
             h1 {
                 font-size: 3em;
+                margin-top: 10px;
                 margin-bottom: 10px;
             }
             a {
@@ -231,37 +232,56 @@
         </div>
 
         <br>
-        <br>
-        <h2>Top 100 Board Games</h2>
+        <h2>Top 100 Board Games Ranking</h2>
+        <p class="description">Here you can view the ranking of all games in the top 100 chart<br>Click on a game to directly view it in the network visualization</p>
         <div class="games-list" id="games-list">
         </div>
 
         <script>
-            fetch('data/dataset_converted_cleaned_v2.json') 
+            let allGames = [];
+            let showingAll = false;
+        
+            function renderGames(games) {
+                const gamesList = document.getElementById('games-list');
+                gamesList.innerHTML = ''; 
+                
+                games.forEach((game) => {
+                    const gameItem = document.createElement('div');
+                    gameItem.className = 'game-item';
+                    
+                    gameItem.innerHTML = `
+                        <div class="game-details">
+                            <span class="game-rank">#${game.rank}</span>
+                            <div class="game-image-wrapper">
+                                <img src="./game_thumbnails/${game.id}.jpg"
+                                    alt="${game.title} image"
+                                    onerror="this.style.display='none';">
+                            </div>
+                            <span class="game-name">${game.title}</span>
+                        </div>
+                        <a href="index_forcedirected.html?gameId=${game.id}" class="view-button">View in Network</a>
+                    `;
+                    
+                    gamesList.appendChild(gameItem);
+                });
+        
+                if (!showingAll) {
+                    const showMoreBtn = document.createElement('button');
+                    showMoreBtn.className = 'view-button';
+                    showMoreBtn.textContent = 'Show All Games';
+                    showMoreBtn.onclick = () => {
+                        showingAll = true;
+                        renderGames(allGames);
+                    };
+                    gamesList.appendChild(showMoreBtn);
+                }
+            }
+        
+            fetch('data/dataset_converted_cleaned_v2.json')
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data)
-                    const gamesList = document.getElementById('games-list');
-                    
-                    data.nodes.forEach((game) => {
-                        const gameItem = document.createElement('div');
-                        gameItem.className = 'game-item';
-                        
-                        gameItem.innerHTML = `
-                            <div class="game-details">
-                                <span class="game-rank">#${game.rank}</span>
-                                <div class="game-image-wrapper">
-                                    <img src="./game_thumbnails/${game.id}.jpg"
-                                        alt="${game.title} image"
-                                        onerror="this.style.display='none';">
-                                </div>
-                                <span class="game-name">${game.title}</span>
-                            </div>
-                            <a href="index_forcedirected.html?gameId=${game.id}" class="view-button">View in Network</a>
-                        `;
-                        
-                        gamesList.appendChild(gameItem);
-                    });
+                    allGames = data.nodes;
+                    renderGames(allGames.slice(0, 50));
                 })
                 .catch(error => {
                     console.error('Error loading games data:', error);

@@ -191,7 +191,7 @@
                 .view-button {
                     margin-top: 10px;
                 }
-                
+
                 @media (max-width: 600px) {
                     .button-container {
                         flex-direction: column;
@@ -273,7 +273,7 @@
                             </div>
                             <span class="game-name">${game.title}</span>
                         </div>
-                        <a href="index_forcedirected.html?gameId=${game.id}" class="view-button">View in Network</a>
+                        <button type="button" class="view-button" onclick=OpenNode(${game.id})>View in Network</button>
                     `;
                     
                     gamesList.appendChild(gameItem);
@@ -302,6 +302,10 @@
                     document.getElementById('games-list').innerHTML = 
                         '<p>Error loading games list.</p>';
                 });
+
+            function OpenNode(gameId){
+                window.open("index_forcedirected.html?gameId=" + gameId, "ForceDirectedPage");
+            }
         </script>
     </body>
 </html>

@@ -163,7 +163,7 @@ async function loadDatasets(){
 
     gamesByYear = calcGamesByYear(data);
     categByYear = calcCategByYears(data);
-    typeByYear = calcTypeByYears2(data);
+    typeByYear = calcTypeByYears(data);
 
     catData.nodes.forEach( d => {
       d.count = d.games.length

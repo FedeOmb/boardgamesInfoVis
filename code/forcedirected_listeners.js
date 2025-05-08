@@ -419,6 +419,30 @@ svg.on("click", function(event) {
 function closeInfoPanel(){
   infoPanelVisible = false
 
+  console.log("zoom", zoomLevel)
+
+  nodeLabels
+    .text(d => {
+      if(zoomLevel <= 1){
+        if(d.rank < 16)
+          return getShortTitle(d.title)
+        else return ""
+      }else if(zoomLevel > 1 && zoomLevel <= 1.2){
+        if(d.rank < 36)
+          return getShortTitle(d.title)
+        else return ""
+      }else if(zoomLevel > 1.2 && zoomLevel <= 1.44){
+        if(d.rank < 51)
+          return getShortTitle(d.title)
+        else return ""
+      }else if(zoomLevel > 1.44 && zoomLevel <= 1.728){
+        if(d.rank < 76)
+          return getShortTitle(d.title)
+        else return ""
+      }else if(zoomLevel > 1.728)
+          return getShortTitle(d.title)
+    })
+
   d3.selectAll(".node-label").style("display", labelsVisible ? "block" : "none");
   d3.select("#toggle-labels").text(labelsVisible? "Hide Labels": "Show labels");
   d3.select("body").classed("panel-open", false);

@@ -36,7 +36,7 @@ Promise.all([
     mechanicsNetwork = mecData
     designersNetwork = desData
 
-    // filtra i dati dei designer e inizializza la visualizzazione
+    // filters designer data and initializes visualization
     let dataToVis = prepareData(designersNetwork);
     createChordDiagram(dataToVis);
     designersToVis = dataToVis;
@@ -76,9 +76,9 @@ function createDiagram(type) {
 
 function prepareData(dataset) {
     const network = dataset;
-    //set per le categorie, meccaniche e designer che sono in comune in qualche gioco
+    //Sets for categories, mechanics, and designers that are in common in some game
     const collaboratingIndividuals = new Set();
-    // mantiene per ogni id di un gioco gli id dei suoi designer, categorie o meccaniche
+    //maintains for each id of a game the ids of its designers, categories, or mechanics
     const gamesToIndividualsMap = {};
 
     network.nodes.forEach(individual => {
@@ -91,32 +91,31 @@ function prepareData(dataset) {
     });
     console.log("games to individual map", gamesToIndividualsMap);
 
-    //filtra i designer, categorie e meccaniche che sono in comune in un gioco
+    //filters designers, categories, and mechanics that are in common in a game
     network.links.forEach(link => {
         collaboratingIndividuals.add(link.source);
         collaboratingIndividuals.add(link.target);
     });
     console.log("collaborating individuals2", collaboratingIndividuals);
 
-    //trova la componente connessa più grande nella rete di collaborazioni
+    //finds the largest connected component in the network of collaborations
     let largestComponent = new Set();
     network.nodes.forEach(individual => {
         let component = findConnectedComponentDFS(individual.id, network);
-        //let component = findConnectedComponent(individual.id, gamesToIndividualsMap);
         if (component.size > largestComponent.size) {
             largestComponent = component;
         }
     });
     console.log("largest component", largestComponent);
 
-    //nodi componente connessa massima
+    //set of nodes in the largest connected component
     let topIndividuals = network.nodes.filter(d => largestComponent.has(d.id));
 
-    //se la componente è troppo piccola aggiunge altri nodi tra quelli che hanno più giochi
+    //if the component is too small it adds more nodes among those that have more games
     if (topIndividuals.length < 10) {
         const additionalIndividuals = Array.from(collaboratingIndividuals)
             .map(id => network.nodes.find(ind => ind.id === id))
-            .filter(ind => !largestComponent.has(ind.id)) // exclude ones we already have
+            .filter(ind => !largestComponent.has(ind.id)) // exclude ones already included
             .sort((a, b) => {
                 const aCount = Object.values(gamesToIndividualsMap).filter(ids => ids.includes(a.id)).length;
                 const bCount = Object.values(gamesToIndividualsMap).filter(ids => ids.includes(b.id)).length;
@@ -126,7 +125,7 @@ function prepareData(dataset) {
 
         topIndividuals = topIndividuals.concat(additionalIndividuals);
     }
-    //ordina i nodi in base al numero di giochi e prende i primi 10
+    //sorts the nodes by the number of games and takes the top 10
     console.log("top individuals after adding new", topIndividuals);
     topIndividuals.sort((a, b) => d3.descending(a.games.length, b.games.length));
     console.log("top individuals sorted", topIndividuals);
@@ -135,7 +134,7 @@ function prepareData(dataset) {
 
     const topIndividualIds = new Set(topIndividuals.map(d => d.id));
 
-    // Filtra i link esistenti per mantenere solo quelli tra i top designers
+    //Filter existing links to keep only those among top 10
     var relevantLinks = network.links.filter(link =>
         topIndividualIds.has(link.source) && topIndividualIds.has(link.target)
     );
@@ -155,14 +154,14 @@ function prepareData(dataset) {
     });
     console.log("relevant links with common games", relevantLinks);
 
-    // Crea la matrice per il chord diagram
+    //Create the matrix for the chord diagram
     const nodeMap = new Map(topIndividuals.map((node, i) => [node.id, i]));
     console.log("node map", nodeMap);
     const matrix = Array.from({ length: topIndividuals.length }, () =>
         Array.from({ length: topIndividuals.length }, () => 0)
     );
 
-    // Popola la matrice usando i link filtrati
+    //Populate the matrix using filtered links
     relevantLinks.forEach(link => {
         const sourceIndex = nodeMap.get(link.source);
         const targetIndex = nodeMap.get(link.target);
@@ -175,29 +174,6 @@ function prepareData(dataset) {
     return { nodes: topIndividuals, links: relevantLinks, matrix };
 }
 
-
-// DFS vecchia che usa la rete di giochi originale
-/*
-function findConnectedComponent(startId, gamesToIndividualsMap) {
-    let visited = new Set();
-    let queue = [startId];
-
-    while (queue.length > 0) {
-        let current = queue.pop();
-        if (!visited.has(current)) {
-            visited.add(current);
-            // Aggiungi vicini alla coda
-            for (const game in gamesToIndividualsMap) {
-                if (gamesToIndividualsMap[game].includes(current)) {
-                    gamesToIndividualsMap[game].forEach(id => {
-                        if (!visited.has(id)) queue.push(id);
-                    });
-                }
-            }
-        }
-    }
-    return visited;
-}*/
 //DFS standard
 function findConnectedComponentDFS(startId, network) {
     let visited = new Set();
@@ -205,11 +181,11 @@ function findConnectedComponentDFS(startId, network) {
     function dfs(currentId) {
         if (visited.has(currentId)) return;
         visited.add(currentId);
-        // Trova tutti i link dove currentId è source o target
+        //Find all links where currentId is source or target
         const adjacentLinks = network.links.filter(link => 
             link.source === currentId || link.target === currentId
         );
-        // Visita ricorsivamente tutti i nodi adiacenti
+        //Recursively visit all adjacent nodes
         adjacentLinks.forEach(link => {
             const nextId = link.source === currentId ? link.target : link.source;
             dfs(nextId);
@@ -264,7 +240,7 @@ function createChordDiagram(dataToVis) {
             .style("top", (event.pageY - 10) + "px");
     }
 
-    //disegna i collegamenti nel chord diagram
+    //draws the connections in the chord diagram
     svg.append("g")
         .selectAll("path")
         .data(chords)
@@ -284,7 +260,7 @@ function createChordDiagram(dataToVis) {
             const sourceId = nodes[d.source.index].id;
             const targetId = nodes[d.target.index].id;
 
-            // Trova il link corrispondente e ottieni i giochi in comune
+            //Find the corresponding link and get the shared games
             const link = links.find(l =>
                 (l.source === sourceId && l.target === targetId) ||
                 (l.source === targetId && l.target === sourceId)
@@ -314,7 +290,7 @@ function createChordDiagram(dataToVis) {
             tooltip.transition().duration(500).style("visibility", "hidden");
         });
     
-    // disegna gli archi circolari
+    //draws the circular arcs
     svg.append("g")
         .selectAll("g")
         .data(chords.groups)
@@ -361,7 +337,7 @@ function createChordDiagram(dataToVis) {
             arcSelected = true;
         });
 
-    // aggiunge le etichette per gli elementi agli archi
+    //Adds labels to arcs
     svg.append("g")
         .selectAll("text")
         .data(chords.groups)
@@ -389,7 +365,7 @@ function createChordDiagram(dataToVis) {
         .style("paint-order", "stroke")
         .style("font-weight", "bold");
 
-    // listener per i click sulle aree vuote dell'svg
+    //listener for clicks on empty areas of the svg
     outerSvg.on("click", (event) => {
         console.log("click", event.target);
         if (event.target.tagName === "svg") {
@@ -415,7 +391,7 @@ function truncateName(name, maxLength = 15) {
     return name.length > maxLength ? name.substring(0, maxLength) + '...' : name;
 }
 
-// Add this helper function for text wrapping
+//helper function for text wrapping
 function wrapArcText(text, width) {
     text.each(function () {
         var textElement = d3.select(this);
@@ -423,9 +399,9 @@ function wrapArcText(text, width) {
         var word,
             line = [],
             lineNumber = 0,
-            lineHeight = 1.1, // Spaziatura più uniforme
-            x = textElement.attr("x") || 0, // Mantieni la posizione x originale
-            y = textElement.attr("y") || 0, // Mantieni la posizione y originale
+            lineHeight = 1.1, 
+            x = textElement.attr("x") || 0, 
+            y = textElement.attr("y") || 0, 
             dy = parseFloat(textElement.attr("dy")) || 0,
             tspan = textElement.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
 
@@ -446,7 +422,7 @@ function wrapArcText(text, width) {
     });
 }
 
-// Add this adjustment to prevent screen cutting
+//adjustment to prevent screen cutting
 function adjustForViewport(svg, padding = 40) {
     const bbox = svg.node().getBBox();
     const width = +svg.attr("width");
@@ -469,157 +445,3 @@ function adjustForViewport(svg, padding = 40) {
         }
     });
 }
-
-/*
-function prepareData_oldvers(dataset){
-    const network = dataset;
-    //set per le categorie, meccaniche e designer che sono in comune in qualche gioco
-    const collaboratingIndividuals = new Set(); 
-    // mapppa per i giochi le loro categorie, meccaniche e designer
-
-    const gamesToIndividualsMap = {}; 
-
-    network.nodes.forEach(individual => {
-        individual.games.forEach(game => {
-            if (!gamesToIndividualsMap[game]) {
-                gamesToIndividualsMap[game] = [];
-            }
-            gamesToIndividualsMap[game].push(individual.id);
-        });
-    });
-    console.log("games to individual map", gamesToIndividualsMap);
-
-    for (const game in gamesToIndividualsMap) {
-        const individualIds = gamesToIndividualsMap[game];
-        if (individualIds.length > 1) {
-            individualIds.forEach(id => collaboratingIndividuals.add(id));
-        }
-    }
-
-    console.log("collaborating individuals", collaboratingIndividuals); 
-
-    let largestComponent = new Set();
-    network.nodes.forEach(individual => {
-        let component = findConnectedComponent(individual.id, gamesToIndividualsMap);
-        //console.log("component", component);
-        if (component.size > largestComponent.size) {
-            largestComponent = component;
-        }
-    });
-    console.log("largest component", largestComponent); 
-    
-    //nodi componente connessa massima
-    let topIndividuals = network.nodes.filter(d => largestComponent.has(d.id));
-    console.log("top individuals", topIndividuals);
-    
-    //se la componente è troppo piccola aggiunge altri nodi tra quelli che hanno più giochi
-    if (topIndividuals.length < 10) {
-        const additionalIndividuals = Array.from(collaboratingIndividuals)
-            .map(id => network.nodes.find(ind => ind.id === id))
-            .filter(ind => !largestComponent.has(ind.id)) // exclude ones we already have
-            .sort((a, b) => {
-                const aCount = Object.values(gamesToIndividualsMap).filter(ids => ids.includes(a.id)).length;
-                const bCount = Object.values(gamesToIndividualsMap).filter(ids => ids.includes(b.id)).length;
-                return bCount - aCount;
-            })
-            .slice(0, 10 - topIndividuals.length);
-        
-        topIndividuals = topIndividuals.concat(additionalIndividuals);
-    }
-    console.log("top individuals", topIndividuals);
-    topIndividuals.sort((a, b) => d3.descending(a.games.length, b.games.length));
-    console.log("top individuals sorted", topIndividuals);
-    topIndividuals = topIndividuals.slice(0, 10);
-    console.log("top individuals after slice", topIndividuals);
-
-    const topIndividualIds = new Set(topIndividuals.map(d => d.id));
-    
-    //mappa che include solo i giochi collegati agli individui principali
-    const filteredGamesToIndividuals = {};
-
-    for (const game in gamesToIndividualsMap) {
-        const individualIds = gamesToIndividualsMap[game].filter(id => topIndividualIds.has(id));
-        if (individualIds.length > 1) {
-            filteredGamesToIndividuals[game] = individualIds;
-        }
-    }
-
-    for (const game in filteredGamesToIndividuals) {
-        filteredGamesToIndividuals[game].forEach(id => collaboratingIndividuals.add(id));
-    }
-    console.log("filtered games to individuals", filteredGamesToIndividuals);   
-    console.log("collaborating individuals after filtering", collaboratingIndividuals);
-
-    const refinedNodes = topIndividuals
-        .filter(individual => collaboratingIndividuals.has(individual.id))
-        .map(individual => ({
-            id: individual.id,
-            name: individual.name,
-            games: individual.games
-        }));
-
-    console.log("refined nodes", refinedNodes);
-
-    const linkMap = new Map();
-    const linkGames = new Map();
-
-    for (const game in filteredGamesToIndividuals) {
-        const individualIds = filteredGamesToIndividuals[game];
-        if (individualIds.length > 1) {
-            for (let i = 0; i < individualIds.length; i++) {
-                for (let j = i + 1; j < individualIds.length; j++) {
-                    const source = Math.min(individualIds[i], individualIds[j]);
-                    const target = Math.max(individualIds[i], individualIds[j]);
-                    const key = `${source}-${target}`;
-
-                    if (linkMap.has(key)) {
-                        linkMap.get(key).weight++;
-                        linkGames.get(key).push(game);
-                    } else {
-                        linkMap.set(key, {
-                            source: source,
-                            target: target,
-                            weight: 1
-                        });
-                        linkGames.set(key, [game]);
-                    }
-                }
-            }
-        }
-    }
-    console.log("link map", linkMap);
-    console.log("link games", linkGames);
-
-    const links = Array.from(linkMap.values());
-    const graph = { nodes: refinedNodes, links: links };
-    console.log("graph", graph);
-
-    const nodeStrength = new Map();
-    refinedNodes.forEach(node => nodeStrength.set(node.id, 0));
-    graph.links.forEach(link => {
-        nodeStrength.set(link.source, nodeStrength.get(link.source) + link.weight);
-        nodeStrength.set(link.target, nodeStrength.get(link.target) + link.weight);
-    });
-
-    refinedNodes.sort((a, b) => d3.descending(a.name, b.name));
-    const nodeMap = new Map(refinedNodes.map((node, i) => [node.id, i]));
-    const matrix = Array.from({ length: refinedNodes.length }, () => 
-        Array.from({ length: refinedNodes.length }, () => 0)
-    );
-
-    graph.links.forEach(link => {
-        const sourceIndex = nodeMap.get(link.source);
-        const targetIndex = nodeMap.get(link.target);
-        if (sourceIndex !== undefined && targetIndex !== undefined) {
-            matrix[sourceIndex][targetIndex] += link.weight;
-            matrix[targetIndex][sourceIndex] += link.weight;
-        }
-    });
-    console.log("matrix", matrix);
-    console.log("refined nodes", refinedNodes);
-    console.log("link games", linkGames);
-
-
-    return { refinedNodes, linkGames, matrix };
-}
-*/

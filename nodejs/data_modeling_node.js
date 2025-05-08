@@ -84,7 +84,7 @@ function data_cleaning(raw_data){
 function create_categories(data) {
     const categoriesMap = new Map();
 
-    // Popola le categorie e associa i giochi
+    //Populate categories and associate games
     data.forEach(game => {
         game.categories.forEach(category => {
             if (!categoriesMap.has(category.id)) {
@@ -108,7 +108,7 @@ function create_categories(data) {
 function create_mechanics(data) {
     const mechanicsMap = new Map();
 
-    // Popola le meccaniche e associa i giochi
+    //Populate mechanics and associate games
     data.forEach(game => {
         game.mechanics.forEach(mechanic => {
             if (!mechanicsMap.has(mechanic.id)) {
@@ -132,7 +132,7 @@ function create_mechanics(data) {
 function create_designers(data) {
     const designersMap = new Map();
 
-    // Popola i designer e associa i giochi
+    //Populate designers and associate games
     data.forEach(game => {
         game.designer.forEach(designer => {
             if (!designersMap.has(designer.id)) {
@@ -156,7 +156,7 @@ function create_designers(data) {
 function buildFullNetwork(individuals) {
     const entityToIndividuals = {};
 
-    // Mappa entità (giochi) → designer/categorie/meccaniche
+    //Maps games to designer/category/mechanic
     individuals.forEach(individual => {
         individual.games.forEach(entityId => {
             if (!entityToIndividuals[entityId]) {
@@ -166,14 +166,14 @@ function buildFullNetwork(individuals) {
         });
     });
 
-    // Creazione dei nodi
+    //Create nodes
     const nodes = individuals.map(individual => ({
         id: individual.id,
         name: individual.name,
         games: individual.games
     }));
 
-    // Creazione dei link (connessioni tra individui che hanno lavorato sugli stessi giochi)
+    //Create links (connections between individuals who have worked on the same games)
     const linkMap = new Map();
     const linkGames = new Map();
 

@@ -8,13 +8,12 @@ var targetfile = '../data/dataset_converted_cleaned_v2.json'
 var dataset 
 const imagesDir = path.join(__dirname, '../game_thumbnails/');
 
-//aggiunta del tipo di gioco
+//add type to games
 fs.readFile(filename, 'utf-8', (err, data) => {
     if (err) throw err;
     dataset = JSON.parse(data)
     id = []
     aggiungiTipoAGiochi(dataset).then(datiAggiornati => {
-        //console.log(JSON.stringify(datiAggiornati.nodes, null, 2));
         fs.writeFile(targetfile, JSON.stringify(datiAggiornati), 'utf-8', (werr) => {
             if (werr)
                 throw werr;
@@ -23,12 +22,12 @@ fs.readFile(filename, 'utf-8', (err, data) => {
       });
 });
 
+//get game images
 fs.readFile(filename, 'utf-8', (err, data) => {
   if (err) throw err;
   dataset = JSON.parse(data)
   id = []
   collectImageLinks(dataset).then(links => {
-      //console.log(JSON.stringify(datiAggiornati.nodes, null, 2));
       fs.writeFile('../game_images_links.json', JSON.stringify(links), 'utf-8', (werr) => {
           if (werr)
               throw werr;
@@ -43,7 +42,7 @@ fs.readFile("../game_images_links.json", 'utf-8', (err, data) => {
   downloadAllThumbnails(dataset);
 })
 
-// Funzione per dividere gli ID in batch da massimo 20 giochi
+//Function to split IDs into batches of up to 20 games
 function chunkArray(array, size) {
     const chunkedArr = [];
     for (let i = 0; i < array.length; i += size) {
@@ -54,7 +53,7 @@ function chunkArray(array, size) {
   
   async function aggiungiTipoAGiochi(dati) {
     const ids = dati.nodes.map(nodo => nodo.id);
-    const batches = chunkArray(ids, 20); // Dividiamo gli ID in batch da 20
+    const batches = chunkArray(ids, 20); 
   
     for (const batch of batches) {
         const url = `https://boardgamegeek.com/xmlapi/boardgame/${batch.join(",")}`;
@@ -64,7 +63,7 @@ function chunkArray(array, size) {
         const result = await parseStringPromise(response.data);
         const items = result.boardgames.boardgame;
         
-        // Mappiamo i risultati sugli ID corrispondenti
+        //map the results to the corresponding IDs
         items.forEach(item => {
           const gameId = parseInt(item.$.objectid, 10);
           console.log(gameId)
@@ -76,7 +75,7 @@ function chunkArray(array, size) {
         
         console.log(`Batch ${batch.join(",")} aggiornato con successo.`);
         
-        // Ritardo per evitare di sovraccaricare l'API
+        //Delay to avoid overloading the API
         await new Promise(res => setTimeout(res, 1000));
   
       } catch (error) {
@@ -89,7 +88,7 @@ function chunkArray(array, size) {
 
   async function collectImageLinks(dati) {
     const ids = dati.nodes.map(nodo => nodo.id);
-    const batches = chunkArray(ids, 20); // Dividiamo gli ID in batch da 20
+    const batches = chunkArray(ids, 20); 
 
     var links = [];
   
@@ -101,7 +100,7 @@ function chunkArray(array, size) {
         const result = await parseStringPromise(response.data);
         const items = result.boardgames.boardgame;
         
-        // Mappiamo i risultati sugli ID corrispondenti
+        //map the results to the corresponding IDs
         items.forEach(item => {
           const gameId = parseInt(item.$.objectid, 10);
           console.log(gameId)
@@ -116,7 +115,7 @@ function chunkArray(array, size) {
         
         console.log(`Batch ${batch.join(",")} aggiornato con successo.`);
         
-        // Ritardo per evitare di sovraccaricare l'API
+        //Delay to avoid overloading the API
         await new Promise(res => setTimeout(res, 1000));
   
       } catch (error) {
@@ -128,12 +127,11 @@ function chunkArray(array, size) {
   }
 
 
-// Funzione per scaricare una singola immagine
+//Function to download a single image
 function downloadImage(url, filename) {
   return new Promise((resolve, reject) => {
     const filePath = path.join(imagesDir, filename);
     
-    // Determina l'estensione del file dalla URL
     const fileExtension = url.includes('.png') ? '.png' : '.jpg';
     const fullFilePath = `${filePath}${fileExtension}`;
     
@@ -149,19 +147,19 @@ function downloadImage(url, filename) {
       });
       
       file.on('error', err => {
-        fs.unlink(fullFilePath, () => {}); // Pulisce qualsiasi file parzialmente scaricato
+        fs.unlink(fullFilePath, () => {}); //Cleans up any partially downloaded files
         console.error(`Errore durante il download di ${url}: ${err.message}`);
         reject(err);
       });
     }).on('error', err => {
-      fs.unlink(fullFilePath, () => {}); // Pulisce qualsiasi file parzialmente scaricato
+      fs.unlink(fullFilePath, () => {}); //Cleans up any partially downloaded files
       console.error(`Errore durante la richiesta per ${url}: ${err.message}`);
       reject(err);
     });
   });
 }
 
-// Scarica tutte le thumbnail
+//Download all thumbnails
 async function downloadAllThumbnails(data) {
   console.log('Inizio download delle thumbnail...');
   

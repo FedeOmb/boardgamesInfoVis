@@ -1,6 +1,7 @@
 var svg = d3.select("svg"),
 width = +svg.node().getBoundingClientRect().width,
 height = +svg.node().getBoundingClientRect().height;
+//append link arrows
 svg.append("defs").selectAll("marker")
   .data(["end", "start"])
   .enter().append("marker")
@@ -26,14 +27,13 @@ function updateSize() {
 
   simulation.force("center", d3.forceCenter(width / 2, (height / 2) - 60));
   simulation.alpha(0).restart();
-  console.log("update size", width, height)
 }
 
 var networkGroup = svg.append("g").attr("class", "network-group");
 
 var zoomLevel = 1
 var zoom = d3.zoom()
-  .scaleExtent([0.2, 5]) // limiti di zoom
+  .scaleExtent([0.2, 5]) //zoom range
   .on("zoom", function(event) {
     zoomLevel = event.transform.k
     networkGroup.attr("transform", event.transform); 
@@ -41,6 +41,7 @@ var zoom = d3.zoom()
       .style("font-size", d => 
         `${Math.max(10, radiusScale(d.rank) / event.transform.k)}px`
       );
+    //show labels with zooming
     if(!infoPanelVisible)
       nodeLabels
         .text(d => {
@@ -67,29 +68,23 @@ var zoom = d3.zoom()
 
 svg.call(zoom);
 
-// svg objects
 var link, node;
 var graph;
 var types = [];
 var categories
 var bidirectionalLinks
 
-//const radiusScale = d3.scaleLinear().domain([1, 100]).range([13, 3]);
+//node radius proportional with ranking
 const radiusScale = d3.scaleSqrt().domain([1, 100]).range([15, 5]);
 
-//var colorScaleType  = d3.scaleOrdinal(d3.schemeCategory10);
-//var customColors = ["#377eb8","#4daf4a","#f781bf","#ffff33","#ff7f00","#e41a1c","#8dd3c7","#b1b1b1"];
-//var custColDesaturated = ["#a5bdd3", "#b3d0b3", "#f5cfdc", "#ffffd9", "#ffd6ad", "#e5aaaa", "#cfe5e1", "#e0e0e0"]
 var colorScaleType  = d3.scaleOrdinal()
 
 function setScale(data){
   types = data.nodes.flatMap(d => d.type);
   types = [...new Set(types)];  
   colorScaleType.domain(types).range(d3.schemeTableau10);
-  //colorScaleType.domain(types);
 }
 
-// Crea la legenda
 var legend = d3.select("#color-legend");
 
 const tooltip = d3.select("body")
@@ -114,19 +109,17 @@ d3.json("data/dataset_converted_cleaned_v2.json").then((data) =>{
   initializeDisplay();
   resetNetColors();
   initializeSimulation();
+
   addLegend();
-
   addSearchBar();
-
 });
 
 const titleToIdMap = {};
 function addSearchBar(){
-  // Mappa titoli → id per ricerca
+  // Maps titles to id 
   graph.nodes.forEach(node => {
-    titleToIdMap[node.title] = node.id;
+    titleToIdMap[node.title] = node.id
 
-    // Popola datalist per suggerimenti
     d3.select("#game-titles")
       .append("option")
       .attr("value", node.title);
@@ -141,7 +134,7 @@ function addLegend() {
       var item = legend.append("button")
           .attr("type", "button")
           .attr("class", "legend-item")
-          .attr("data-type", type); // Set the data-type attribute here
+          .attr("data-type", type); 
       
       item.append("div")
           .attr("class", "legend-color")
@@ -194,7 +187,7 @@ function initializeSimulation() {
   simulation.nodes(graph.nodes);
   initializeForces();
   simulation.on("tick", ticked);
-  //al termine dell simulazione apre il nodo specificato nell'url se presente
+  //at the end of the simulation opens the node specified in the url if present
   simulation.on("end", function() { 
     openNodeByQuery();
   });
@@ -243,6 +236,7 @@ forceProperties.labelCollision = {
   strength: 0.7,
   radius: d => Math.max(10, radiusScale(d.rank)) * 2 
 };
+
 function forceCluster(alpha) {
   const strength = 0.15;
   const padding = 250;
@@ -280,7 +274,6 @@ function forceCluster(alpha) {
 
 // add forces to the simulation
 function initializeForces() {
-  // add forces and associate each with a name
   simulation
     .force("link", d3.forceLink())
     .force("charge", d3.forceManyBody())
@@ -304,7 +297,7 @@ function updateForces() {
   simulation
     .force("center")
     .x(width * forceProperties.center.x)
-    .y((height * forceProperties.center.y) - 60); //290
+    .y((height * forceProperties.center.y) - 60); 
   simulation
     .force("charge")
     .strength(forceProperties.charge.strength * forceProperties.charge.enabled)
@@ -337,8 +330,6 @@ function updateForces() {
   simulation
     .force("cluster");
 
-  // updates ignored until this is run
-  // restarts the simulation (important if simulation has already slowed down)
   simulation.alpha(1).restart();
 }
 
@@ -385,14 +376,13 @@ function initializeDisplay() {
 
     node.call(d3.drag()
       .on("start", function(event, d) {
-        // Niente simulazione da riattivare
       })
       .on("drag", function(event, d) {
         d.x = event.x;
         d.y = event.y;
         d3.select(this).attr("transform", `translate(${d.x},${d.y})`);
         
-        // Aggiorna la posizione dei link e delle label manualmente
+        //Adjust link and label position  
         link
           .filter(l => l.source === d || l.target === d)
           .attr("x1", d => adjustLinkStart(d.source, d.target, radiusScale(d.source.rank)).x)
@@ -410,7 +400,6 @@ function initializeDisplay() {
 
           nodeLabels
           .attr("x", d => {
-            // Try to find a position with least overlap
             const angle = Math.atan2(d.y - height/2, d.x - width/2);
             const offset = radiusScale(d.rank) + 10;
             return d.labelX = d.x + Math.cos(angle) * offset;
@@ -432,22 +421,21 @@ function initializeDisplay() {
     .enter()
     .append("text")
     .attr("class", "node-label")
-    .attr("text-anchor", "middle")  // Changed to middle for better centering
+    .attr("text-anchor", "middle")  
     .attr("pointer-events", "none")
     .style("font-size", d => `${Math.max(10, radiusScale(d.rank))}px`)
-    .style("stroke", "white") // bordo
-    .style("stroke-width", "3px") // spessore del bordo
-    .style("paint-order", "stroke") // il bordo va sotto il testo
+    .style("stroke", "white") 
+    .style("stroke-width", "3px") 
+    .style("paint-order", "stroke") 
     .style("stroke-linejoin", "round")
     .style("stroke-opacity", 0.5)
     .text(d => d.rank<16 ? getShortTitle(d.title) : "")
     .style("display", "none")
-    .attr("dx", 0)  // Reset dx since we'll position differently
+    .attr("dx", 0)  
     .attr("dy", "0.35em")
     .each(function(d) {
-      // Store original position
       d.labelX = d.x;
-      d.labelY = d.y + radiusScale(d.rank) + 5; // Position below node
+      d.labelY = d.y + radiusScale(d.rank) + 5; 
     });
 
   // visualize the graph
@@ -495,20 +483,6 @@ function updateDisplay() {
 
 // update the display positions after each simulation tick
 function ticked() {
-
-  /*link
-    .attr("x1", function (d) {
-      return d.source.x;
-    })
-    .attr("y1", function (d) {
-      return d.source.y;
-    })
-    .attr("x2", function (d) {
-      return d.target.x;
-    })
-    .attr("y2", function (d) {
-      return d.target.y;
-    });*/
     link
       .attr("x1", d => adjustLinkStart(d.source, d.target, radiusScale(d.source.rank)).x)
       .attr("y1", d => adjustLinkStart(d.source, d.target, radiusScale(d.source.rank)).y)
@@ -535,8 +509,8 @@ function ticked() {
   nodeLabels
     .attr("x", d => {
       // Try to find a position with least overlap
-  const angle = Math.atan2(d.y - height/2, d.x - width/2);
-  const offset = radiusScale(d.rank) + 10;
+      const angle = Math.atan2(d.y - height/2, d.x - width/2);
+      const offset = radiusScale(d.rank) + 10;
       return d.labelX = d.x + Math.cos(angle) * offset;
     })
     .attr("y", d => {
@@ -598,11 +572,11 @@ window.addEventListener("resize", () => {
 
 // Helper function to check if two nodes are adjacent
 function isAdjacent(source, target) {
-  return graph.links.some(link => 
-    (link.source === source && link.target === target) /*|| 
-    (link.source === target && link.target === source)*/
-  );
+  return graph.links.some(link => (link.source === source && link.target === target) );
 }
+
+
+//compute and draw hulls
 
 let activeHull = null;
 
@@ -636,11 +610,11 @@ function computeHulls(nodes, types) {
 
   types.forEach(type => {
     let points = nodes
-      .filter(d => d.type.includes(type)) // Filtra i nodi con il type specifico
-      .map(d => [d.x, d.y]); // Estrai coordinate dei nodi
+      .filter(d => d.type.includes(type)) 
+      .map(d => [d.x, d.y]); 
 
     if (points.length > 2) {
-      hulls[type] = d3.polygonHull(points); // Crea la convex hull
+      hulls[type] = d3.polygonHull(points); 
     }
   });
 
@@ -667,15 +641,15 @@ function computeHulls(nodes, types) {
 }
 
 function drawHulls(svg, hulls) {
-  svg.selectAll(".hull").remove(); // Rimuove eventuali hull esistenti
+  svg.selectAll(".hull").remove();  
 
   Object.keys(hulls).forEach(type => {
     if (hulls[type]) {
       networkGroup.select(".hulls-group")
         .append("path")
         .attr("class", "hull")
-        .attr("d", "M" + hulls[type].join("L") + "Z") // Genera il path della hull
-        .style("fill", colorScaleType(type)) // Colore in base al type
+        .attr("d", "M" + hulls[type].join("L") + "Z") 
+        .style("fill", colorScaleType(type)) 
         .style("opacity", 0.15)
         .style("pointer-events", "none");
     }
@@ -771,7 +745,7 @@ function getUniqueLinks(links) {
       return;
     }
 
-    // Controlliamo se esiste un link inverso
+    //check if there is a reverse link
     const isBidirectional = links.some(l => 
       (l.source.id !== undefined ? l.source.id : l.source) === targetId && 
       (l.target.id !== undefined ? l.target.id : l.target) === sourceId
@@ -795,7 +769,6 @@ function openNodeById(nodeId) {
   if (targetNode) {
     const nodeElement = d3.selectAll(".node").filter(d => d.id === nodeId).node();
     if (nodeElement) {
-      console.log("opened node",nodeId)
       handleNodeClick.call(nodeElement, null, targetNode);
     }
   } else {
@@ -806,14 +779,12 @@ function openNodeById(nodeId) {
 function openNodeByQuery(){
 
     if(!nodeOpenedFromQuery){
-      // Controlla se c'è un parametro gameId nell'URL
+      //Check if there is a gameId parameter in the URL
     const urlParams = new URLSearchParams(window.location.search);
     const gameId = urlParams.get('gameId');
-    console.log("read parameter",gameId)
     
     if (gameId) {
       openNodeById(parseInt(gameId)); 
-      //setTimeout(() => openNodeById(parseInt(gameId)), 1000);
       nodeOpenedFromQuery = true;
     }
   }

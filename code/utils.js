@@ -1,6 +1,5 @@
 
   function calcGamesByYear(data) {
-    console.log(data);
     var years = [];
   
     data.nodes.forEach(game => {
@@ -23,8 +22,6 @@
     years = d3.sort(years, (a, b) => d3.ascending(a.count, b.count));
     return years;
   }
-
-//const customColors = ["#377eb8","#4daf4a","#f781bf","#ffff33","#ff7f00","#e41a1c","#8dd3c7","#b1b1b1"];
 
 function calcTypeByYears2(data){
 
@@ -56,7 +53,6 @@ function calcTypeByYears2(data){
   
         });
   
-        console.log(yearsType)
         return yearsType;
     };
 
@@ -87,7 +83,6 @@ function calcTypeByYears2(data){
             });
             yearEntry.count++;
         });
-        console.log(yearsCateg)
         return yearsCateg;
       }
       
@@ -119,7 +114,6 @@ function calcTypeByYears2(data){
             });
             yearEntry.count++;
         });
-        console.log(yearsType)
         typeByYear = yearsType;
       }
 
@@ -127,7 +121,6 @@ function calcTypeByYears2(data){
         const self = d3.select(element);
         let title = String(d).trim();
     
-        // Abbreviazioni comuni
         const abbreviations = {
             'edition': 'ed.',
             'second': '2nd',
@@ -137,7 +130,7 @@ function calcTypeByYears2(data){
             'fifth': '5th'
         };
     
-        // Applica le abbreviazioni
+        //Apply le abbreviations
         for (let [word, abbrev] of Object.entries(abbreviations)) {
             const regex = new RegExp(`\\b${word}\\b`, 'gi');
             title = title.replace(regex, abbrev);

@@ -1,7 +1,7 @@
 svg = d3.select("svg");
 var clickedNode = null;
 
-// Funzioni zoom
+//zoom buttons
 d3.select("#zoom-in").on("click", function() {
     svg.transition().call(zoom.scaleBy, 1.2);
   });
@@ -15,6 +15,7 @@ d3.select("#zoom-in").on("click", function() {
       svg.transition().call(zoom.transform, d3.zoomIdentity);
 });
 
+//show labels controls
 d3.select("#toggle-labels").on("click", function() {
   labelsVisible = !labelsVisible;
   d3.select(this).text(labelsVisible ? "Hide Labels" : "Show Labels");
@@ -28,18 +29,18 @@ d3.select("#toggle-labels").on("click", function() {
   }
 });
 
-// Gestione selezione da barra di ricerca
+//search bar selection
 d3.select("#search-box").on("change", function() {
   const selectedTitle = this.value;
   const nodeId = titleToIdMap[selectedTitle];
   if (nodeId) {
-    openNodeById(nodeId); // chiama la funzione con l'id corretto
+    openNodeById(nodeId); 
   } else {
     alert("Game not found. Ensure that you select a valid title.");
   }
 });
 
-//funzioni per regolare la posizione dei marker quando sono evidenziati i link
+//Functions to adjust the position of markers when links are highlighted
 function adjustMarkerEnd(strokeWidth) {
   const marker = d3.select(`#arrow-end`);
   marker.attr("refX", 7 + (strokeWidth)); 
@@ -51,22 +52,19 @@ function adjustMarkerStart(strokeWidth) {
     return "url(#arrow-start)";
 }
 
-// Function to handle mouseover node event
-function handleMouseOver(event,d) {
+//handle mouseover node event
+function handleMouseOver(event, d) {
   
   if (!infoPanelVisible) {
-    // Abbassiamo l'opacità di tutti i nodi e link
     node.selectAll("circle, path").attr("opacity", 0.5);
     link.attr("opacity", 0.3);
 
-    // Evidenziamo il nodo corrente
     d3.select(this)
       .selectAll("circle, path")
       .attr("stroke", "DarkSlateGrey")
       .attr("stroke-width", 2)
       .attr("opacity", 1);
 
-    // Evidenziamo solo i link in uscita
     link.each(function (l) {
       if (isBidirectional(l.source.id, l.target.id) && (l.source === d || l.target === d)) {
         d3.select(this)
@@ -78,7 +76,7 @@ function handleMouseOver(event,d) {
           })
           .attr("marker-start", function(){
             return adjustMarkerStart(2);
-          }); // Keep marker-start for bidirectional
+          }); 
       } else if (l.source === d) {
         d3.select(this)
           .attr("stroke", "DarkSlateGrey")
@@ -91,7 +89,6 @@ function handleMouseOver(event,d) {
       }
     });
 
-    // Evidenziamo solo i nodi di destinazione
     node.each(function (n) {
       if (isAdjacent(d, n) || isBidirectional(d.id, n.id)) {
         d3.select(this)
@@ -103,14 +100,13 @@ function handleMouseOver(event,d) {
     });
   }
 
-  // Mostra tooltip
   tooltip.html(`<strong>${d.rank}°: ${d.title}<br>`)
     .style("left", (event.pageX + 10) + "px")
     .style("top", (event.pageY - 10) + "px")
     .style("visibility", "visible");
 }
 
-function handleMouseOut(event,d) {
+function handleMouseOut(event, d) {
   if (!infoPanelVisible) {
       resetNetColors();
       link.attr("marker-end", "url(#arrow-end)")
@@ -120,13 +116,15 @@ function handleMouseOut(event,d) {
   tooltip.style("visibility", "hidden");
 }
 
-function mouseEnterEdge(event,d) {
+//handle mouseover link
+function mouseEnterEdge(event, d) {
     const sourceNode = graph.nodes.find(n => n.id === (d.source.id || d.source));
     const targetNode = graph.nodes.find(n => n.id === (d.target.id || d.target));
   
     if (!sourceNode || !targetNode) return;
 
     if (!infoPanelVisible) {
+      //highlight link 
       d3.select(this)
         .attr("stroke", "lime")
         .attr("stroke-width", 3)
@@ -137,10 +135,10 @@ function mouseEnterEdge(event,d) {
         .attr("marker-start", function(){
           if(isBidirectional(d.source.id, d.target.id)){
             return adjustMarkerStart(3);
-        }
-          else {return null};
-    });
-      // Evidenziamo anche i nodi collegati
+          }
+            else {return null};
+        });
+      //highlight source and target nodes
       node.each(function (n) {
         if (n === d.source || n === d.target) {
           d3.select(this)
@@ -150,8 +148,9 @@ function mouseEnterEdge(event,d) {
         }
       });
     }
+
+    //show tooltip
   
-    // Mostra tooltip
     tooltip.style("visibility", "visible");
     tooltip.transition().duration(200).style("opacity", 0.9);
 
@@ -169,7 +168,7 @@ function mouseEnterEdge(event,d) {
     
   }
 
-//handle mouseout edge
+//handle mouseout link
 function mouseLeaveEdge(event, d) {
     if (!infoPanelVisible) {
       // Unhighlight edge
@@ -193,7 +192,7 @@ function mouseLeaveEdge(event, d) {
 function centerNode(node) {
   width = +svg.node().getBoundingClientRect().width;
   height = +svg.node().getBoundingClientRect().height;
-  const scale = d3.zoomTransform(svg.node()).k; // mantiene lo zoom corrente
+  const scale = d3.zoomTransform(svg.node()).k; 
   const x = -node.x * scale + width/2;
   const y = -node.y * scale + height/2;
 
@@ -205,19 +204,19 @@ function centerNode(node) {
     );
 }
 
-function handleNodeClick(event,d) {
+function handleNodeClick(event, d) {
     
     infoPanelVisible = true;
     d3.select("body").classed("panel-open", true);
     d3.select("#info-panel").style("display", "block");
     tooltip.style("visibility", "hidden");
 
-    // Resetta la visualizzazione
+    //Reset visualization
     resetNetColors();
     networkGroup.selectAll("line").attr("opacity", 0.3);
     networkGroup.selectAll("circle, path").attr("opacity", 0.5);
 
-    // Evidenziamo il nodo cliccato
+    //highlight clicked node
     clickedNode = d3.select(this);
   
     clickedNode
@@ -226,7 +225,7 @@ function handleNodeClick(event,d) {
       .attr("stroke-width", 2)
       .attr("opacity", 1);
   
-    // Evidenziamo i link in uscita e bidirezionali
+    //Highlight outbound and bidirectional links
     link.each(function (l) {
       if (isBidirectional(l.source.id, l.target.id) && (l.source === d || l.target === d)) {
         d3.select(this)
@@ -238,7 +237,7 @@ function handleNodeClick(event,d) {
           })
           .attr("marker-start", function(){
             return adjustMarkerStart(2);
-          }); // Keep marker-start for bidirectional
+          }); 
       } else if (l.source === d) {
         d3.select(this)
           .attr("stroke", "DarkSlateGrey")
@@ -251,7 +250,7 @@ function handleNodeClick(event,d) {
       }
     });
 
-    // Evidenziamo solo i nodi di destinazione
+    //highlight target nodes
     node.each(function (n) {
       if (isAdjacent(d, n) || isBidirectional(d.id, n.id)) {
         d3.select(this)
@@ -262,7 +261,7 @@ function handleNodeClick(event,d) {
       }
     });
 
-    // Set fill to black for the clicked node
+    //Set fill to black for the clicked node
     if (d.type.length === 1) {
         // For single-colored nodes (circle)
         clickedNode.select("circle")
@@ -273,7 +272,7 @@ function handleNodeClick(event,d) {
         .attr("fill", "black");
     }
   
-    // Write game information
+    //Write game information
     var fans_liked = graph.links
       .filter(l => l.source.id === d.id || (l.target.id === d.id && isBidirectional(l.source.id, l.target.id)))
       .map(l => {
@@ -336,9 +335,7 @@ function handleNodeClick(event,d) {
         .duration(100)
         .style("flex-basis", "70%")
         .on("end", function() {
-            //updateSize(); // Update the simulation and center force
             setTimeout(() => centerNode(d), 100);
-            
           });
   
     if (activeHull !== null) {
@@ -348,8 +345,7 @@ function handleNodeClick(event,d) {
   
     d3.select("#node-details").html("");
     d3.select("#info-panel").style("position", "relative");
-    
-    //listener click tasto chiusura info panel
+  
     d3.select("#close-info-panel").on("click", () => {
       closeInfoPanel();
     });
@@ -364,7 +360,8 @@ function handleNodeClick(event,d) {
     const data = [d, ...neighbors];
     data.sort((a, b) => d3.descending(a.minage, b.minage));
     d3.selectAll(".chart-btn").classed("active", false);
-  
+    
+    //additional charts buttons
     d3.selectAll(".chart-btn").on("click", function() {
       const chartType = d3.select(this).attr("data-chart");
       d3.selectAll(".chart-btn").classed("active", false);
@@ -390,6 +387,7 @@ function handleNodeClick(event,d) {
       }
     });
 
+    //set labels text only for node clicked fans_liked cluster 
     nodeLabels
       .text(d => {
         const node = data.find(n => n.id == d.id);
@@ -412,8 +410,6 @@ function handleNodeClick(event,d) {
     }
 }
 
-
-//listener che chiude l'info panel al click su un area vuota
 svg.on("click", function(event) {
   if (event.target.tagName !== "circle" && event.target.tagName !== "path" && infoPanelVisible) {
     closeInfoPanel();
@@ -422,15 +418,8 @@ svg.on("click", function(event) {
 
 function closeInfoPanel(){
   infoPanelVisible = false
-  /*
-  nodeLabels
-    .text(d => d.rank<16 ? getShortTitle(d.title) : "")
-    .style("display", labelsVisible? "block": "none")
-    .attr("dx", d => -radiusScale(d.rank)) 
-    .attr("dy", "0.35em");*/
 
   d3.selectAll(".node-label").style("display", labelsVisible ? "block" : "none");
-  //labelsVisible = true
   d3.select("#toggle-labels").text(labelsVisible? "Hide Labels": "Show labels");
   d3.select("body").classed("panel-open", false);
   d3.select("#info-panel").style("display", "none");

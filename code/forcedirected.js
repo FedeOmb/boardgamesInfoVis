@@ -175,9 +175,8 @@ function addLegend() {
     });
 }
 
-//////////// FORCE SIMULATION ////////////
+// FORCE SIMULATION
 
-// force simulator
 var simulation = d3.forceSimulation();
 
 // set up the simulation and event to update locations after each tick
@@ -193,20 +192,18 @@ function initializeSimulation() {
   });
 }
 
-// values for all forces
+// FORCE PROPERTIES
 forceProperties = {
   center: {
     x: 0.5,
     y: 0.5,
   },
   charge: {
-    enabled: true,
     strength: -70,
     distanceMin: 1,
     distanceMax: 6000,
   },
   collide: {
-    enabled: true,
     strength: 0.7,
     iterations: 1,
     radius: 16,
@@ -217,25 +214,21 @@ forceProperties = {
     x: 0.5,
   },
   forceY: {
-    enabled: true,
     strength: -0.05,
     y: 0.5,
   },
   link: {
-    enabled: true,
     distance: 60,
     iterations: 1,
   },
   cluster: {
-    enabled: true,
     strength: 0.15,
   },
-};
-forceProperties.labelCollision = {
-  enabled: true,
-  strength: 0.7,
-  radius: d => Math.max(10, radiusScale(d.rank)) * 2 
-};
+  labelCollision: {
+    strength: 0.7,
+    radius: d => Math.max(10, radiusScale(d.rank)) * 2 
+  },
+}
 
 function forceCluster(alpha) {
   const strength = 0.15;
@@ -244,7 +237,6 @@ function forceCluster(alpha) {
   let centers = {};
 
   function force(alpha) {
-    // Per ogni nodo
     nodes.forEach(d => {
       d.type.forEach(nodeType => {
         if (centers[nodeType]) {
@@ -272,68 +264,49 @@ function forceCluster(alpha) {
   return force;
 }
 
-// add forces to the simulation
+// add forces to the simulation and set their properties
 function initializeForces() {
-  simulation
-    .force("link", d3.forceLink())
-    .force("charge", d3.forceManyBody())
-    .force("collide", d3.forceCollide())
-    .force("center", d3.forceCenter())
-    .force("forceX", d3.forceX())
-    .force("forceY", d3.forceY())
-    .force("cluster", forceCluster());
-  simulation
-    .force("labelCollision", d3.forceCollide()
+
+  simulation.force("link", d3.forceLink()
+      .id(function (d) {
+        return d.id;
+      })
+      .distance(forceProperties.link.distance)
+      .iterations(forceProperties.link.iterations)
+      .links(graph.links)
+  );
+  simulation.force("charge", d3.forceManyBody()
+    .strength(forceProperties.charge.strength)
+    .distanceMin(forceProperties.charge.distanceMin)
+    .distanceMax(forceProperties.charge.distanceMax)
+  );
+  simulation.force("collide", d3.forceCollide()
+  .strength(forceProperties.collide.strength)
+  .radius(forceProperties.collide.radius)
+  .iterations(forceProperties.collide.iterations)
+);
+  simulation.force("center", d3.forceCenter()
+  .x(width * forceProperties.center.x)
+  .y((height * forceProperties.center.y) - 60)
+);
+  simulation.force("forceX", d3.forceX()
+  .strength(forceProperties.forceX.strength)
+  .x(width * forceProperties.forceX.x)
+);
+  simulation.force("forceY", d3.forceY()
+  .strength(forceProperties.forceY.strength)
+  .y(height * forceProperties.forceY.y)
+);
+  simulation.force("cluster", forceCluster());
+  simulation.force("labelCollision", d3.forceCollide()
       .strength(forceProperties.labelCollision.strength)
       .radius(forceProperties.labelCollision.radius)
     );
-  // apply properties to each of the forces
-  updateForces();
+
+simulation.alpha(1).restart();
 }
 
-// apply new force properties
-function updateForces() {
-  // get each force by name and update the properties
-  simulation
-    .force("center")
-    .x(width * forceProperties.center.x)
-    .y((height * forceProperties.center.y) - 60); 
-  simulation
-    .force("charge")
-    .strength(forceProperties.charge.strength * forceProperties.charge.enabled)
-    .distanceMin(forceProperties.charge.distanceMin)
-    .distanceMax(forceProperties.charge.distanceMax);
-  simulation
-    .force("collide")
-    .strength(
-      forceProperties.collide.strength * forceProperties.collide.enabled
-    )
-    .radius(forceProperties.collide.radius)
-    .iterations(forceProperties.collide.iterations);
-  simulation
-    .force("forceX")
-    .strength(forceProperties.forceX.strength * forceProperties.forceX.enabled)
-    .x(width * forceProperties.forceX.x);
-  simulation
-    .force("forceY")
-    .strength(forceProperties.forceY.strength * forceProperties.forceY.enabled)
-    .y(height * forceProperties.forceY.y);
-  simulation
-    .force("link")
-    .id(function (d) {
-      return d.id;
-    })
-    .distance(forceProperties.link.distance)
-    .iterations(forceProperties.link.iterations)
-    .links(forceProperties.link.enabled ? graph.links : []);
-
-  simulation
-    .force("cluster");
-
-  simulation.alpha(1).restart();
-}
-
-//////////// DISPLAY ////////////
+// DISPLAY
 
 var arc = d3.arc()
 
@@ -374,6 +347,7 @@ function initializeDisplay() {
       handleNodeClick.call(this, event, d); 
     });
 
+    //add drag event to nodes
     node.call(d3.drag()
       .on("start", function(event, d) {
       })
@@ -442,11 +416,10 @@ function initializeDisplay() {
   updateDisplay();
 }
 
-// update the display based on the forces (but not positions)
+// update nodes and links attributes
 function updateDisplay() {
 
   node.each(function(d) {
-
     const nodeGroup = d3.select(this);
 
     arc.innerRadius(0)
@@ -475,8 +448,8 @@ function updateDisplay() {
   }); 
 
   link
-    .attr("stroke-width", forceProperties.link.enabled ? 1 : 0.5)
-    .attr("opacity", forceProperties.link.enabled ? 1 : 0)
+    .attr("stroke-width", 1)
+    .attr("opacity", 1)
     .attr("marker-end", "url(#arrow-end)")
     .attr("marker-start", d => d.bidirectional ? "url(#arrow-start)" : null);
 }
@@ -503,7 +476,6 @@ function ticked() {
     const hull = computeSingleHull(graph.nodes, activeHull);
     drawSingleHull(svg, hull, activeHull);
   }
-  d3.select("#alpha_value").style("flex-basis", simulation.alpha() * 100 + "%");
 
   // Update label positions with collision avoidance
   nodeLabels
@@ -567,7 +539,6 @@ window.addEventListener("resize", () => {
   width = +svg.node().getBoundingClientRect().width;
   height = +svg.node().getBoundingClientRect().height;
   updateSize();
-  updateForces();
 });
 
 // Helper function to check if two nodes are adjacent

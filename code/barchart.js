@@ -2,7 +2,6 @@ var categories = [];
 var mechanics = [];
 var designers = [];
 var dataset = {};
-var categByYear = [];
 var typeByYear = [];
 var gamesByYear = [];
 var years = [];
@@ -162,7 +161,6 @@ async function loadDatasets(){
   ]).then(([data, catData, mecData, desData]) =>{
 
     gamesByYear = calcGamesByYear(data);
-    categByYear = calcCategByYears(data);
     typeByYear = calcTypeByYears(data);
 
     catData.nodes.forEach( d => {
@@ -338,7 +336,7 @@ function createBarchart1(attr, varY, varX){
     .style("text-anchor", "end")
     .style("font-size", "11px")
     .each( function(d) {
-      wrapText(this,d);
+      wrapText(this,d, 25);
     })
 
   innerChart
@@ -631,6 +629,7 @@ function updateYearsChart(chartType) {
           infoDefaultText.style("display", "none");
           infoText.style("display","block").html(`Showing statistics about games released in year <strong>${d.year} </strong>`);
           showAdditionalCharts(additionalData, attrMainChart="year",containerId="#additional-info-2");
+          barSelected = true;
         });
 
       barGroup

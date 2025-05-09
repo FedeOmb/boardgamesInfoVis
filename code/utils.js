@@ -55,38 +55,8 @@ function calcTypeByYears(data){
   return yearsType;
 }
 
-function calcCategByYears(data){
-
-  const yearsCateg = [];
-  
-  data.nodes.forEach(game => {
-    const year = game.year;
-    let yearEntry = yearsCateg.find(d => d.year == year)
-    if (!yearEntry) {
-      yearEntry = { 
-        year: year,
-        count: 0
-      };
-      yearsCateg.push(yearEntry);
-    }
-  
-    const gameCategories = game.categories.map(c => c.name);
-    
-    gameCategories.forEach(category => {
-      let yearEntry = yearsCateg.find(d => d.year == year)
-      if (!yearEntry[category]) {
-        yearEntry[category] = [];
-      }
-      yearEntry[category].push(game.id);
-
-    });
-    yearEntry.count++;
-  });
-
-  return yearsCateg;
-}
-
-function wrapText(element, d){
+//helper function for text wrapping 
+function wrapText(element, d, numChars){
   const self = d3.select(element);
   let title = String(d).trim();
 
@@ -99,20 +69,24 @@ function wrapText(element, d){
       'fifth': '5th'
   };
 
-  //Apply le abbreviations
+  //Apply abbreviations
   for (let [word, abbrev] of Object.entries(abbreviations)) {
       const regex = new RegExp(`\\b${word}\\b`, 'gi');
       title = title.replace(regex, abbrev);
   }
   
-  if (title.length > 25) {
-    let firstLine = title.substring(0, 25);
-    let secondLine = title.substring(25);
+  if (title.length > numChars) {
+    let firstLine = title.substring(0, numChars);
+    let secondLine = title.substring(numChars);
     
     const lastSpace = firstLine.lastIndexOf(' ');
-    if (lastSpace > 15) {
+    if (lastSpace > numChars - 10) {
       firstLine = title.substring(0, lastSpace);
       secondLine = title.substring(lastSpace + 1);
+      if(secondLine.length > numChars){
+        secondLine = title.substring(lastSpace + 1, lastSpace + 1 + numChars);
+        secondLine = secondLine+"...";
+      }
     }
     self.text('');
     self.append('tspan')
@@ -128,3 +102,49 @@ function wrapText(element, d){
       self.text(title);
   }
 }
+
+//helper function for text wrapping in chord diagram
+function wrapArcText(text, width) {
+  text.each(function () {
+      const textElement = d3.select(this);
+      var words = textElement.text().split(/\s+/).reverse();
+      var line = [];
+      var lineNumber = 0;
+      var lineHeight = 1.1;
+      const x = textElement.attr("x") || 0; 
+      const y = textElement.attr("y") || 0;
+      var dy = parseFloat(textElement.attr("dy")) || 0;
+      var tspan = textElement.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
+      
+      for (let word of words) {
+          line.push(word);
+          tspan.text(line.join(" "));
+          if (tspan.node().getComputedTextLength() > width) {
+              line.pop();
+              tspan.text(line.join(" "));
+              line = [word];
+              tspan = textElement.append("tspan")
+                  .attr("x", x)
+                  .attr("y", y)
+                  .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                  .text(word);
+          }
+      }
+  });
+}
+
+function getShortTitle(title){
+  title = String(title)
+  if(title.includes(":"))
+      return title.split(":")[0]+"..."
+  else if(title.includes("("))
+      return title.split("(")[0]+"..."
+  else return title
+}
+
+function getShortCatName(catName){
+  if(String(catName).length > 12)
+    return String(catName).split("/").join("\n")
+  else return catName
+}
+

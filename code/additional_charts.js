@@ -1,4 +1,4 @@
-var showAllSelector 
+var showAllSelector;
 
 //function to create additional charts on barchart page
 function showAdditionalCharts(data, attrMainChart, containerId) {
@@ -237,7 +237,7 @@ function createAdditionalBarchart(data, chartContainer, attr, maxValue, title, a
       .style("text-anchor", "end")
       .style("font-size", "11px")
       .each( function(d) {
-        wrapText(this,d);
+        wrapText(this, d, 25);
       });
   
     innerChart
@@ -354,7 +354,7 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
       .style("text-anchor", "end")
       .style("font-size", "11px")
       .each( function(d) {
-        wrapText(this,d);
+        wrapText(this,d,25);
       })
   }
   
@@ -454,8 +454,11 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
       .attr("transform", `translate(${margin.left}, 0)`) 
       .call(d3.axisLeft(y))
       .selectAll(".tick text")
-      .style("font-size", "12px") 
-      .call(wrapText2, margin.left - 10); 
+      .style("font-size", "12px")
+      .each( function(d) {
+        wrapText(this,d, 25);
+      })
+      /*.call(wrapText2, margin.left - 10);*/
   }
 
   function updateTooltipPosition(event) {
@@ -471,51 +474,6 @@ function createDumbbellChart(data, minProp, maxProp, chartContainer, title, game
     tooltip
       .style("left", (event.pageX - 40) + "px")
       .style("top", tooltipY + "px");
-  }
-
-  function getShortTitle(title){
-    title = String(title)
-    if(title.includes(":"))
-        return title.split(":")[0]
-    else if(title.includes("("))
-        return title.split("(")[0]
-    else return title
-  }
-  
-  function getShortCatName(catName){
-    if(String(catName).length > 12)
-      return String(catName).split("/").join("\n")
-    else return catName
-  }
-
-  function wrapText2(selection, width) {
-    selection.each(function() {
-      const text = d3.select(this);
-      let words = text.text().split(/\s+/);
-      let line = [];
-      let lineNumber = 0;
-      let lineHeight = 1.1; 
-      let y = text.attr("y");
-      let x = text.attr("x");
-      let dy = parseFloat(text.attr("dy")) || 0;
-
-      let tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
-
-      for (let word of words) {
-        line.push(word);
-        tspan.text(line.join(" "));
-        if (tspan.node().getComputedTextLength() > width) {
-          line.pop();
-          tspan.text(line.join(" "));
-          line = [word];
-          tspan = text.append("tspan")
-            .attr("x", x)
-            .attr("y", y)
-            .attr("dy", ++lineNumber * lineHeight + dy + "em")
-            .text(word);
-        }
-      }
-    });
   }
 
   function getMaxMinAge(dataset){

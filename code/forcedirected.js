@@ -651,21 +651,6 @@ function isBidirectional(sourceid, targetid) {
   return bidirectionalLinks.has(`${sourceid}-${targetid}`) || bidirectionalLinks.has(`${targetid}-${sourceid}`);
 }
 
-function getShortTitle(title){
-  title = String(title)
-  if(title.includes(":"))
-      return title.split(":")[0]+"..."
-  else if(title.includes("("))
-      return title.split("(")[0]+"..."
-  else return title
-}
-
-function getShortCatName(catName){
-  if(String(catName).length > 12)
-    return String(catName).split("/").join("\n")
-  else return catName
-}
-
 function resetNetColors() {
   // Reset link styles
   networkGroup.selectAll("line")

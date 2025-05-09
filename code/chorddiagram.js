@@ -89,14 +89,12 @@ function prepareData(dataset) {
             gamesToIndividualsMap[game].push(individual.id);
         });
     });
-    console.log("games to individual map", gamesToIndividualsMap);
 
     //filters designers, categories, and mechanics that are in common in a game
     network.links.forEach(link => {
         collaboratingIndividuals.add(link.source);
         collaboratingIndividuals.add(link.target);
     });
-    console.log("collaborating individuals2", collaboratingIndividuals);
 
     //finds the largest connected component in the network of collaborations
     let largestComponent = new Set();
@@ -106,7 +104,6 @@ function prepareData(dataset) {
             largestComponent = component;
         }
     });
-    console.log("largest component", largestComponent);
 
     //set of nodes in the largest connected component
     let topIndividuals = network.nodes.filter(d => largestComponent.has(d.id));
@@ -126,20 +123,14 @@ function prepareData(dataset) {
         topIndividuals = topIndividuals.concat(additionalIndividuals);
     }
     //sorts the nodes by the number of games and takes the top 10
-    console.log("top individuals after adding new", topIndividuals);
     topIndividuals.sort((a, b) => d3.descending(a.games.length, b.games.length));
-    console.log("top individuals sorted", topIndividuals);
     topIndividuals = topIndividuals.slice(0, 10);
-    console.log("top individuals after slice", topIndividuals);
-
     const topIndividualIds = new Set(topIndividuals.map(d => d.id));
 
     //Filter existing links to keep only those among top 10
     var relevantLinks = network.links.filter(link =>
         topIndividualIds.has(link.source) && topIndividualIds.has(link.target)
     );
-
-    console.log("relevant links", relevantLinks);
 
     relevantLinks = relevantLinks.map(link => {
         const sourceNode = network.nodes.find(n => n.id === link.source);
@@ -152,11 +143,9 @@ function prepareData(dataset) {
             commonGames: commonGames
         };
     });
-    console.log("relevant links with common games", relevantLinks);
 
     //Create the matrix for the chord diagram
     const nodeMap = new Map(topIndividuals.map((node, i) => [node.id, i]));
-    console.log("node map", nodeMap);
     const matrix = Array.from({ length: topIndividuals.length }, () =>
         Array.from({ length: topIndividuals.length }, () => 0)
     );
@@ -168,16 +157,13 @@ function prepareData(dataset) {
         matrix[sourceIndex][targetIndex] = link.weight;
         matrix[targetIndex][sourceIndex] = link.weight;
     });
-    console.log("matrix", matrix);
-    console.log("refined nodes", topIndividuals);
-    console.log("link games", relevantLinks);
+
     return { nodes: topIndividuals, links: relevantLinks, matrix };
 }
 
 //DFS standard
 function findConnectedComponentDFS(startId, network) {
     let visited = new Set();
-    console.log("findconnectedcomponentDFS")
     function dfs(currentId) {
         if (visited.has(currentId)) return;
         visited.add(currentId);
@@ -367,7 +353,6 @@ function createChordDiagram(dataToVis) {
 
     //listener for clicks on empty areas of the svg
     outerSvg.on("click", (event) => {
-        console.log("click", event.target);
         if (event.target.tagName === "svg") {
             svg.selectAll(".ribbon")
                 .transition()
@@ -389,37 +374,6 @@ function createChordDiagram(dataToVis) {
 
 function truncateName(name, maxLength = 15) {
     return name.length > maxLength ? name.substring(0, maxLength) + '...' : name;
-}
-
-//helper function for text wrapping
-function wrapArcText(text, width) {
-    text.each(function () {
-        var textElement = d3.select(this);
-        var words = textElement.text().split(/\s+/).reverse();
-        var word,
-            line = [],
-            lineNumber = 0,
-            lineHeight = 1.1, 
-            x = textElement.attr("x") || 0, 
-            y = textElement.attr("y") || 0, 
-            dy = parseFloat(textElement.attr("dy")) || 0,
-            tspan = textElement.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
-
-        while (word = words.pop()) {
-            line.push(word);
-            tspan.text(line.join(" "));
-            if (tspan.node().getComputedTextLength() > width) {
-                line.pop();
-                tspan.text(line.join(" "));
-                line = [word];
-                tspan = textElement.append("tspan")
-                    .attr("x", x)
-                    .attr("y", y)
-                    .attr("dy", ++lineNumber * lineHeight + dy + "em")
-                    .text(word);
-            }
-        }
-    });
 }
 
 //adjustment to prevent screen cutting

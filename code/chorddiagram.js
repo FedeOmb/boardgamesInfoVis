@@ -168,7 +168,7 @@ function findConnectedComponentDFS(startId, network) {
         if (visited.has(currentId)) return;
         visited.add(currentId);
         //Find all links where currentId is source or target
-        const adjacentLinks = network.links.filter(link => 
+        const adjacentLinks = network.links.filter(link =>
             link.source === currentId || link.target === currentId
         );
         //Recursively visit all adjacent nodes
@@ -182,7 +182,7 @@ function findConnectedComponentDFS(startId, network) {
 }
 
 function createChordDiagram(dataToVis) {
-    
+
     const { nodes, links, matrix } = dataToVis;
 
     const cont = d3.select(".chord-container");
@@ -275,7 +275,7 @@ function createChordDiagram(dataToVis) {
             }
             tooltip.transition().duration(500).style("visibility", "hidden");
         });
-    
+
     //draws the circular arcs
     svg.append("g")
         .selectAll("g")

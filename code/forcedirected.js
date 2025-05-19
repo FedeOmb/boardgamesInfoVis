@@ -240,7 +240,7 @@ function forceCluster(alpha) {
     nodes.forEach(d => {
       d.type.forEach(nodeType => {
         if (centers[nodeType]) {
-          // Attrai il nodo verso il centro del suo gruppo
+          // attract nodes to the center of their group
           d.vx += (centers[nodeType].x - d.x) * strength * alpha;
           d.vy += (centers[nodeType].y - d.y) * strength * alpha;
         }
@@ -250,7 +250,7 @@ function forceCluster(alpha) {
 
   force.initialize = function(_nodes) {
     nodes = _nodes;
-    // Calcola i centri per ogni tipo
+    // compute group center for each type
     const types = Array.from(new Set(nodes.flatMap(d => d.type)));
     types.forEach((type, i) => {
       const angle = (i / types.length) * 2 * Math.PI;
@@ -438,12 +438,12 @@ function updateDisplay() {
         nodeGroup.append("path")
             .attr("d", arc)
             .attr("fill", colorScaleType(d.type[0]))
-            .attr("transform", "rotate(0)"); // First half-circle
+            .attr("transform", "rotate(0)");
 
         nodeGroup.append("path")
             .attr("d", arc)
             .attr("fill", colorScaleType(d.type[1]))
-            .attr("transform", "rotate(180)"); // Second half-circle, rotated 180 degrees
+            .attr("transform", "rotate(180)");
     }
   }); 
 

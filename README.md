@@ -6,4 +6,6 @@ Questo lavoro ha l’obiettivo di progettare un sistema di visualizzazione per e
 
 L’interfaccia sviluppata consente di analizzare e confrontare i giochi sulla base di diverse caratteristiche, con un focus particolare sull’individuazione di relazioni tra giochi simili e sulle preferenze condivise dagli utenti.
 
-Il sistema è pensato per essere intuitivo e orientato sia ad appassionati di giochi da tavolo o neofiti che vogliono scoprire nuovi giochi, anche sulla base di quelli già apprezzati, ma anche a esperti nel campo o organizzatori di eventi che intendono approfondire dei pattern o caratte-ristiche dei giochi più alti nel ranking.
+Il sistema è pensato per essere intuitivo e orientato sia ad appassionati di giochi da tavolo o neofiti che vogliono scoprire nuovi giochi, anche sulla base di quelli già apprezzati, ma anche a esperti nel campo o organizzatori di eventi che intendono approfondire dei pattern o caratteristiche dei giochi più alti nel ranking.
+
+Per tutti i dettagli visualizza il documento di progetto [ProgettoInfoVis_Boardgames-Recommendation.pdf](./ProgettoInfoVis_Boardgames-Recommendation.pdf)
